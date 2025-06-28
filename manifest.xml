@@ -15,7 +15,7 @@
 
   <AppDomains>
     <AppDomain>https://8080-ikhn0sw4dtbie34mvyb0g-8e26c31b.e2b.dev</AppDomain>
-    <AppDomain>https://ai-bot.cn</AppDomain>
+    <AppDomain>https://8080-ibcq34tzqozbvcxg5c7o0-b334fc63.e2b.dev</AppDomain>
     <AppDomain>https://github.com</AppDomain>
     <AppDomain>https://lizheng.me</AppDomain>
   </AppDomains>
@@ -25,7 +25,7 @@
   </Hosts>
 
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://lizheng.me/index.php/2025/06/context-budgeting-in-ai-coding-agents/"/>
+    <SourceLocation DefaultValue="https://8080-ibcq34tzqozbvcxg5c7o0-b334fc63.e2b.dev/focus-management.html"/>
     <RequestedWidth>1200</RequestedWidth>
     <RequestedHeight>2000</RequestedHeight>
   </DefaultSettings>

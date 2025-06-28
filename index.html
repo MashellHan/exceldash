@@ -1,178 +1,101 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTML Report Test</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 20px;
-            background-color: #f5f5f5;
-            color: #333;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .info-card {
-            background: #e8f4fd;
-            padding: 20px;
-            border-left: 4px solid #3498db;
-            margin: 20px 0;
-        }
-        .chart-placeholder {
-            width: 100%;
-            height: 200px;
-            background: linear-gradient(45deg, #74b9ff, #0984e3);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            margin: 20px 0;
-        }
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        .data-table th, .data-table td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-        .data-table th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-        }
-        .data-table tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-        .button {
-            background-color: #3498db;
-            border: none;
-            color: white;
-            padding: 12px 24px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-        .button:hover {
-            background-color: #2980b9;
-        }
-        .status {
-            padding: 10px;
-            border-radius: 4px;
-            margin: 10px 0;
-            background-color: #d4edda;
-            border: 1px solid #c3e6cb;
-            color: #155724;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Excel People‑Style Graph (Binding Demo)</title>
+  <!-- Office.js -->
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <style>
+    body{font-family:Segoe UI,Arial,sans-serif;margin:0;padding:16px;background:#f7f9fc}
+    #chart{width:100%;height:420px;border:1px solid #e1e4e8;border-radius:6px;background:#fff}
+    button{padding:8px 18px;font-size:14px;border:none;border-radius:4px;cursor:pointer;background:#4361ee;color:#fff;margin-bottom:12px}
+    button:hover{opacity:.9}
+    #status{margin-left:12px;color:#666;font-size:13px}
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📊 HTML Report 测试页面</h1>
-        
-        <div class="info-card">
-            <h3>✅ Add-in 连接成功</h3>
-            <p>这是一个测试HTML文件，用于验证Excel Add-in的功能。</p>
-            <p><strong>当前时间:</strong> <span id="current-time"></span></p>
-        </div>
+  <button id="bind">Bind Selection & Draw</button><span id="status"></span>
+  <div id="chart"></div>
 
-        <div class="status">
-            <strong>状态:</strong> HTML内容已成功加载到Excel中
-        </div>
+  <script>
+    let bindingId = "peopleData";
+    let chart = null;
 
-        <div class="chart-placeholder">
-            📈 图表区域 (模拟数据可视化)
-        </div>
+    Office.onReady(() => {
+      document.getElementById("bind").onclick = addOrRebind;
+    });
 
-        <h3>📋 示例数据表格</h3>
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>项目</th>
-                    <th>数值</th>
-                    <th>状态</th>
-                    <th>更新时间</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>收入</td>
-                    <td>¥125,000</td>
-                    <td>✅ 正常</td>
-                    <td>2024-01-15</td>
-                </tr>
-                <tr>
-                    <td>支出</td>
-                    <td>¥98,500</td>
-                    <td>⚠️ 注意</td>
-                    <td>2024-01-15</td>
-                </tr>
-                <tr>
-                    <td>利润</td>
-                    <td>¥26,500</td>
-                    <td>✅ 良好</td>
-                    <td>2024-01-15</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div style="text-align: center; margin: 30px 0;">
-            <button class="button" onclick="refreshData()">🔄 刷新数据</button>
-            <button class="button" onclick="exportData()">📥 导出数据</button>
-        </div>
-
-        <div class="info-card">
-            <h4>🔧 技术信息</h4>
-            <ul>
-                <li>类型: Content Add-in</li>
-                <li>版本: 1.0.0.2</li>
-                <li>权限: ReadWriteDocument</li>
-                <li>支持: Excel Workbook</li>
-            </ul>
-        </div>
-    </div>
-
-    <script>
-        // 显示当前时间
-        function updateTime() {
-            const now = new Date();
-            document.getElementById('current-time').textContent = now.toLocaleString('zh-CN');
+    function addOrRebind() {
+      Office.context.document.bindings.addFromSelectionAsync(
+        Office.BindingType.Matrix,
+        { id: bindingId },
+        result => {
+          if (result.status === Office.AsyncResultStatus.Succeeded) {
+            setStatus("✅ Bound to selection – listening for changes…");
+            // attach change handler only once
+            const binding = result.value;
+            binding.addHandlerAsync(
+              Office.EventType.BindingDataChanged,
+              () => refreshChart(binding)
+            );
+            refreshChart(binding);
+          } else {
+            // if binding exists already, just get it
+            Office.context.document.bindings.getByIdAsync(bindingId, r => {
+              if (r.status === Office.AsyncResultStatus.Succeeded) {
+                refreshChart(r.value);
+              } else {
+                setStatus("⚠️ Select a 2‑column range then click again.");
+              }
+            });
+          }
         }
-        
-        function refreshData() {
-            alert('数据刷新功能 - 这里可以实现与Excel的数据交互');
+      );
+    }
+
+    function refreshChart(binding) {
+      binding.getDataAsync({ coercionType: Office.CoercionType.Matrix }, res => {
+        if (res.status !== Office.AsyncResultStatus.Succeeded) {
+          setStatus("Failed to read data: " + res.error.message);
+          return;
         }
-        
-        function exportData() {
-            alert('数据导出功能 - 这里可以实现数据导出到Excel');
+        const matrix = res.value; // [[Category, Value], ...]
+        if (!Array.isArray(matrix) || matrix.length < 2) {
+          setStatus("Select at least 2 rows (header + data)");
+          return;
         }
-        
-        // 页面加载时更新时间
-        updateTime();
-        
-        // 每秒更新时间
-        setInterval(updateTime, 1000);
-    </script>
+        const categories = matrix.slice(1).map(r => r[0]);
+        const values = matrix.slice(1).map(r => Number(r[1]) || 0);
+        renderChart(categories, values);
+      });
+    }
+
+    function renderChart(labels, vals) {
+      if (!chart) {
+        chart = echarts.init(document.getElementById("chart"));
+      }
+      const option = {
+        tooltip: { trigger: "axis", formatter: params => `${params[0].name}: ${params[0].value}` },
+        xAxis: { type: "category", data: labels, axisLabel: { rotate: 20 } },
+        yAxis: { type: "value" },
+        series: [{
+          name: "People Count",
+          data: vals,
+          type: "bar",
+          itemStyle: {
+            color: "#4361ee",
+            borderRadius: [4,4,0,0]
+          }
+        }],
+        animationDuration: 500
+      };
+      chart.setOption(option);
+      setStatus(`Last updated: ${new Date().toLocaleTimeString()}`);
+    }
+
+    function setStatus(msg){document.getElementById("status").textContent=msg;}
+  </script>
 </body>
-</html> 
+</html>

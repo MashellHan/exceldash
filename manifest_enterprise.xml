@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:type="TaskPaneApp">
+
+  <!-- ========== 基础信息 ========== -->
+  <Id>28d4a3e2-65c6-43d0-9c3b-0a336ab67701</Id>
+  <Version>1.1.0.0</Version>
+  <ProviderName>Enterprise IT Department</ProviderName>
+  <DefaultLocale>en-US</DefaultLocale>
+
+  <DisplayName DefaultValue="HTML Report Viewer (Enterprise)"/>
+  <Description DefaultValue="企业级 HTML 仪表板查看器，支持 Excel Online 和桌面版的统一部署"/>
+  <IconUrl DefaultValue="https://via.placeholder.com/32x32.png?text=HR"/>
+  <HighResolutionIconUrl DefaultValue="https://via.placeholder.com/64x64.png?text=HR"/>
+
+  <!-- ========== 企业支持信息 ========== -->
+  <SupportUrl DefaultValue="https://your-company.com/support"/>
+  
+  <!-- ========== 允许访问的域（企业级安全配置） ========== -->
+  <AppDomains>
+    <AppDomain>https://8080-ibcq34tzqozbvcxg5c7o0-b334fc63.e2b.dev</AppDomain>
+    <AppDomain>https://reports.your-company.com</AppDomain>
+    <AppDomain>https://dashboard.your-company.com</AppDomain>
+    <AppDomain>https://analytics.your-company.com</AppDomain>
+  </AppDomains>
+
+  <!-- ========== 宿主应用：支持所有 Excel 版本 ========== -->
+  <Hosts>
+    <Host Name="Workbook"/>
+  </Hosts>
+
+  <!-- ========== 权限：企业级权限控制 ========== -->
+  <Permissions>ReadWriteDocument</Permissions>
+
+  <!-- ========== Office.js API 需求 ========== -->
+  <Requirements>
+    <Sets DefaultMinVersion="1.1">
+      <Set Name="ExcelApi" MinVersion="1.1"/>
+      <Set Name="SharedRuntime" MinVersion="1.1"/>
+    </Sets>
+  </Requirements>
+
+  <!-- ========== 默认设置 ========== -->
+  <DefaultSettings>
+    <SourceLocation
+        DefaultValue="https://8080-ibcq34tzqozbvcxg5c7o0-b334fc63.e2b.dev/focus-management.html"/>
+  </DefaultSettings>
+
+  <!-- ========== 版本覆盖：企业级配置 ========== -->
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides/1.1"
+                    xsi:type="VersionOverridesV1_1">
+    
+    <!-- ========== 描述覆盖（多语言支持） ========== -->
+    <Description resid="GetStarted.Description"/>
+    
+    <Hosts>
+      <Host xsi:type="Workbook">
+
+        <!-- ★ 共享运行时：企业级性能优化 -->
+        <Runtimes>
+          <Runtime resid="Taskpane.Url" lifetime="long"/>
+        </Runtimes>
+
+        <!-- ★ 功能区按钮：企业标准化界面 -->
+        <ExtensionPoint xsi:type="PrimaryCommandSurface">
+          <OfficeTab id="TabHome">
+            <Group id="EnterpriseReportGroup" label="企业报表">
+              
+              <!-- 主要报表按钮 -->
+              <Control xsi:type="Button" id="ShowMainDashboard"
+                       label="主仪表板"
+                       screentip="打开主仪表板"
+                       supertip="显示企业主要 KPI 和指标仪表板"
+                       icon="Icon.Dashboard">
+                <Action xsi:type="ShowTaskpane">
+                  <SourceLocation resid="Taskpane.Url"/>
+                </Action>
+              </Control>
+              
+              <!-- 报表查看器按钮 -->
+              <Control xsi:type="Button" id="ShowReportViewer"
+                       label="报表查看器"
+                       screentip="HTML 报表查看器"
+                       supertip="查看和交互 HTML 格式的业务报表"
+                       icon="Icon.Report">
+                <Action xsi:type="ShowTaskpane">
+                  <SourceLocation resid="Taskpane.Url"/>
+                </Action>
+              </Control>
+              
+              <!-- 设置按钮 -->
+              <Control xsi:type="Button" id="ShowSettings"
+                       label="设置"
+                       screentip="插件设置"
+                       supertip="配置报表查看器的显示选项"
+                       icon="Icon.Settings">
+                <Action xsi:type="ShowTaskpane">
+                  <SourceLocation resid="Taskpane.Url"/>
+                </Action>
+              </Control>
+              
+            </Group>
+          </OfficeTab>
+        </ExtensionPoint>
+
+        <!-- ★ 上下文菜单扩展（可选） -->
+        <ExtensionPoint xsi:type="ContextMenu">
+          <OfficeMenu id="ContextMenuCell">
+            <Control xsi:type="Menu" id="ReportContextMenu">
+              <Label resid="ContextMenu.Label"/>
+              <Supertip>
+                <Title resid="ContextMenu.Label"/>
+                <Description resid="ContextMenu.Tooltip"/>
+              </Supertip>
+              <Icon>
+                <bt:Image size="16" resid="Icon.16"/>
+                <bt:Image size="32" resid="Icon.32"/>
+                <bt:Image size="80" resid="Icon.80"/>
+              </Icon>
+              <Items>
+                <Item id="ViewAsReport">
+                  <Label resid="ContextMenu.ViewReport"/>
+                  <Supertip>
+                    <Title resid="ContextMenu.ViewReport"/>
+                    <Description resid="ContextMenu.ViewReportTooltip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <SourceLocation resid="Taskpane.Url"/>
+                  </Action>
+                </Item>
+              </Items>
+            </Control>
+          </OfficeMenu>
+        </ExtensionPoint>
+
+      </Host>
+    </Hosts>
+
+    <!-- ★ 资源表：企业级多语言和图标 -->
+    <Resources>
+      <bt:Images>
+        <bt:Image id="Icon.16" DefaultValue="https://via.placeholder.com/16x16.png?text=E"/>
+        <bt:Image id="Icon.32" DefaultValue="https://via.placeholder.com/32x32.png?text=E"/>
+        <bt:Image id="Icon.80" DefaultValue="https://via.placeholder.com/80x80.png?text=E"/>
+        <bt:Image id="Icon.Dashboard" DefaultValue="https://via.placeholder.com/32x32.png?text=📊"/>
+        <bt:Image id="Icon.Report" DefaultValue="https://via.placeholder.com/32x32.png?text=📋"/>
+        <bt:Image id="Icon.Settings" DefaultValue="https://via.placeholder.com/32x32.png?text=⚙️"/>
+      </bt:Images>
+      
+      <bt:Urls>
+        <bt:Url id="Taskpane.Url"
+                DefaultValue="https://8080-ibcq34tzqozbvcxg5c7o0-b334fc63.e2b.dev/focus-management.html"/>
+        <bt:Url id="GetStarted.LearnMoreUrl"
+                DefaultValue="https://your-company.com/help"/>
+      </bt:Urls>
+      
+      <bt:ShortStrings>
+        <bt:String id="GetStarted.Title" DefaultValue="HTML Report Viewer (Enterprise)"/>
+        <bt:String id="CommandsGroup.Label" DefaultValue="企业报表"/>
+        <bt:String id="TaskpaneButton.Label" DefaultValue="主仪表板"/>
+        <bt:String id="ContextMenu.Label" DefaultValue="报表选项"/>
+        <bt:String id="ContextMenu.ViewReport" DefaultValue="查看为报表"/>
+      </bt:ShortStrings>
+      
+      <bt:LongStrings>
+        <bt:String id="GetStarted.Description" DefaultValue="企业级 HTML 仪表板查看器，提供安全、高效的报表查看体验。支持交互式图表、实时数据更新和多格式导出。"/>
+        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="打开企业主仪表板，查看关键业务指标和 KPI。"/>
+        <bt:String id="ContextMenu.Tooltip" DefaultValue="将选中的数据转换为交互式报表视图。"/>
+        <bt:String id="ContextMenu.ViewReportTooltip" DefaultValue="在 HTML 报表查看器中显示选中的数据区域。"/>
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
+</OfficeApp> 
