@@ -1,53 +1,408 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <title>Excel People‑Style Graph (Binding Demo)</title>
+  <title>Excel 智能图表生成器 (多类型·多系列)</title>
   <!-- Office.js -->
   <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
   <!-- ECharts -->
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
   <style>
-    body{font-family:Segoe UI,Arial,sans-serif;margin:0;padding:16px;background:#f7f9fc}
-    #chart{width:100%;height:420px;border:1px solid #e1e4e8;border-radius:6px;background:#fff}
-    button{padding:8px 18px;font-size:14px;border:none;border-radius:4px;cursor:pointer;background:#4361ee;color:#fff;margin-bottom:12px}
-    button:hover{opacity:.9}
-    #status{margin-left:12px;color:#666;font-size:13px}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', 'Microsoft YaHei', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+      font-weight: 300;
+    }
+    
+    .header p {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+    
+    .control-panel {
+      padding: 30px;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e9ecef;
+    }
+    
+    .control-row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .control-group label {
+      font-weight: 600;
+      color: #495057;
+      font-size: 14px;
+    }
+    
+    .btn {
+      padding: 12px 24px;
+      font-size: 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+    
+    .select {
+      padding: 10px 15px;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+      transition: border-color 0.3s;
+      min-width: 150px;
+    }
+    
+    .select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .input {
+      padding: 10px 15px;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+      min-width: 200px;
+    }
+    
+    .input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .checkbox-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    
+    .status {
+      background: #e3f2fd;
+      border: 1px solid #90caf9;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 20px 0;
+      color: #1565c0;
+      font-weight: 500;
+    }
+    
+    .chart-container {
+      padding: 30px;
+    }
+    
+    #chart {
+      width: 100%;
+      height: 500px;
+      border: 2px solid #e9ecef;
+      border-radius: 15px;
+      background: white;
+    }
+    
+    .data-preview {
+      margin-top: 20px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    
+    .data-preview h4 {
+      color: #495057;
+      margin-bottom: 10px;
+    }
+    
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    
+    .data-table th,
+    .data-table td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #dee2e6;
+    }
+    
+    .data-table th {
+      background: #e9ecef;
+      font-weight: 600;
+    }
+    
+    .color-picker {
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    
+    @media (max-width: 768px) {
+      .control-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .select, .input {
+        min-width: auto;
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
-  <button id="bind">Bind Selection & Draw</button><span id="status"></span>
-  <div id="chart"></div>
+  <div class="container">
+    <!-- 标题区域 -->
+    <div class="header">
+      <h1>📊 Excel 智能图表生成器</h1>
+      <p>选择数据范围，自动生成可配置的交互式图表</p>
+    </div>
+    
+    <!-- 控制面板 -->
+    <div class="control-panel">
+      <!-- 数据绑定 -->
+      <div class="control-row">
+        <button id="bindBtn" class="btn btn-primary">
+          🔗 绑定选定数据
+        </button>
+        <div class="status" id="status">请选择 Excel 数据范围，然后点击"绑定选定数据"</div>
+      </div>
+      
+      <!-- 图表类型配置 -->
+      <div class="control-row">
+        <div class="control-group">
+          <label>图表类型</label>
+          <select id="chartType" class="select">
+            <option value="bar">📊 柱状图</option>
+            <option value="line">📈 折线图</option>
+            <option value="pie">🥧 饼图</option>
+            <option value="area">📊 面积图</option>
+            <option value="scatter">⚫ 散点图</option>
+            <option value="radar">🕸️ 雷达图</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label>图表标题</label>
+          <input type="text" id="chartTitle" class="input" placeholder="输入图表标题" value="数据分析图表">
+        </div>
+        
+        <div class="control-group">
+          <label>主题色彩</label>
+          <input type="color" id="primaryColor" class="color-picker" value="#667eea">
+        </div>
+      </div>
+      
+      <!-- 系列配置 -->
+      <div class="control-row">
+        <div class="control-group">
+          <label>数据系列模式</label>
+          <select id="seriesMode" class="select">
+            <option value="auto">🤖 自动检测</option>
+            <option value="single">📊 单系列</option>
+            <option value="multi">📊 多系列</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label>动画效果</label>
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="enableAnimation" checked>
+              <label for="enableAnimation">启用动画</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="enable3D">
+              <label for="enable3D">3D效果</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 样式配置 -->
+      <div class="control-row">
+        <div class="control-group">
+          <label>显示选项</label>
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="showLegend" checked>
+              <label for="showLegend">显示图例</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="showGrid" checked>
+              <label for="showGrid">显示网格</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="showTooltip" checked>
+              <label for="showTooltip">显示提示</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 图表容器 -->
+    <div class="chart-container">
+      <div id="chart"></div>
+      
+      <!-- 数据预览 -->
+      <div class="data-preview" id="dataPreview" style="display: none;">
+        <h4>📋 数据预览</h4>
+        <table class="data-table" id="dataTable"></table>
+      </div>
+    </div>
+  </div>
 
   <script>
-    let bindingId = "peopleData";
+    let bindingId = "smartChartData";
     let chart = null;
+    let currentData = null;
+    
+    // 预定义颜色主题
+    const colorSchemes = {
+      default: ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'],
+      business: ['#3366cc', '#dc3912', '#ff9900', '#109618', '#990099', '#0099c6'],
+      nature: ['#8bc34a', '#4caf50', '#009688', '#00bcd4', '#03a9f4', '#2196f3'],
+      warm: ['#ff5722', '#ff9800', '#ffc107', '#ffeb3b', '#cddc39', '#8bc34a']
+    };
 
     Office.onReady(() => {
-      document.getElementById("bind").onclick = addOrRebind;
+      initializeEventListeners();
+      initializeChart();
     });
 
+    function initializeEventListeners() {
+      document.getElementById("bindBtn").onclick = addOrRebind;
+      document.getElementById("chartType").onchange = updateChart;
+      document.getElementById("chartTitle").oninput = updateChart;
+      document.getElementById("primaryColor").onchange = updateChart;
+      document.getElementById("seriesMode").onchange = updateChart;
+      document.getElementById("enableAnimation").onchange = updateChart;
+      document.getElementById("enable3D").onchange = updateChart;
+      document.getElementById("showLegend").onchange = updateChart;
+      document.getElementById("showGrid").onchange = updateChart;
+      document.getElementById("showTooltip").onchange = updateChart;
+    }
+
+    function initializeChart() {
+      chart = echarts.init(document.getElementById("chart"));
+      
+      // 显示默认图表
+      const option = {
+        title: {
+          text: '等待数据绑定...',
+          left: 'center',
+          top: 'center',
+          textStyle: {
+            fontSize: 24,
+            color: '#999'
+          }
+        }
+      };
+      chart.setOption(option);
+    }
+
     function addOrRebind() {
+      setStatus("🔄 正在绑定数据...", "loading");
+      
       Office.context.document.bindings.addFromSelectionAsync(
         Office.BindingType.Matrix,
         { id: bindingId },
         result => {
           if (result.status === Office.AsyncResultStatus.Succeeded) {
-            setStatus("✅ Bound to selection – listening for changes…");
-            // attach change handler only once
+            setStatus("✅ 数据绑定成功！图表将自动更新", "success");
             const binding = result.value;
+            
+            // 移除旧的事件监听器
+            binding.removeHandlerAsync(Office.EventType.BindingDataChanged, () => {});
+            
+            // 添加新的事件监听器
             binding.addHandlerAsync(
               Office.EventType.BindingDataChanged,
-              () => refreshChart(binding)
+              () => {
+                setStatus("🔄 检测到数据变化，正在更新图表...", "loading");
+                setTimeout(() => refreshChart(binding), 100);
+              }
             );
+            
             refreshChart(binding);
           } else {
-            // if binding exists already, just get it
+            // 尝试获取已存在的绑定
             Office.context.document.bindings.getByIdAsync(bindingId, r => {
               if (r.status === Office.AsyncResultStatus.Succeeded) {
                 refreshChart(r.value);
               } else {
-                setStatus("⚠️ Select a 2‑column range then click again.");
+                setStatus("⚠️ 请先选择一个包含标题行的数据范围", "error");
               }
             });
           }
@@ -58,44 +413,369 @@
     function refreshChart(binding) {
       binding.getDataAsync({ coercionType: Office.CoercionType.Matrix }, res => {
         if (res.status !== Office.AsyncResultStatus.Succeeded) {
-          setStatus("Failed to read data: " + res.error.message);
+          setStatus("❌ 数据读取失败: " + res.error.message, "error");
           return;
         }
-        const matrix = res.value; // [[Category, Value], ...]
+        
+        const matrix = res.value;
         if (!Array.isArray(matrix) || matrix.length < 2) {
-          setStatus("Select at least 2 rows (header + data)");
+          setStatus("⚠️ 请选择至少2行数据（包含标题行）", "error");
           return;
         }
-        const categories = matrix.slice(1).map(r => r[0]);
-        const values = matrix.slice(1).map(r => Number(r[1]) || 0);
-        renderChart(categories, values);
+        
+        currentData = matrix;
+        processDataAndRender();
+        showDataPreview(matrix);
+        setStatus(`✅ 图表已更新 (${new Date().toLocaleTimeString()})`, "success");
       });
     }
 
-    function renderChart(labels, vals) {
-      if (!chart) {
-        chart = echarts.init(document.getElementById("chart"));
+    function processDataAndRender() {
+      if (!currentData) return;
+      
+      const chartType = document.getElementById("chartType").value;
+      const seriesMode = document.getElementById("seriesMode").value;
+      
+      let processedData;
+      
+      if (seriesMode === 'auto') {
+        // 自动检测：如果有2列则单系列，多列则多系列
+        processedData = currentData[0].length <= 2 ? 
+          processSingleSeries(currentData) : 
+          processMultiSeries(currentData);
+      } else if (seriesMode === 'single') {
+        processedData = processSingleSeries(currentData);
+      } else {
+        processedData = processMultiSeries(currentData);
       }
-      const option = {
-        tooltip: { trigger: "axis", formatter: params => `${params[0].name}: ${params[0].value}` },
-        xAxis: { type: "category", data: labels, axisLabel: { rotate: 20 } },
-        yAxis: { type: "value" },
-        series: [{
-          name: "People Count",
-          data: vals,
-          type: "bar",
-          itemStyle: {
-            color: "#4361ee",
-            borderRadius: [4,4,0,0]
-          }
-        }],
-        animationDuration: 500
-      };
-      chart.setOption(option);
-      setStatus(`Last updated: ${new Date().toLocaleTimeString()}`);
+      
+      renderChart(processedData, chartType);
     }
 
-    function setStatus(msg){document.getElementById("status").textContent=msg;}
+    function processSingleSeries(matrix) {
+      const headers = matrix[0];
+      const dataRows = matrix.slice(1);
+      
+      return {
+        categories: dataRows.map(row => row[0]),
+        series: [{
+          name: headers[1] || '数值',
+          data: dataRows.map(row => Number(row[1]) || 0)
+        }]
+      };
+    }
+
+    function processMultiSeries(matrix) {
+      const headers = matrix[0];
+      const dataRows = matrix.slice(1);
+      const categories = dataRows.map(row => row[0]);
+      
+      const series = [];
+      for (let i = 1; i < headers.length; i++) {
+        series.push({
+          name: headers[i],
+          data: dataRows.map(row => Number(row[i]) || 0)
+        });
+      }
+      
+      return { categories, series };
+    }
+
+    function renderChart(data, chartType) {
+      const primaryColor = document.getElementById("primaryColor").value;
+      const chartTitle = document.getElementById("chartTitle").value;
+      const enableAnimation = document.getElementById("enableAnimation").checked;
+      const enable3D = document.getElementById("enable3D").checked;
+      const showLegend = document.getElementById("showLegend").checked;
+      const showGrid = document.getElementById("showGrid").checked;
+      const showTooltip = document.getElementById("showTooltip").checked;
+      
+      // 生成颜色方案
+      const colors = generateColorScheme(primaryColor, data.series.length);
+      
+      let option = {
+        color: colors,
+        title: {
+          text: chartTitle,
+          left: 'center',
+          textStyle: {
+            fontSize: 18,
+            fontWeight: 'bold'
+          }
+        },
+        tooltip: showTooltip ? {
+          trigger: chartType === 'pie' ? 'item' : 'axis',
+          formatter: chartType === 'pie' ? 
+            '{a} <br/>{b}: {c} ({d}%)' : 
+            null
+        } : {},
+        legend: showLegend && data.series.length > 1 ? {
+          top: '10%',
+          type: 'scroll'
+        } : {},
+        grid: showGrid && chartType !== 'pie' && chartType !== 'radar' ? {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          top: showLegend ? '20%' : '15%',
+          containLabel: true
+        } : {},
+        animationDuration: enableAnimation ? 1000 : 0,
+        animationEasing: 'elasticOut'
+      };
+      
+      // 根据图表类型设置不同的配置
+      switch (chartType) {
+        case 'bar':
+          setupBarChart(option, data, enable3D);
+          break;
+        case 'line':
+          setupLineChart(option, data, enable3D);
+          break;
+        case 'pie':
+          setupPieChart(option, data, enable3D);
+          break;
+        case 'area':
+          setupAreaChart(option, data);
+          break;
+        case 'scatter':
+          setupScatterChart(option, data);
+          break;
+        case 'radar':
+          setupRadarChart(option, data);
+          break;
+      }
+      
+      chart.setOption(option, true);
+    }
+
+    function setupBarChart(option, data, enable3D) {
+      option.xAxis = {
+        type: 'category',
+        data: data.categories,
+        axisLabel: { rotate: 30 }
+      };
+      option.yAxis = { type: 'value' };
+      option.series = data.series.map(s => ({
+        name: s.name,
+        type: 'bar',
+        data: s.data,
+        itemStyle: {
+          borderRadius: enable3D ? [0, 0, 0, 0] : [4, 4, 0, 0]
+        },
+        ...(enable3D && {
+          stack: 'total',
+          emphasis: { focus: 'series' }
+        })
+      }));
+    }
+
+    function setupLineChart(option, data, enable3D) {
+      option.xAxis = {
+        type: 'category',
+        data: data.categories
+      };
+      option.yAxis = { type: 'value' };
+      option.series = data.series.map(s => ({
+        name: s.name,
+        type: 'line',
+        data: s.data,
+        smooth: enable3D,
+        symbol: enable3D ? 'circle' : 'emptyCircle',
+        symbolSize: enable3D ? 8 : 6,
+        lineStyle: {
+          width: enable3D ? 4 : 2
+        }
+      }));
+    }
+
+    function setupPieChart(option, data) {
+      // 饼图使用第一个系列的数据
+      const seriesData = data.categories.map((name, i) => ({
+        name: name,
+        value: data.series[0].data[i]
+      }));
+      
+      option.series = [{
+        name: data.series[0].name,
+        type: 'pie',
+        radius: ['40%', '70%'],
+        avoidLabelOverlap: false,
+        itemStyle: {
+          borderRadius: 10,
+          borderColor: '#fff',
+          borderWidth: 2
+        },
+        label: {
+          show: false,
+          position: 'center'
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: '30',
+            fontWeight: 'bold'
+          }
+        },
+        data: seriesData
+      }];
+    }
+
+    function setupAreaChart(option, data) {
+      option.xAxis = {
+        type: 'category',
+        data: data.categories
+      };
+      option.yAxis = { type: 'value' };
+      option.series = data.series.map(s => ({
+        name: s.name,
+        type: 'line',
+        data: s.data,
+        areaStyle: {
+          opacity: 0.6
+        },
+        smooth: true
+      }));
+    }
+
+    function setupScatterChart(option, data) {
+      option.xAxis = { type: 'value' };
+      option.yAxis = { type: 'value' };
+      option.series = data.series.map((s, index) => ({
+        name: s.name,
+        type: 'scatter',
+        data: s.data.map((value, i) => [i, value]),
+        symbolSize: 10
+      }));
+    }
+
+    function setupRadarChart(option, data) {
+      option.radar = {
+        indicator: data.categories.map(name => ({ name, max: Math.max(...data.series.map(s => Math.max(...s.data))) }))
+      };
+      option.series = [{
+        type: 'radar',
+        data: data.series.map(s => ({
+          value: s.data,
+          name: s.name
+        }))
+      }];
+    }
+
+    function generateColorScheme(primaryColor, count) {
+      const colors = [primaryColor];
+      const hsl = hexToHsl(primaryColor);
+      
+      for (let i = 1; i < count; i++) {
+        const newHue = (hsl.h + (360 / count) * i) % 360;
+        colors.push(hslToHex(newHue, hsl.s, hsl.l));
+      }
+      
+      return colors;
+    }
+
+    function hexToHsl(hex) {
+      const r = parseInt(hex.slice(1, 3), 16) / 255;
+      const g = parseInt(hex.slice(3, 5), 16) / 255;
+      const b = parseInt(hex.slice(5, 7), 16) / 255;
+      
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      let h, s, l = (max + min) / 2;
+      
+      if (max === min) {
+        h = s = 0;
+      } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+          case g: h = (b - r) / d + 2; break;
+          case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+      }
+      
+      return { h: h * 360, s: s, l: l };
+    }
+
+    function hslToHex(h, s, l) {
+      const c = (1 - Math.abs(2 * l - 1)) * s;
+      const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+      const m = l - c / 2;
+      let r, g, b;
+      
+      if (0 <= h && h < 60) {
+        r = c; g = x; b = 0;
+      } else if (60 <= h && h < 120) {
+        r = x; g = c; b = 0;
+      } else if (120 <= h && h < 180) {
+        r = 0; g = c; b = x;
+      } else if (180 <= h && h < 240) {
+        r = 0; g = x; b = c;
+      } else if (240 <= h && h < 300) {
+        r = x; g = 0; b = c;
+      } else if (300 <= h && h < 360) {
+        r = c; g = 0; b = x;
+      }
+      
+      r = Math.round((r + m) * 255);
+      g = Math.round((g + m) * 255);
+      b = Math.round((b + m) * 255);
+      
+      return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    }
+
+    function showDataPreview(matrix) {
+      const preview = document.getElementById("dataPreview");
+      const table = document.getElementById("dataTable");
+      
+      let html = "";
+      matrix.slice(0, 6).forEach((row, i) => {
+        html += `<tr>`;
+        row.forEach(cell => {
+          html += i === 0 ? `<th>${cell}</th>` : `<td>${cell}</td>`;
+        });
+        html += `</tr>`;
+      });
+      
+      if (matrix.length > 6) {
+        html += `<tr><td colspan="${matrix[0].length}">... 还有 ${matrix.length - 6} 行数据</td></tr>`;
+      }
+      
+      table.innerHTML = html;
+      preview.style.display = "block";
+    }
+
+    function updateChart() {
+      if (currentData) {
+        processDataAndRender();
+      }
+    }
+
+    function setStatus(msg, type = "info") {
+      const status = document.getElementById("status");
+      status.textContent = msg;
+      status.className = "status";
+      
+      if (type === "success") {
+        status.style.background = "#e8f5e8";
+        status.style.borderColor = "#4caf50";
+        status.style.color = "#2e7d32";
+      } else if (type === "error") {
+        status.style.background = "#ffebee";
+        status.style.borderColor = "#f44336";
+        status.style.color = "#c62828";
+      } else if (type === "loading") {
+        status.style.background = "#fff3e0";
+        status.style.borderColor = "#ff9800";
+        status.style.color = "#ef6c00";
+      } else {
+        status.style.background = "#e3f2fd";
+        status.style.borderColor = "#2196f3";
+        status.style.color = "#1565c0";
+      }
+    }
   </script>
 </body>
 </html>

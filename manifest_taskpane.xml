@@ -17,6 +17,7 @@
   <!-- ========== 允许访问的域 ========== -->
   <AppDomains>
     <AppDomain>https://8080-ibcq34tzqozbvcxg5c7o0-b334fc63.e2b.dev</AppDomain>
+    <AppDomain>https://mashellhan.github.io</AppDomain>
     <AppDomain>https://github.com</AppDomain>
     <AppDomain>https://lizheng.me</AppDomain>
   </AppDomains>
@@ -39,7 +40,7 @@
   <!-- ========== 必须保留的 DefaultSettings（任务窗格初次加载入口） ========== -->
   <DefaultSettings>
     <SourceLocation
-        DefaultValue="https://8080-ibcq34tzqozbvcxg5c7o0-b334fc63.e2b.dev/focus-management.html"/>
+        DefaultValue="https://8080-ibcq34tzqozbvcxg5c7o0-b334fc63.e2b.dev/index.html"/>
   </DefaultSettings>
 
   <!-- ========== VersionOverrides 1.1：共享运行时 + 按钮 ========== -->
@@ -74,7 +75,7 @@
     <Resources>
       <bt:Urls>
         <bt:Url id="Taskpane.Url"
-                DefaultValue="https://8080-ibcq34tzqozbvcxg5c7o0-b334fc63.e2b.dev/focus-management.html"/>
+                DefaultValue="https://8080-ibcq34tzqozbvcxg5c7o0-b334fc63.e2b.dev/index.html"/>
       </bt:Urls>
       <bt:Images>
         <bt:Image id="Icon.32" DefaultValue="https://via.placeholder.com/32x32.png"/>
