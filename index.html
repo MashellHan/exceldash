@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <title>Excel 智能图表生成器 (多类型·多系列)</title>
+  <title>Excel Smart Chart Generator (Multiple Series)</title>
   <!-- Office.js -->
   <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
   <!-- ECharts -->
@@ -224,8 +224,8 @@
   <div class="container">
     <!-- 标题区域 -->
     <div class="header">
-      <h1>📊 Excel 智能图表生成器</h1>
-      <p>选择数据范围，自动生成可配置的交互式图表</p>
+      <h1>📊 Excel Smart Chart Generator</h1>
+      <p>Select a data range to automatically generate configurable interactive charts</p>
     </div>
     
     <!-- 控制面板 -->
@@ -233,32 +233,32 @@
       <!-- 数据绑定 -->
       <div class="control-row">
         <button id="bindBtn" class="btn btn-primary">
-          🔗 绑定选定数据
+          🔗 Bind Selected Data
         </button>
-        <div class="status" id="status">请选择 Excel 数据范围，然后点击"绑定选定数据"</div>
+        <div class="status" id="status">Please select Excel data Range and click "Bind Selected Data"</div>
       </div>
       
-      <!-- 图表类型配置 -->
+      <!-- Chart Type配置 -->
       <div class="control-row">
         <div class="control-group">
-          <label>图表类型</label>
+          <label>Chart Type</label>
           <select id="chartType" class="select">
-            <option value="bar">📊 柱状图</option>
-            <option value="line">📈 折线图</option>
-            <option value="pie">🥧 饼图</option>
-            <option value="area">📊 面积图</option>
-            <option value="scatter">⚫ 散点图</option>
-            <option value="radar">🕸️ 雷达图</option>
+            <option value="bar">📊 Bar Chart</option>
+            <option value="line">📈 Line Chart</option>
+            <option value="pie">🥧 Pie Chart</option>
+            <option value="area">📊 Area Chart</option>
+            <option value="scatter">⚫ Scatter Plot</option>
+            <option value="radar">🕸️ Radar Chart</option>
           </select>
         </div>
         
         <div class="control-group">
-          <label>图表标题</label>
-          <input type="text" id="chartTitle" class="input" placeholder="输入图表标题" value="数据分析图表">
+          <label>Chart Title</label>
+          <input type="text" id="chartTitle" class="input" placeholder="输入Chart Title" value="Data Analysis Chart">
         </div>
         
         <div class="control-group">
-          <label>主题色彩</label>
+          <label>Primary Color</label>
           <input type="color" id="primaryColor" class="color-picker" value="#667eea">
         </div>
       </div>
@@ -266,24 +266,24 @@
       <!-- 系列配置 -->
       <div class="control-row">
         <div class="control-group">
-          <label>数据系列模式</label>
+          <label>Series Mode</label>
           <select id="seriesMode" class="select">
-            <option value="auto">🤖 自动检测</option>
-            <option value="single">📊 单系列</option>
-            <option value="multi">📊 多系列</option>
+            <option value="auto">🤖 Auto Detect</option>
+            <option value="single">📊 Single Series</option>
+            <option value="multi">📊 Multiple Series</option>
           </select>
         </div>
         
         <div class="control-group">
-          <label>动画效果</label>
+          <label>Animation</label>
           <div class="checkbox-group">
             <div class="checkbox-item">
               <input type="checkbox" id="enableAnimation" checked>
-              <label for="enableAnimation">启用动画</label>
+              <label for="enableAnimation">Enable Animation</label>
             </div>
             <div class="checkbox-item">
               <input type="checkbox" id="enable3D">
-              <label for="enable3D">3D效果</label>
+              <label for="enable3D">3D Effect</label>
             </div>
           </div>
         </div>
@@ -292,19 +292,19 @@
       <!-- 样式配置 -->
       <div class="control-row">
         <div class="control-group">
-          <label>显示选项</label>
+          <label>Display Options</label>
           <div class="checkbox-group">
             <div class="checkbox-item">
               <input type="checkbox" id="showLegend" checked>
-              <label for="showLegend">显示图例</label>
+              <label for="showLegend">Show Legend</label>
             </div>
             <div class="checkbox-item">
               <input type="checkbox" id="showGrid" checked>
-              <label for="showGrid">显示网格</label>
+              <label for="showGrid">Show Grid</label>
             </div>
             <div class="checkbox-item">
               <input type="checkbox" id="showTooltip" checked>
-              <label for="showTooltip">显示提示</label>
+              <label for="showTooltip">Show Tooltip</label>
             </div>
           </div>
         </div>
@@ -315,9 +315,9 @@
     <div class="chart-container">
       <div id="chart"></div>
       
-      <!-- 数据预览 -->
+      <!-- Data Preview -->
       <div class="data-preview" id="dataPreview" style="display: none;">
-        <h4>📋 数据预览</h4>
+        <h4>📋 Data Preview</h4>
         <table class="data-table" id="dataTable"></table>
       </div>
     </div>
@@ -360,7 +360,7 @@
       // 显示默认图表
       const option = {
         title: {
-          text: '等待数据绑定...',
+          text: 'Waiting for Data Binding...',
           left: 'center',
           top: 'center',
           textStyle: {
@@ -380,7 +380,7 @@
         { id: bindingId },
         result => {
           if (result.status === Office.AsyncResultStatus.Succeeded) {
-            setStatus("✅ 数据绑定成功！图表将自动更新", "success");
+            setStatus("✅ Data binding successful! Chart will update automatically", "success");
             const binding = result.value;
             
             // 移除旧的事件监听器
@@ -390,7 +390,7 @@
             binding.addHandlerAsync(
               Office.EventType.BindingDataChanged,
               () => {
-                setStatus("🔄 检测到数据变化，正在更新图表...", "loading");
+                setStatus("🔄 Data change detected. Updating chart...", "loading");
                 setTimeout(() => refreshChart(binding), 100);
               }
             );
@@ -402,7 +402,7 @@
               if (r.status === Office.AsyncResultStatus.Succeeded) {
                 refreshChart(r.value);
               } else {
-                setStatus("⚠️ 请先选择一个包含标题行的数据范围", "error");
+                setStatus("⚠️ Please select a data range with a header row", "error");
               }
             });
           }
@@ -413,20 +413,20 @@
     function refreshChart(binding) {
       binding.getDataAsync({ coercionType: Office.CoercionType.Matrix }, res => {
         if (res.status !== Office.AsyncResultStatus.Succeeded) {
-          setStatus("❌ 数据读取失败: " + res.error.message, "error");
+          setStatus("❌ Failed to read data: " + res.error.message, "error");
           return;
         }
         
         const matrix = res.value;
         if (!Array.isArray(matrix) || matrix.length < 2) {
-          setStatus("⚠️ 请选择至少2行数据（包含标题行）", "error");
+          setStatus("⚠️ Please select at least 2 rows of data (including header)", "error");
           return;
         }
         
         currentData = matrix;
         processDataAndRender();
         showDataPreview(matrix);
-        setStatus(`✅ 图表已更新 (${new Date().toLocaleTimeString()})`, "success");
+        setStatus(`✅ Chart Updated (${new Date().toLocaleTimeString()})`, "success");
       });
     }
 
@@ -439,7 +439,7 @@
       let processedData;
       
       if (seriesMode === 'auto') {
-        // 自动检测：如果有2列则单系列，多列则多系列
+        // Auto Detect：如果有2列则Single Series，多列则Multiple Series
         processedData = currentData[0].length <= 2 ? 
           processSingleSeries(currentData) : 
           processMultiSeries(currentData);
@@ -459,7 +459,7 @@
       return {
         categories: dataRows.map(row => row[0]),
         series: [{
-          name: headers[1] || '数值',
+          name: headers[1] || 'Value',
           data: dataRows.map(row => Number(row[1]) || 0)
         }]
       };
@@ -524,7 +524,7 @@
         animationEasing: 'elasticOut'
       };
       
-      // 根据图表类型设置不同的配置
+      // 根据Chart Type设置不同的配置
       switch (chartType) {
         case 'bar':
           setupBarChart(option, data, enable3D);
@@ -590,7 +590,6 @@
     }
 
     function setupPieChart(option, data) {
-      // 饼图使用第一个系列的数据
       const seriesData = data.categories.map((name, i) => ({
         name: name,
         value: data.series[0].data[i]
@@ -740,7 +739,7 @@
       });
       
       if (matrix.length > 6) {
-        html += `<tr><td colspan="${matrix[0].length}">... 还有 ${matrix.length - 6} 行数据</td></tr>`;
+        html += `<tr><td colspan="${matrix[0].length}">... …more ${matrix.length - 6}  rows of data</td></tr>`;
       }
       
       table.innerHTML = html;
