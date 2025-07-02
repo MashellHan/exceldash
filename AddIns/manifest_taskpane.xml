@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:type="TaskPaneApp">
+
+  <!-- ========== 基础信息 ========== -->
+  <Id>28d4a3e2-65c6-43d0-9c3b-0a336ab67701</Id>
+  <Version>1.1.0.0</Version>
+  <ProviderName>HTML Report Add-in</ProviderName>
+  <DefaultLocale>en-US</DefaultLocale>
+
+  <DisplayName DefaultValue="HTML Report Viewer (SharedRuntime)"/>
+  <Description DefaultValue="View HTML dashboards in Excel (Taskpane + SharedRuntime)"/>
+  <IconUrl DefaultValue="https://via.placeholder.com/32x32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://via.placeholder.com/64x64.png"/>
+
+  <!-- ========== 允许访问的域 ========== -->
+  <AppDomains>
+    <AppDomain>https://8080-ibcq34tzqozbvcxg5c7o0-b334fc63.e2b.dev</AppDomain>
+    <AppDomain>https://mashellhan.github.io</AppDomain>
+    <AppDomain>https://github.com</AppDomain>
+    <AppDomain>https://lizheng.me</AppDomain>
+    <AppDomain>https://mashellhan.github.io</AppDomain>
+  </AppDomains>
+
+  <!-- ========== 宿主应用 ========== -->
+  <Hosts>
+    <Host Name="Workbook"/>
+  </Hosts>
+
+  <!-- ========== 权限 ========== -->
+  <Permissions>ReadWriteDocument</Permissions>
+
+  <!-- ========== Office.js API 需求：启用 SharedRuntime ========== -->
+  <Requirements>
+    <Sets DefaultMinVersion="1.1">
+      <Set Name="SharedRuntime" MinVersion="1.1"/>
+    </Sets>
+  </Requirements>
+
+  <!-- ========== 必须保留的 DefaultSettings（任务窗格初次加载入口） ========== -->
+  <DefaultSettings>
+    <SourceLocation
+        DefaultValue="https://mashellhan.github.io/exceldash/"/>
+  </DefaultSettings>
+
+  <!-- ========== VersionOverrides 1.1：共享运行时 + 按钮 ========== -->
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides/1.1"
+                    xsi:type="VersionOverridesV1_1">
+    <Hosts>
+      <Host xsi:type="Workbook">
+
+        <!-- ★ 共享运行时：所有入口公用同一 WebView -->
+        <Runtimes>
+          <Runtime resid="Taskpane.Url" lifetime="long"/>
+        </Runtimes>
+
+        <!-- ★ 功能区按钮（可选） -->
+        <ExtensionPoint xsi:type="PrimaryCommandSurface">
+          <OfficeTab id="TabHome">
+            <Group id="ReportGroup" label="Reports" insertAfterMso="TabHome">
+              <Control xsi:type="Button" id="ShowPane"
+                       label="Open Dashboard"
+                       screentip="Show HTML dashboard"
+                       supertip="Launch the report viewer task-pane"
+                       icon="Icon.32"
+                       onAction="launch"/>
+            </Group>
+          </OfficeTab>
+        </ExtensionPoint>
+
+      </Host>
+    </Hosts>
+
+    <!-- ★ 资源表：URL / 图标 / 文本 -->
+    <Resources>
+      <bt:Urls>
+        <bt:Url id="Taskpane.Url"
+                DefaultValue="https://mashellhan.github.io/exceldash/"/>
+      </bt:Urls>
+      <bt:Images>
+        <bt:Image id="Icon.32" DefaultValue="https://via.placeholder.com/32x32.png"/>
+      </bt:Images>
+    </Resources>
+  </VersionOverrides>
+</OfficeApp>

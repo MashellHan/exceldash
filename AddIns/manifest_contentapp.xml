@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:type="ContentApp">
+
+  <Id>28d4a3e2-65c6-43d0-9c3b-0a336ab67701</Id>
+  <Version>1.0.0.2</Version>
+
+  <ProviderName>Menha</ProviderName>
+  <DefaultLocale>en-US</DefaultLocale>
+  <DisplayName DefaultValue="AIExcel Report"/>
+  <Description DefaultValue="AI Automated Reports in Office Excel with Content App"/>
+  <IconUrl DefaultValue="https://mashellhan.github.io/exceldash/AIExcel_Icon_32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://mashellhan.github.io/exceldash/AIExcel_Icon_64.png"/>
+  <SupportUrl DefaultValue="https://mashellhan.github.io/exceldash/README.md"/>
+
+  <AppDomains>
+    <AppDomain>https://mashellhan.github.io</AppDomain>
+  </AppDomains>
+
+  <Hosts>
+    <Host Name="Workbook"/>
+  </Hosts>
+
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://mashellhan.github.io/exceldash?tag=latest"/>
+  </DefaultSettings>
+
+  <Permissions>ReadWriteDocument</Permissions>
+
+</OfficeApp>
