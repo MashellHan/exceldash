@@ -1,5 +1,4 @@
 Privacy policy
-Last update: 12 June 2023
 
 This Data Privacy Policy ("Privacy Policy" or this "Policy") represents the minimum standards that Menha S.à.r.l. and its affiliates, including Menha Labs, Inc, Menha SRL and Menha SAS (“Menha ”, “we”, “our”) have set with respect to data privacy, for ensuring that we collect, use, retain and disclose Personal Data in a fair, transparent and secure way.
 
@@ -188,5 +187,3 @@ Data Subjects protected by the Children's Online Privacy Protection Act (COPPA) 
 Update of this Privacy Policy
 
 As our business and the regulatory environment regularly change, this Privacy Policy may also change. You are thus invited to consult it on a regular basis.
-
-However, users of our products will be notified in advance of any material changes to this Privacy Policy via embedded app notifications.
