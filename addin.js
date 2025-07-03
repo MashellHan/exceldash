@@ -11,8 +11,12 @@ const colorSchemes = {
 };
 
 Office.onReady(() => {
-  initializeEventListeners();
-  initializeChart();
+  try {
+    initializeEventListeners();
+    initializeChart();
+  } catch (error) {
+  } finally {
+  }
 });
 
 function initializeEventListeners() {

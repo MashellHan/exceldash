@@ -1902,8 +1902,10 @@
   var chart = null;
   var currentData = null;
   Office.onReady(function () {
-    initializeEventListeners();
-    initializeChart();
+    try {
+      initializeEventListeners();
+      initializeChart();
+    } catch (error) {} finally {}
   });
   function initializeEventListeners() {
     document.getElementById("bindBtn").onclick = addOrRebind;
