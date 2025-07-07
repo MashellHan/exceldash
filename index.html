@@ -114,12 +114,55 @@
     let currentIframe = null;
     let isOfficeEnvironment = false;
     
+    // 读取Excel自定义属性的异步函数
+    async function readExcelCustomProperties() {
+      if (!isOfficeEnvironment) {
+        console.log('Not in Office environment');
+        return null;
+      }
+      
+      try {
+        return await Excel.run(async (context) => {
+          // 获取自定义属性
+          const customProperties = context.workbook.properties.custom;
+          customProperties.load("items");
+          
+          await context.sync();
+          
+          console.log("自定义属性数量:", customProperties.items.length);
+          
+          // 遍历所有自定义属性
+          for (let i = 0; i < customProperties.items.length; i++) {
+            const property = customProperties.items[i];
+            console.log("属性名:", property.key, "属性值:", property.value, "属性类型:", property.type);
+          }
+          
+          // 查找特定属性
+          const targetProperty = customProperties.getItemOrNullObject("WebExtensionProperty");
+          targetProperty.load("key,value,type");
+          
+          await context.sync();
+          
+          if (!targetProperty.isNullObject) {
+            console.log("找到属性:", targetProperty.value);
+            return targetProperty.value;
+          } else {
+            console.log("未找到WebExtensionProperty属性");
+            return null;
+          }
+        });
+      } catch (error) {
+        console.error("读取属性失败:", error);
+        return null;
+      }
+    }
+    
     // Get target URL from URL parameters or Office Add-in
-    function getTargetUrl() {
+    async function getTargetUrl() {
       // Check URL parameters first
       const urlParams = new URLSearchParams(window.location.search);
       let targetUrl = urlParams.get('targetUrl') || 
-                     urlParams.get('url') 
+                     urlParams.get('url');
       
       if (targetUrl) {
         return targetUrl;
@@ -153,13 +196,24 @@
         try {
           if (Office.context && Office.context.roamingSettings) {
             targetUrl = Office.context.roamingSettings.get('targetUrl');
-
             if (targetUrl) {
               return targetUrl;
             }
           }
         } catch (error) {
           console.log('Could not read Office settings:', error.message);
+        }
+        
+        // 尝试从Excel自定义属性读取
+        try {
+          console.log('Attempting to read Excel custom properties...');
+          const customPropertyUrl = await readExcelCustomProperties();
+          if (customPropertyUrl) {
+            console.log('Found URL in custom properties:', customPropertyUrl);
+            return customPropertyUrl;
+          }
+        } catch (error) {
+          console.log('Could not read Excel custom properties:', error.message);
         }
       }
       
@@ -197,7 +251,7 @@
     }
     
     // Load URL in iframe
-    function loadUrl(url) {
+    async function loadUrl(url) {
       console.log('Loading URL:', url);
       
       if (!isValidUrl(url)) {
@@ -257,21 +311,53 @@
     }
     
     // Initialize app
-    function initializeApp() {
+    async function initializeApp() {
       console.log('Initializing app...');
       
       // Ensure page can receive focus
       document.body.setAttribute('tabindex', '0');
       document.body.focus();
       
-      const targetUrl = getTargetUrl();
+      const targetUrl = await getTargetUrl();
       console.log('Target URL:', targetUrl);
       console.log('Office Environment:', isOfficeEnvironment);
       
       if (targetUrl) {
-        loadUrl(targetUrl);
+        await loadUrl(targetUrl);
       } else {
         showPlaceholder('No URL specified');
+      }
+    }
+    
+    // 点击事件处理函数 - 重新读取Excel属性并刷新页面
+    async function handleClickRefresh() {
+      console.log('Click event triggered - refreshing Excel properties...');
+      
+      if (isOfficeEnvironment) {
+        try {
+          // 重新读取Excel自定义属性
+          const newUrl = await readExcelCustomProperties();
+          if (newUrl && isValidUrl(newUrl)) {
+            console.log('Found new URL from Excel properties:', newUrl);
+            await loadUrl(newUrl);
+          } else {
+            console.log('No valid URL found in Excel properties, using fallback');
+            // 使用其他方式获取URL
+            const fallbackUrl = await getTargetUrl();
+            if (fallbackUrl) {
+              await loadUrl(fallbackUrl);
+            }
+          }
+        } catch (error) {
+          console.error('Error refreshing from Excel properties:', error);
+        }
+      } else {
+        console.log('Not in Office environment, performing regular refresh');
+        // 非Office环境下，重新获取URL
+        const targetUrl = await getTargetUrl();
+        if (targetUrl) {
+          await loadUrl(targetUrl);
+        }
       }
     }
     
@@ -304,12 +390,15 @@
       }
     });
     
-    // Ensure focus on user interaction
-    document.addEventListener('click', () => {
+    // Ensure focus on user interaction and trigger refresh
+    document.addEventListener('click', async () => {
       if (currentIframe) {
         document.body.focus();
         currentIframe.focus();
       }
+      
+      // 触发Excel属性刷新
+      await handleClickRefresh();
     });
   </script>
 </body>
