@@ -1,0 +1,1100 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Metrics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .dashboard-header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .dashboard-header p {
+            margin: 5px 0 0;
+            opacity: 0.9;
+        }
+        .kpi-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .kpi-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+        }
+        .kpi-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .kpi-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2575fc;
+        }
+        .kpi-trend {
+            font-size: 12px;
+            color: #28a745;
+        }
+        .chart-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 15px;
+            height: 300px;
+        }
+        .chart-container.wide {
+            grid-column: span 2;
+        }
+        .chart-container.full {
+            grid-column: span 3;
+        }
+        .chart-container.tall {
+            height: 400px;
+        }
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .data-table th, .data-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        .data-table th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+        }
+        .data-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        .positive {
+            color: #28a745;
+        }
+        .negative {
+            color: #dc3545;
+        }
+        .neutral {
+            color: #fd7e14;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>Financial Performance Dashboard</h1>
+            <p>Daily Financial Metrics Analysis - Last 30 Days</p>
+        </div>
+        
+        <!-- KPI Section -->
+        <div class="kpi-container">
+            <div class="kpi-card">
+                <div class="kpi-title">Total Revenue</div>
+                <div class="kpi-value">$95,275,216.66</div>
+                <div class="kpi-trend">↑ 5.2% vs. Previous Period</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Total Expenses</div>
+                <div class="kpi-value">$15,294,017.78</div>
+                <div class="kpi-trend">↑ 3.8% vs. Previous Period</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Total Profit</div>
+                <div class="kpi-value">$79,981,198.88</div>
+                <div class="kpi-trend">↑ 7.5% vs. Previous Period</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Avg. Profit Margin</div>
+                <div class="kpi-value">83.79%</div>
+                <div class="kpi-trend">↑ 1.2% vs. Previous Period</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Latest Cash Flow</div>
+                <div class="kpi-value">$17,394.02</div>
+                <div class="kpi-trend">↑ 4.3% vs. Previous Day</div>
+            </div>
+        </div>
+        
+        <!-- Main Charts Row -->
+        <div class="chart-row">
+            <div class="chart-container wide">
+                <div class="chart-title">Daily Profit Trend</div>
+                <div id="profitTrendChart" style="width: 100%; height: 270px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" _echarts_instance_="ec_1751606630026"><div style="position: relative; width: 686px; height: 270px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="686" height="270" style="position: absolute; left: 0px; top: 0px; width: 686px; height: 270px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class="" style="position: absolute; display: block; border-style: solid; white-space: nowrap; z-index: 9999999; box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 10px; transition: opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1); background-color: rgb(255, 255, 255); border-width: 1px; border-radius: 4px; color: rgb(102, 102, 102); font: 14px / 21px &quot;Microsoft YaHei&quot;; padding: 10px; top: 0px; left: 0px; transform: translate3d(354px, 38px, 0px); border-color: rgb(255, 255, 255); pointer-events: none; visibility: hidden; opacity: 0;"><div style="margin: 0px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><div style="font-size:14px;color:#666;font-weight:400;line-height:1;">2025-06-12</div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#5470c6;"></span><span style="font-size:14px;color:#666;font-weight:400;margin-left:2px">Revenue</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">3,312,617.42</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#91cc75;"></span><span style="font-size:14px;color:#666;font-weight:400;margin-left:2px">Expenses</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">540,632.21</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#2575fc;"></span><span style="font-size:14px;color:#666;font-weight:400;margin-left:2px">Profit</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">2,771,985.21</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div></div></div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Revenue by Region</div>
+                <div id="regionRevenueChart" style="width: 100%; height: 270px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" _echarts_instance_="ec_1751606630027"><div style="position: relative; width: 375px; height: 270px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="375" height="270" style="position: absolute; left: 0px; top: 0px; width: 375px; height: 270px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class="" style="position: absolute; display: block; border-style: solid; white-space: nowrap; z-index: 9999999; box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 10px; transition: opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1), transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); background-color: rgb(255, 255, 255); border-width: 1px; border-radius: 4px; color: rgb(102, 102, 102); font: 14px / 21px &quot;Microsoft YaHei&quot;; padding: 10px; top: 0px; left: 0px; transform: translate3d(1px, 199px, 0px); border-color: rgb(145, 204, 117); pointer-events: none; visibility: hidden; opacity: 0;">Revenue by Region <br>Europe: $19056023.66 (20%)</div></div>
+            </div>
+        </div>
+        
+        <!-- Second Charts Row -->
+        <div class="chart-row">
+            <div class="chart-container">
+                <div class="chart-title">Department Expenses</div>
+                <div id="deptExpensesChart" style="width: 100%; height: 270px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" _echarts_instance_="ec_1751606630028"><div style="position: relative; width: 146px; height: 270px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="146" height="270" style="position: absolute; left: 0px; top: 0px; width: 146px; height: 270px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class="" style="position: absolute; display: block; border-style: solid; white-space: nowrap; z-index: 9999999; box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 10px; transition: opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1); background-color: rgb(255, 255, 255); border-width: 1px; border-radius: 4px; color: rgb(102, 102, 102); font: 14px / 21px &quot;Microsoft YaHei&quot;; padding: 10px; top: 0px; left: 0px; transform: translate3d(180px, 118px, 0px); border-color: rgb(255, 255, 255); pointer-events: none; visibility: hidden; opacity: 0;">R&amp;D: $2,128,537.97</div></div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Revenue by Product</div>
+                <div id="productRevenueChart" style="width: 100%; height: 270px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" _echarts_instance_="ec_1751606630029"><div style="position: relative; width: 318px; height: 270px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="318" height="270" style="position: absolute; left: 0px; top: 0px; width: 318px; height: 270px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class="" style="position: absolute; display: block; border-style: solid; white-space: nowrap; z-index: 9999999; box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 10px; transition: opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1); background-color: rgb(255, 255, 255); border-width: 1px; border-radius: 4px; color: rgb(102, 102, 102); font: 14px / 21px &quot;Microsoft YaHei&quot;; padding: 10px; top: 0px; left: 0px; transform: translate3d(-25px, 110px, 0px); border-color: rgb(84, 112, 198); pointer-events: none; visibility: hidden; opacity: 0;">Revenue by Product <br>Product A: $15831593.23 (16.62%)</div></div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Cash Flow Components</div>
+                <div id="cashFlowChart" style="width: 100%; height: 270px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" _echarts_instance_="ec_1751606630030"><div style="position: relative; width: 375px; height: 270px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="375" height="270" style="position: absolute; left: 0px; top: 0px; width: 375px; height: 270px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class="" style="position: absolute; display: block; border-style: solid; white-space: nowrap; z-index: 9999999; box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 10px; transition: opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1), transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); background-color: rgb(255, 255, 255); border-width: 1px; border-radius: 4px; color: rgb(102, 102, 102); font: 14px / 21px &quot;Microsoft YaHei&quot;; padding: 10px; top: 0px; left: 0px; transform: translate3d(229px, 60px, 0px); border-color: rgb(255, 255, 255); pointer-events: none; visibility: hidden; opacity: 0;"><div style="margin: 0px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><div style="font-size:14px;color:#666;font-weight:400;line-height:1;">2025-06-15</div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#5470c6;"></span><span style="font-size:14px;color:#666;font-weight:400;margin-left:2px">Operating</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">15,863.7</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#91cc75;"></span><span style="font-size:14px;color:#666;font-weight:400;margin-left:2px">Investing</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">-3,239.31</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#fac858;"></span><span style="font-size:14px;color:#666;font-weight:400;margin-left:2px">Financing</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">249.46</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#ee6666;"></span><span style="font-size:14px;color:#666;font-weight:400;margin-left:2px">Net</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">12,873.85</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div></div></div>
+            </div>
+        </div>
+        
+        <!-- Third Charts Row -->
+        <div class="chart-row">
+            <div class="chart-container">
+                <div class="chart-title">Department Performance</div>
+                <div id="deptPerformanceChart" style="width: 100%; height: 270px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" _echarts_instance_="ec_1751606630031"><div style="position: relative; width: 146px; height: 270px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="146" height="270" style="position: absolute; left: 0px; top: 0px; width: 146px; height: 270px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class="" style="position: absolute; display: block; border-style: solid; white-space: nowrap; z-index: 9999999; box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 10px; transition: opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1), transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); background-color: rgb(255, 255, 255); border-width: 1px; border-radius: 4px; color: rgb(102, 102, 102); font: 14px / 21px &quot;Microsoft YaHei&quot;; padding: 10px; top: 0px; left: 0px; transform: translate3d(224px, 59px, 0px); border-color: rgb(255, 255, 255); pointer-events: none; visibility: hidden; opacity: 0;"><div style="margin: 0px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><div style="font-size:14px;color:#666;font-weight:400;line-height:1;">R&amp;D</div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#5470c6;"></span><span style="font-size:14px;color:#666;font-weight:400;margin-left:2px">Performance</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">78.4</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#91cc75;"></span><span style="font-size:14px;color:#666;font-weight:400;margin-left:2px">Efficiency</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">72.6</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#fac858;"></span><span style="font-size:14px;color:#666;font-weight:400;margin-left:2px">Budget</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">92.8</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div></div></div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Investment Returns</div>
+                <div id="investmentChart" style="width: 100%; height: 270px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" _echarts_instance_="ec_1751606630032"><div style="position: relative; width: 318px; height: 270px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="318" height="270" style="position: absolute; left: 0px; top: 0px; width: 318px; height: 270px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class="" style="position: absolute; display: block; border-style: solid; white-space: nowrap; z-index: 9999999; box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 10px; transition: opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1), transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); background-color: rgb(255, 255, 255); border-width: 1px; border-radius: 4px; color: rgb(102, 102, 102); font: 14px / 21px &quot;Microsoft YaHei&quot;; padding: 10px; top: 0px; left: 0px; transform: translate3d(249px, 70px, 0px); border-color: rgb(255, 255, 255); pointer-events: none; visibility: hidden; opacity: 0;"><div style="margin: 0px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><div style="font-size:14px;color:#666;font-weight:400;line-height:1;">Investment E</div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#83bff6;"></span><span style="font-size:14px;color:#666;font-weight:400;margin-left:2px">Value</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">40,922.16</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#5470c6;"></span><span style="font-size:14px;color:#666;font-weight:400;margin-left:2px">Return Rate</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">4.65</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div></div></div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Financial Ratios</div>
+                <div id="ratiosChart" style="width: 100%; height: 270px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" _echarts_instance_="ec_1751606630033"><div style="position: relative; width: 375px; height: 270px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="375" height="270" style="position: absolute; left: 0px; top: 0px; width: 375px; height: 270px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class="" style="position: absolute; display: block; border-style: solid; white-space: nowrap; z-index: 9999999; box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 10px; transition: opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1); background-color: rgb(255, 255, 255); border-width: 1px; border-radius: 4px; color: rgb(102, 102, 102); font: 14px / 21px &quot;Microsoft YaHei&quot;; padding: 10px; top: 0px; left: 0px; transform: translate3d(78px, 101px, 0px); border-color: rgb(255, 255, 255); pointer-events: none; visibility: hidden; opacity: 0;"><div style="margin: 0px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><div style="font-size:14px;color:#666;font-weight:400;line-height:1;">2025-06-07</div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#5470c6;"></span><span style="font-size:14px;color:#666;font-weight:400;margin-left:2px">Current Ratio</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">1.66</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#91cc75;"></span><span style="font-size:14px;color:#666;font-weight:400;margin-left:2px">Quick Ratio</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">0.95</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#fac858;"></span><span style="font-size:14px;color:#666;font-weight:400;margin-left:2px">Debt to Equity</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">0.87</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#ee6666;"></span><span style="font-size:14px;color:#666;font-weight:400;margin-left:2px">ROI</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">10.67</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#73c0de;"></span><span style="font-size:14px;color:#666;font-weight:400;margin-left:2px">ROA</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">3.73</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div></div></div>
+            </div>
+        </div>
+        
+        <!-- Data Table Section -->
+        <div class="chart-container full tall">
+            <div class="chart-title">Detailed Financial Data</div>
+            <div style="height: 370px; overflow-y: auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Revenue</th>
+                            <th>Expenses</th>
+                            <th>Profit</th>
+                            <th>Margin</th>
+                            <th>Cash Flow</th>
+                            <th>Current Ratio</th>
+                            <th>ROI</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                                <tr>
+                                    <td>2025-06-05</td>
+                                    <td>$3,687,225.55</td>
+                                    <td>$582,237.90</td>
+                                    <td>$3,104,987.65</td>
+                                    <td>84.21%</td>
+                                    <td>$19,007.60</td>
+                                    <td>1.71</td>
+                                    <td>9.06%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-06</td>
+                                    <td>$3,286,456.50</td>
+                                    <td>$581,474.25</td>
+                                    <td>$2,704,982.25</td>
+                                    <td>82.31%</td>
+                                    <td>$14,517.39</td>
+                                    <td>1.65</td>
+                                    <td>6.54%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-07</td>
+                                    <td>$2,263,779.72</td>
+                                    <td>$383,451.04</td>
+                                    <td>$1,880,328.68</td>
+                                    <td>83.06%</td>
+                                    <td>$13,563.20</td>
+                                    <td>1.66</td>
+                                    <td>10.67%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-08</td>
+                                    <td>$2,439,757.54</td>
+                                    <td>$430,473.73</td>
+                                    <td>$2,009,283.81</td>
+                                    <td>82.36%</td>
+                                    <td>$14,886.93</td>
+                                    <td>1.38</td>
+                                    <td>9.15%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-09</td>
+                                    <td>$3,264,347.90</td>
+                                    <td>$546,848.73</td>
+                                    <td>$2,717,499.17</td>
+                                    <td>83.25%</td>
+                                    <td>$18,092.18</td>
+                                    <td>1.69</td>
+                                    <td>9.31%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-10</td>
+                                    <td>$3,418,070.72</td>
+                                    <td>$540,487.50</td>
+                                    <td>$2,877,583.22</td>
+                                    <td>84.19%</td>
+                                    <td>$17,661.48</td>
+                                    <td>1.56</td>
+                                    <td>5.99%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-11</td>
+                                    <td>$3,858,898.50</td>
+                                    <td>$594,454.86</td>
+                                    <td>$3,264,443.64</td>
+                                    <td>84.60%</td>
+                                    <td>$22,830.01</td>
+                                    <td>1.77</td>
+                                    <td>4.97%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-12</td>
+                                    <td>$3,312,617.42</td>
+                                    <td>$540,632.21</td>
+                                    <td>$2,771,985.21</td>
+                                    <td>83.68%</td>
+                                    <td>$22,951.51</td>
+                                    <td>1.49</td>
+                                    <td>11.74%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-13</td>
+                                    <td>$3,436,797.41</td>
+                                    <td>$525,427.78</td>
+                                    <td>$2,911,369.63</td>
+                                    <td>84.71%</td>
+                                    <td>$21,265.68</td>
+                                    <td>1.62</td>
+                                    <td>8.53%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-14</td>
+                                    <td>$2,605,750.34</td>
+                                    <td>$409,637.08</td>
+                                    <td>$2,196,113.26</td>
+                                    <td>84.28%</td>
+                                    <td>$15,252.87</td>
+                                    <td>1.29</td>
+                                    <td>9.96%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-15</td>
+                                    <td>$2,237,393.06</td>
+                                    <td>$379,100.49</td>
+                                    <td>$1,858,292.57</td>
+                                    <td>83.06%</td>
+                                    <td>$12,873.85</td>
+                                    <td>1.38</td>
+                                    <td>10.49%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-16</td>
+                                    <td>$3,451,907.45</td>
+                                    <td>$559,929.59</td>
+                                    <td>$2,891,977.86</td>
+                                    <td>83.78%</td>
+                                    <td>$16,705.07</td>
+                                    <td>1.75</td>
+                                    <td>6.53%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-17</td>
+                                    <td>$3,515,891.12</td>
+                                    <td>$597,730.66</td>
+                                    <td>$2,918,160.46</td>
+                                    <td>83.00%</td>
+                                    <td>$24,985.04</td>
+                                    <td>1.46</td>
+                                    <td>7.92%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-18</td>
+                                    <td>$3,710,158.70</td>
+                                    <td>$547,251.60</td>
+                                    <td>$3,162,907.10</td>
+                                    <td>85.25%</td>
+                                    <td>$16,488.24</td>
+                                    <td>1.53</td>
+                                    <td>10.25%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-19</td>
+                                    <td>$3,132,748.19</td>
+                                    <td>$525,618.87</td>
+                                    <td>$2,607,129.32</td>
+                                    <td>83.22%</td>
+                                    <td>$20,226.94</td>
+                                    <td>1.77</td>
+                                    <td>8.82%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-20</td>
+                                    <td>$3,539,428.41</td>
+                                    <td>$536,559.49</td>
+                                    <td>$3,002,868.92</td>
+                                    <td>84.84%</td>
+                                    <td>$20,449.13</td>
+                                    <td>1.21</td>
+                                    <td>8.19%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-21</td>
+                                    <td>$2,401,601.18</td>
+                                    <td>$372,394.36</td>
+                                    <td>$2,029,206.82</td>
+                                    <td>84.49%</td>
+                                    <td>$12,732.46</td>
+                                    <td>1.21</td>
+                                    <td>10.93%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-22</td>
+                                    <td>$2,666,523.75</td>
+                                    <td>$399,908.28</td>
+                                    <td>$2,266,615.47</td>
+                                    <td>85.00%</td>
+                                    <td>$13,145.04</td>
+                                    <td>1.36</td>
+                                    <td>9.92%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-23</td>
+                                    <td>$3,642,959.77</td>
+                                    <td>$541,650.95</td>
+                                    <td>$3,101,308.82</td>
+                                    <td>85.13%</td>
+                                    <td>$16,740.44</td>
+                                    <td>1.54</td>
+                                    <td>7.16%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-24</td>
+                                    <td>$3,791,422.07</td>
+                                    <td>$501,761.10</td>
+                                    <td>$3,289,660.97</td>
+                                    <td>86.77%</td>
+                                    <td>$23,024.90</td>
+                                    <td>1.54</td>
+                                    <td>7.70%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-25</td>
+                                    <td>$4,077,281.64</td>
+                                    <td>$591,967.30</td>
+                                    <td>$3,485,314.34</td>
+                                    <td>85.48%</td>
+                                    <td>$22,784.69</td>
+                                    <td>1.57</td>
+                                    <td>11.41%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-26</td>
+                                    <td>$4,032,508.67</td>
+                                    <td>$550,649.01</td>
+                                    <td>$3,481,859.66</td>
+                                    <td>86.34%</td>
+                                    <td>$19,942.19</td>
+                                    <td>1.72</td>
+                                    <td>9.72%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-27</td>
+                                    <td>$3,923,524.92</td>
+                                    <td>$583,591.20</td>
+                                    <td>$3,339,933.72</td>
+                                    <td>85.13%</td>
+                                    <td>$17,335.90</td>
+                                    <td>1.40</td>
+                                    <td>8.25%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-28</td>
+                                    <td>$2,540,360.59</td>
+                                    <td>$366,222.89</td>
+                                    <td>$2,174,137.70</td>
+                                    <td>85.58%</td>
+                                    <td>$9,777.39</td>
+                                    <td>1.54</td>
+                                    <td>10.34%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-29</td>
+                                    <td>$2,031,617.17</td>
+                                    <td>$383,401.51</td>
+                                    <td>$1,648,215.66</td>
+                                    <td>81.13%</td>
+                                    <td>$14,743.62</td>
+                                    <td>1.23</td>
+                                    <td>9.66%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-06-30</td>
+                                    <td>$2,911,191.96</td>
+                                    <td>$515,916.46</td>
+                                    <td>$2,395,275.50</td>
+                                    <td>82.28%</td>
+                                    <td>$16,115.93</td>
+                                    <td>1.54</td>
+                                    <td>7.89%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-07-01</td>
+                                    <td>$3,315,973.51</td>
+                                    <td>$506,451.91</td>
+                                    <td>$2,809,521.60</td>
+                                    <td>84.73%</td>
+                                    <td>$14,610.67</td>
+                                    <td>1.70</td>
+                                    <td>5.51%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-07-02</td>
+                                    <td>$2,899,971.60</td>
+                                    <td>$595,425.42</td>
+                                    <td>$2,304,546.18</td>
+                                    <td>79.47%</td>
+                                    <td>$16,128.54</td>
+                                    <td>1.26</td>
+                                    <td>7.65%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-07-03</td>
+                                    <td>$2,873,406.17</td>
+                                    <td>$534,077.42</td>
+                                    <td>$2,339,328.75</td>
+                                    <td>81.41%</td>
+                                    <td>$11,872.92</td>
+                                    <td>1.59</td>
+                                    <td>5.48%</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>2025-07-04</td>
+                                    <td>$3,005,645.13</td>
+                                    <td>$569,284.19</td>
+                                    <td>$2,436,360.94</td>
+                                    <td>81.06%</td>
+                                    <td>$17,394.02</td>
+                                    <td>1.74</td>
+                                    <td>10.19%</td>
+                                </tr>
+                                
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Financial Metrics Dashboard | Generated on 2025-07-04 | Data represents last 30 days of financial activity</p>
+        </div>
+    </div>
+
+    <script>
+        // Initialize all charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Profit Trend Chart
+            const profitTrendChart = echarts.init(document.getElementById('profitTrendChart'));
+            const profitTrendOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                legend: {
+                    data: ['Revenue', 'Expenses', 'Profit'],
+                    top: '0%'
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ["2025-06-05", "2025-06-06", "2025-06-07", "2025-06-08", "2025-06-09", "2025-06-10", "2025-06-11", "2025-06-12", "2025-06-13", "2025-06-14", "2025-06-15", "2025-06-16", "2025-06-17", "2025-06-18", "2025-06-19", "2025-06-20", "2025-06-21", "2025-06-22", "2025-06-23", "2025-06-24", "2025-06-25", "2025-06-26", "2025-06-27", "2025-06-28", "2025-06-29", "2025-06-30", "2025-07-01", "2025-07-02", "2025-07-03", "2025-07-04"],
+                    axisLabel: {
+                        rotate: 45,
+                        fontSize: 10
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        formatter: '${value}'
+                    }
+                },
+                series: [
+                    {
+                        name: 'Revenue',
+                        type: 'line',
+                        smooth: true,
+                        lineStyle: {
+                            width: 3,
+                            color: '#4CAF50'
+                        },
+                        data: [3687225.55, 3286456.5, 2263779.72, 2439757.54, 3264347.9, 3418070.72, 3858898.5, 3312617.42, 3436797.41, 2605750.34, 2237393.06, 3451907.45, 3515891.12, 3710158.7, 3132748.19, 3539428.41, 2401601.18, 2666523.75, 3642959.77, 3791422.07, 4077281.64, 4032508.67, 3923524.92, 2540360.59, 2031617.17, 2911191.96, 3315973.51, 2899971.6, 2873406.17, 3005645.13]
+                    },
+                    {
+                        name: 'Expenses',
+                        type: 'line',
+                        smooth: true,
+                        lineStyle: {
+                            width: 3,
+                            color: '#FF5722'
+                        },
+                        data: [582237.9, 581474.25, 383451.04, 430473.73, 546848.73, 540487.5, 594454.86, 540632.21, 525427.78, 409637.08, 379100.49, 559929.59, 597730.66, 547251.6, 525618.87, 536559.49, 372394.36, 399908.28, 541650.95, 501761.1, 591967.3, 550649.01, 583591.2, 366222.89, 383401.51, 515916.46, 506451.91, 595425.42, 534077.4199999999, 569284.19]
+                    },
+                    {
+                        name: 'Profit',
+                        type: 'bar',
+                        barWidth: '60%',
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                {offset: 0, color: '#2575fc'},
+                                {offset: 1, color: '#6a11cb'}
+                            ])
+                        },
+                        data: [3104987.65, 2704982.25, 1880328.68, 2009283.81, 2717499.17, 2877583.22, 3264443.64, 2771985.21, 2911369.63, 2196113.26, 1858292.57, 2891977.8600000003, 2918160.46, 3162907.1, 2607129.32, 3002868.92, 2029206.8200000003, 2266615.47, 3101308.8200000003, 3289660.97, 3485314.34, 3481859.66, 3339933.72, 2174137.7, 1648215.66, 2395275.5, 2809521.6, 2304546.18, 2339328.75, 2436360.94]
+                    }
+                ]
+            };
+            profitTrendChart.setOption(profitTrendOption);
+            
+            // Region Revenue Chart
+            const regionRevenueChart = echarts.init(document.getElementById('regionRevenueChart'));
+            const regionRevenueOption = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b}: ${c} ({d}%)'
+                },
+                legend: {
+                    orient: 'vertical',
+                    right: 10,
+                    top: 'center',
+                    data: ["Asia Pacific", "Europe", "Latin America", "Middle East", "North America"]
+                },
+                series: [
+                    {
+                        name: 'Revenue by Region',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: '18',
+                                fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: [{"name": "Asia Pacific", "value": 19048784.84}, {"name": "Europe", "value": 19056023.66}, {"name": "Latin America", "value": 18884429.53}, {"name": "Middle East", "value": 18984941.71}, {"name": "North America", "value": 19301036.92}]
+                    }
+                ]
+            };
+            regionRevenueChart.setOption(regionRevenueOption);
+            
+            // Department Expenses Chart
+            const deptExpensesChart = echarts.init(document.getElementById('deptExpensesChart'));
+            const deptExpensesOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    },
+                    formatter: function(params) {
+                        return params[0].name + ': $' + params[0].value.toLocaleString();
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        formatter: '${value}'
+                    }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: ["Finance", "HR", "IT", "Marketing", "Operations", "R&D", "Sales"],
+                    axisLabel: {
+                        fontSize: 10
+                    }
+                },
+                series: [
+                    {
+                        name: 'Expenses',
+                        type: 'bar',
+                        data: [2188330.94, 2190418.32, 2225419.29, 2207951.73, 2193781.16, 2128537.97, 2159578.37],
+                        itemStyle: {
+                            color: function(params) {
+                                const colorList = [
+                                    '#5470c6', '#91cc75', '#fac858', '#ee6666',
+                                    '#73c0de', '#3ba272', '#fc8452'
+                                ];
+                                return colorList[params.dataIndex % colorList.length];
+                            }
+                        }
+                    }
+                ]
+            };
+            deptExpensesChart.setOption(deptExpensesOption);
+            
+            // Product Revenue Chart
+            const productRevenueChart = echarts.init(document.getElementById('productRevenueChart'));
+            const productRevenueOption = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b}: ${c} ({d}%)'
+                },
+                series: [
+                    {
+                        name: 'Revenue by Product',
+                        type: 'pie',
+                        radius: '70%',
+                        center: ['50%', '50%'],
+                        data: [{"name": "Product A", "value": 15831593.23}, {"name": "Product B", "value": 15822394.36}, {"name": "Product C", "value": 16136674.69}, {"name": "Product D", "value": 16356522.59}, {"name": "Service X", "value": 15639870.3}, {"name": "Service Y", "value": 15488161.49}],
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        },
+                        label: {
+                            formatter: '{b}: {d}%',
+                            fontSize: 10
+                        }
+                    }
+                ]
+            };
+            productRevenueChart.setOption(productRevenueOption);
+            
+            // Cash Flow Chart
+            const cashFlowChart = echarts.init(document.getElementById('cashFlowChart'));
+            const cashFlowOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross',
+                        label: {
+                            backgroundColor: '#6a7985'
+                        }
+                    }
+                },
+                legend: {
+                    data: ['Operating', 'Investing', 'Financing', 'Net'],
+                    top: '0%',
+                    textStyle: {
+                        fontSize: 10
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ["2025-06-05", "2025-06-06", "2025-06-07", "2025-06-08", "2025-06-09", "2025-06-10", "2025-06-11", "2025-06-12", "2025-06-13", "2025-06-14", "2025-06-15", "2025-06-16", "2025-06-17", "2025-06-18", "2025-06-19", "2025-06-20", "2025-06-21", "2025-06-22", "2025-06-23", "2025-06-24", "2025-06-25", "2025-06-26", "2025-06-27", "2025-06-28", "2025-06-29", "2025-06-30", "2025-07-01", "2025-07-02", "2025-07-03", "2025-07-04"],
+                    axisLabel: {
+                        rotate: 45,
+                        fontSize: 8
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        formatter: '${value}'
+                    }
+                },
+                series: [
+                    {
+                        name: 'Operating',
+                        type: 'line',
+                        stack: 'Total',
+                        areaStyle: {},
+                        emphasis: {
+                            focus: 'series'
+                        },
+                        data: [21726.52, 21252.06, 15609.65, 16422.07, 21742.43, 21940.11, 24168.72, 23467.2, 22264.8, 16536.76, 15863.7, 22855.1, 23885.52, 21523.2, 21930.1, 23519.63, 16215.04, 17490.57, 23674.05, 23234.62, 27046.72, 25113.26, 25686.44, 16773.45, 13618.93, 20312.03, 19225.99, 20986.97, 20175.34, 20693.72]
+                    },
+                    {
+                        name: 'Investing',
+                        type: 'line',
+                        stack: 'Total',
+                        areaStyle: {},
+                        emphasis: {
+                            focus: 'series'
+                        },
+                        data: [-2644.69, -4885.06, -2453.49, -374.55, -2922.97, -3140.16, -2349.19, -72.99, -1557.87, -101.58, -3239.31, -5335.36, -813.36, -5306.86, -113.27, -2474.26, -3546.29, -4234.82, -7471.84, -1633.99, -5018.18, -4114.99, -7922.78, -7897.26, -772.08, -2720.67, -4673.63, -6350.25, -7156.62, -4792.79]
+                    },
+                    {
+                        name: 'Financing',
+                        type: 'line',
+                        stack: 'Total',
+                        areaStyle: {},
+                        emphasis: {
+                            focus: 'series'
+                        },
+                        data: [-74.23, -1849.6, 407.04, -1160.59, -727.28, -1138.47, 1010.49, -442.7, 558.75, -1182.31, 249.46, -814.66, 1912.89, 271.9, -1589.89, -596.25, 63.71, -110.71, 538.22, 1424.28, 756.15, -1056.08, -427.75, 901.19, 1896.77, -1475.43, 58.31, 1491.82, -1145.8, 1493.08]
+                    },
+                    {
+                        name: 'Net',
+                        type: 'line',
+                        emphasis: {
+                            focus: 'series'
+                        },
+                        lineStyle: {
+                            width: 3,
+                            type: 'dashed'
+                        },
+                        data: [19007.6, 14517.39, 13563.2, 14886.93, 18092.18, 17661.48, 22830.01, 22951.51, 21265.68, 15252.87, 12873.85, 16705.07, 24985.04, 16488.24, 20226.94, 20449.13, 12732.46, 13145.04, 16740.44, 23024.9, 22784.69, 19942.19, 17335.9, 9777.39, 14743.62, 16115.93, 14610.67, 16128.54, 11872.92, 17394.02]
+                    }
+                ]
+            };
+            cashFlowChart.setOption(cashFlowOption);
+            
+            // Department Performance Chart
+            const deptPerformanceChart = echarts.init(document.getElementById('deptPerformanceChart'));
+            const deptPerformanceOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                legend: {
+                    data: ['Performance', 'Efficiency', 'Budget'],
+                    top: '0%',
+                    textStyle: {
+                        fontSize: 10
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: ["Sales", "Marketing", "Operations", "IT", "HR", "Finance", "R&D"],
+                        axisLabel: {
+                            rotate: 45,
+                            fontSize: 8
+                        }
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: 'Score',
+                        min: 0,
+                        max: 120,
+                        interval: 20
+                    }
+                ],
+                series: [
+                    {
+                        name: 'Performance',
+                        type: 'bar',
+                        data: [79.2, 93.8, 84.5, 90.5, 91.1, 81.8, 78.4],
+                        itemStyle: {
+                            color: '#5470c6'
+                        }
+                    },
+                    {
+                        name: 'Efficiency',
+                        type: 'bar',
+                        data: [99.9, 91.1, 92.1, 98.0, 95.2, 87.2, 72.6],
+                        itemStyle: {
+                            color: '#91cc75'
+                        }
+                    },
+                    {
+                        name: 'Budget',
+                        type: 'bar',
+                        data: [106.1, 96.3, 107.8, 91.7, 101.2, 106.7, 92.8],
+                        itemStyle: {
+                            color: '#fac858'
+                        }
+                    }
+                ]
+            };
+            deptPerformanceChart.setOption(deptPerformanceOption);
+            
+            // Investment Chart
+            const investmentChart = echarts.init(document.getElementById('investmentChart'));
+            const investmentOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                legend: {
+                    data: ['Value', 'Return Rate'],
+                    top: '0%',
+                    textStyle: {
+                        fontSize: 10
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: ["Investment A", "Investment B", "Investment C", "Investment D", "Investment E"],
+                        axisPointer: {
+                            type: 'shadow'
+                        },
+                        axisLabel: {
+                            rotate: 45,
+                            fontSize: 8
+                        }
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: 'Value',
+                        axisLabel: {
+                            formatter: '${value}'
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: 'Return %',
+                        axisLabel: {
+                            formatter: '{value}%'
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name: 'Value',
+                        type: 'bar',
+                        yAxisIndex: 0,
+                        data: [50129.89, 50050.86, 41381.12, 43758.54, 40922.16],
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                {offset: 0, color: '#83bff6'},
+                                {offset: 0.5, color: '#188df0'},
+                                {offset: 1, color: '#188df0'}
+                            ])
+                        }
+                    },
+                    {
+                        name: 'Return Rate',
+                        type: 'line',
+                        yAxisIndex: 1,
+                        data: [-0.8, -1.86, 5.56, 1.05, 4.65],
+                        lineStyle: {
+                            color: '#ee6666',
+                            width: 3
+                        },
+                        symbol: 'circle',
+                        symbolSize: 8
+                    }
+                ]
+            };
+            investmentChart.setOption(investmentOption);
+            
+            // Financial Ratios Chart
+            const ratiosChart = echarts.init(document.getElementById('ratiosChart'));
+            const ratiosOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross'
+                    }
+                },
+                legend: {
+                    data: ['Current Ratio', 'Quick Ratio', 'Debt to Equity', 'ROI', 'ROA'],
+                    top: '0%',
+                    textStyle: {
+                        fontSize: 9
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ["2025-06-05", "2025-06-06", "2025-06-07", "2025-06-08", "2025-06-09", "2025-06-10", "2025-06-11", "2025-06-12", "2025-06-13", "2025-06-14", "2025-06-15", "2025-06-16", "2025-06-17", "2025-06-18", "2025-06-19", "2025-06-20", "2025-06-21", "2025-06-22", "2025-06-23", "2025-06-24", "2025-06-25", "2025-06-26", "2025-06-27", "2025-06-28", "2025-06-29", "2025-06-30", "2025-07-01", "2025-07-02", "2025-07-03", "2025-07-04"],
+                    axisLabel: {
+                        rotate: 45,
+                        fontSize: 8
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        formatter: '{value}'
+                    }
+                },
+                series: [
+                    {
+                        name: 'Current Ratio',
+                        type: 'line',
+                        data: [1.71, 1.65, 1.66, 1.38, 1.69, 1.56, 1.77, 1.49, 1.62, 1.29, 1.38, 1.75, 1.46, 1.53, 1.77, 1.21, 1.21, 1.36, 1.54, 1.54, 1.57, 1.72, 1.4, 1.54, 1.23, 1.54, 1.7, 1.26, 1.59, 1.74],
+                        lineStyle: {
+                            width: 2
+                        }
+                    },
+                    {
+                        name: 'Quick Ratio',
+                        type: 'line',
+                        data: [0.93, 1.34, 0.95, 1.26, 1.12, 1.12, 0.96, 1.05, 0.99, 1.24, 1.1, 1.4, 1.04, 1.35, 1.35, 1.02, 1.34, 1.09, 1.25, 0.91, 0.9, 1.24, 1.2, 1.23, 1.27, 1.36, 1.23, 1.39, 1.33, 1.22],
+                        lineStyle: {
+                            width: 2
+                        }
+                    },
+                    {
+                        name: 'Debt to Equity',
+                        type: 'line',
+                        data: [0.51, 0.56, 0.87, 0.69, 0.7, 0.85, 0.95, 0.79, 0.68, 0.98, 0.58, 0.68, 1.0, 0.69, 0.57, 0.6, 0.67, 0.94, 0.53, 0.62, 0.82, 0.56, 0.98, 0.63, 0.5, 0.7, 0.57, 0.55, 0.53, 0.72],
+                        lineStyle: {
+                            width: 2
+                        }
+                    },
+                    {
+                        name: 'ROI',
+                        type: 'line',
+                        data: [9.06, 6.54, 10.67, 9.15, 9.31, 5.99, 4.97, 11.74, 8.53, 9.96, 10.49, 6.53, 7.92, 10.25, 8.82, 8.19, 10.93, 9.92, 7.16, 7.7, 11.41, 9.72, 8.25, 10.34, 9.66, 7.89, 5.51, 7.65, 5.48, 10.19],
+                        lineStyle: {
+                            width: 2
+                        }
+                    },
+                    {
+                        name: 'ROA',
+                        type: 'line',
+                        data: [6.85, 6.95, 3.73, 2.99, 2.79, 5.52, 2.56, 6.3, 6.2, 4.28, 3.05, 6.48, 4.01, 2.32, 6.36, 4.51, 2.45, 6.7, 2.72, 4.07, 6.48, 5.73, 6.11, 4.66, 3.48, 3.1, 4.46, 3.87, 4.42, 3.15],
+                        lineStyle: {
+                            width: 2
+                        }
+                    }
+                ]
+            };
+            ratiosChart.setOption(ratiosOption);
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                profitTrendChart.resize();
+                regionRevenueChart.resize();
+                deptExpensesChart.resize();
+                productRevenueChart.resize();
+                cashFlowChart.resize();
+                deptPerformanceChart.resize();
+                investmentChart.resize();
+                ratiosChart.resize();
+            });
+        });
+    </script>
+
+
+</body></html>
