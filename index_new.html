@@ -29,6 +29,7 @@
       height: 100%;
       border: none;
       background: white;
+      position: relative;
     }
     
     .iframe-container iframe {
@@ -36,6 +37,49 @@
       height: 100%;
       border: none;
       display: block;
+    }
+    
+    /* Focus overlay for iframe activation */
+    .focus-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.02);
+      z-index: 10;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+    
+    .focus-overlay:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+    
+    .focus-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    .focus-hint {
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid #007acc;
+      border-radius: 8px;
+      padding: 15px 25px;
+      color: #007acc;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      animation: pulse 2s infinite;
+      user-select: none;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
     }
     
     .loading {
@@ -46,6 +90,7 @@
       text-align: center;
       color: #666;
       font-size: 16px;
+      z-index: 20;
     }
     
     .loading-spinner {
@@ -75,6 +120,7 @@
       color: #c62828;
       text-align: center;
       max-width: 400px;
+      z-index: 20;
     }
     
     .placeholder {
@@ -85,12 +131,33 @@
       color: #999;
       font-size: 18px;
       text-align: center;
+      z-index: 20;
     }
     
     .placeholder-icon {
       font-size: 48px;
       opacity: 0.5;
       margin-bottom: 15px;
+    }
+    
+    /* Focus helper for better accessibility */
+    .focus-helper {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 122, 204, 0.1);
+      border: 1px solid #007acc;
+      border-radius: 4px;
+      padding: 5px 10px;
+      font-size: 12px;
+      color: #007acc;
+      z-index: 15;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .focus-helper.visible {
+      opacity: 1;
     }
   </style>
 </head>
@@ -101,6 +168,18 @@
         <div class="loading-spinner"></div>
         <div>Loading content...</div>
       </div>
+      
+      <!-- Focus overlay to help iframe get focus -->
+      <div class="focus-overlay" id="focusOverlay">
+        <div class="focus-hint">
+          👆 Click to activate content
+        </div>
+      </div>
+      
+      <!-- Focus helper indicator -->
+      <div class="focus-helper" id="focusHelper">
+        Click to focus iframe
+      </div>
     </div>
   </div>
 
@@ -109,6 +188,10 @@
     const DEFAULT_URL = 'https://mashellhan.github.io/exceldash/dashboard_example.html';
     
     let currentIframe = null;
+    let focusOverlay = null;
+    let focusHelper = null;
+    let isIframeFocused = false;
+    let interactionTimeout = null;
     
     // Get target URL from various sources
     function getTargetUrl() {
@@ -166,6 +249,206 @@
       `;
     }
     
+    // Focus iframe and hide overlay
+    function focusIframe() {
+      if (currentIframe) {
+        try {
+          // Multiple focus attempts for better compatibility
+          currentIframe.focus();
+          
+          // Try to focus the iframe content window
+          if (currentIframe.contentWindow) {
+            currentIframe.contentWindow.focus();
+          }
+          
+          // Try to dispatch focus events
+          currentIframe.dispatchEvent(new FocusEvent('focus', { bubbles: true }));
+          
+          isIframeFocused = true;
+          console.log('Iframe focused successfully');
+          
+          // Hide focus overlay after successful focus
+          if (focusOverlay) {
+            focusOverlay.classList.add('hidden');
+            setTimeout(() => {
+              focusOverlay.style.display = 'none';
+            }, 300);
+          }
+          
+          // Hide focus helper
+          if (focusHelper) {
+            focusHelper.classList.remove('visible');
+          }
+          
+        } catch (error) {
+          console.warn('Failed to focus iframe:', error);
+        }
+      }
+    }
+    
+    // Setup focus handling for iframe
+    function setupIframeFocus() {
+      if (!currentIframe) return;
+      
+      // Setup focus overlay click handler
+      focusOverlay = document.getElementById('focusOverlay');
+      focusHelper = document.getElementById('focusHelper');
+      
+      if (focusOverlay) {
+        focusOverlay.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          focusIframe();
+        });
+        
+        // Auto-hide overlay after some time
+        setTimeout(() => {
+          if (focusOverlay && !isIframeFocused) {
+            focusHelper.classList.add('visible');
+          }
+        }, 3000);
+      }
+      
+      // Monitor iframe focus state
+      currentIframe.addEventListener('focus', () => {
+        isIframeFocused = true;
+        console.log('Iframe received focus');
+      });
+      
+      currentIframe.addEventListener('blur', () => {
+        isIframeFocused = false;
+        console.log('Iframe lost focus');
+      });
+      
+      // Try to auto-focus after load
+      currentIframe.addEventListener('load', () => {
+        setTimeout(() => {
+          if (!isIframeFocused) {
+            attemptAutoFocus();
+          }
+        }, 500);
+      });
+      
+      // Setup interaction detection
+      setupInteractionDetection();
+    }
+    
+    // Attempt automatic focus with various strategies
+    function attemptAutoFocus() {
+      console.log('Attempting auto-focus...');
+      
+      // Strategy 1: Direct focus
+      setTimeout(() => focusIframe(), 100);
+      
+      // Strategy 2: Simulated user interaction
+      setTimeout(() => {
+        if (!isIframeFocused) {
+          simulateUserInteraction();
+        }
+      }, 500);
+      
+      // Strategy 3: Focus with tabindex
+      setTimeout(() => {
+        if (!isIframeFocused && currentIframe) {
+          currentIframe.setAttribute('tabindex', '0');
+          currentIframe.focus();
+        }
+      }, 1000);
+      
+      // Strategy 4: Mouse event simulation
+      setTimeout(() => {
+        if (!isIframeFocused) {
+          simulateMouseClick();
+        }
+      }, 1500);
+    }
+    
+    // Simulate user interaction to trigger focus
+    function simulateUserInteraction() {
+      if (!currentIframe) return;
+      
+      try {
+        // Create and dispatch a mouse event
+        const mouseEvent = new MouseEvent('mousedown', {
+          bubbles: true,
+          cancelable: true,
+          clientX: 100,
+          clientY: 100
+        });
+        
+        currentIframe.dispatchEvent(mouseEvent);
+        
+        setTimeout(() => {
+          const mouseUpEvent = new MouseEvent('mouseup', {
+            bubbles: true,
+            cancelable: true,
+            clientX: 100,
+            clientY: 100
+          });
+          currentIframe.dispatchEvent(mouseUpEvent);
+          focusIframe();
+        }, 50);
+        
+        console.log('Simulated user interaction');
+      } catch (error) {
+        console.warn('Failed to simulate user interaction:', error);
+      }
+    }
+    
+    // Simulate mouse click to activate iframe
+    function simulateMouseClick() {
+      if (!currentIframe) return;
+      
+      try {
+        const rect = currentIframe.getBoundingClientRect();
+        const clickEvent = new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+          clientX: rect.left + rect.width / 2,
+          clientY: rect.top + rect.height / 2
+        });
+        
+        currentIframe.dispatchEvent(clickEvent);
+        focusIframe();
+        
+        console.log('Simulated mouse click on iframe');
+      } catch (error) {
+        console.warn('Failed to simulate mouse click:', error);
+      }
+    }
+    
+    // Setup interaction detection
+    function setupInteractionDetection() {
+      // Listen for any user interaction on the page
+      const interactionEvents = ['mousedown', 'touchstart', 'keydown'];
+      
+      interactionEvents.forEach(eventType => {
+        document.addEventListener(eventType, () => {
+          if (!isIframeFocused && currentIframe) {
+            // Clear any existing timeout
+            if (interactionTimeout) {
+              clearTimeout(interactionTimeout);
+            }
+            
+            // Focus iframe after a short delay
+            interactionTimeout = setTimeout(() => {
+              focusIframe();
+            }, 100);
+          }
+        }, { passive: true });
+      });
+      
+      // Listen for iframe container interactions
+      const iframeContainer = document.getElementById('iframeContainer');
+      if (iframeContainer) {
+        iframeContainer.addEventListener('click', (e) => {
+          if (e.target !== currentIframe && !isIframeFocused) {
+            focusIframe();
+          }
+        });
+      }
+    }
+    
     // Load URL in iframe
     function loadUrl(url) {
       console.log('Loading URL:', url);
@@ -188,15 +471,21 @@
       currentIframe.src = url;
       currentIframe.style.display = 'none';
       
-      // Set iframe attributes for better compatibility
-      currentIframe.setAttribute('allow', 'autoplay; camera; microphone; geolocation');
-      currentIframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-top-navigation-by-user-activation');
+      // Set iframe attributes for better compatibility and focus
+      currentIframe.setAttribute('allow', 'autoplay; camera; microphone; geolocation; fullscreen');
+      currentIframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-top-navigation-by-user-activation allow-pointer-lock');
+      currentIframe.setAttribute('tabindex', '0');
+      currentIframe.setAttribute('role', 'document');
+      currentIframe.setAttribute('aria-label', 'Embedded content');
       
       // Handle iframe load
       currentIframe.onload = () => {
         loading.style.display = 'none';
         currentIframe.style.display = 'block';
         console.log('Content loaded successfully:', url);
+        
+        // Setup focus handling after load
+        setupIframeFocus();
       };
       
       // Handle iframe error
@@ -212,6 +501,7 @@
           if (currentIframe.style.display === 'none') {
             currentIframe.style.display = 'block';
             console.log('Content loaded with potential issues:', url);
+            setupIframeFocus();
           }
         }
       }, 10000); // 10 second timeout
@@ -248,6 +538,13 @@
         setTimeout(() => {
           currentIframe.style.height = '100%';
         }, 1);
+      }
+    });
+    
+    // Handle page focus events
+    window.addEventListener('focus', () => {
+      if (currentIframe && !isIframeFocused) {
+        setTimeout(() => focusIframe(), 100);
       }
     });
     
