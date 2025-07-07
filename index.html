@@ -135,14 +135,14 @@
       
       // Try to get from Office Add-in settings
       if (isOfficeEnvironment) {
-        console.log("office roamingsettings:", Office.context.roamingSettings.get('targetUrl'));
+        console.log("office roamingsettings:", Office.context.roamingSettings);
         const settings = Office.context.document.settings;
-        const customValue = settings.get("targetUrl");
-        console.log("office.context.document.settings:", customValue);
+        console.log("office.context.document.settings:", settings);
 
         try {
           if (Office.context && Office.context.roamingSettings) {
             targetUrl = Office.context.roamingSettings.get('targetUrl');
+
             if (targetUrl) {
               return targetUrl;
             }

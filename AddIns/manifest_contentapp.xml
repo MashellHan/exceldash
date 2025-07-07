@@ -4,11 +4,11 @@
            xsi:type="ContentApp">
 
   <Id>28d4a3e2-65c6-43d0-9c3b-0a336ab67701</Id>
-  <Version>1.0.0.2</Version>
+  <Version>1.0.0.1</Version>
 
-  <ProviderName>Menha</ProviderName>
+  <ProviderName>Microsoft Corporation</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="AIExcel Report"/>
+  <DisplayName DefaultValue="Societas DataViz"/>
   <Description DefaultValue="AI Automated Reports in Office Excel with Content App"/>
   <IconUrl DefaultValue="https://mashellhan.github.io/exceldash/AIExcel_Icon_32.png"/>
   <HighResolutionIconUrl DefaultValue="https://mashellhan.github.io/exceldash/AIExcel_Icon_64.png"/>
@@ -17,6 +17,8 @@
   <AppDomains>
     <AppDomain>https://mashellhan.github.io</AppDomain>
   </AppDomains>
+
+  <SupportsSettings>true</SupportsSettings>
 
   <Hosts>
     <Host Name="Workbook"/>
