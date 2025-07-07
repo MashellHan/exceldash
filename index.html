@@ -139,6 +139,15 @@
         const document = Office.context.document;
         if (document) {
           console.log("office.context.document.settings:", document.settings);
+          const settings = document.settings;
+          if (settings) {
+            targetUrl = settings.get('targetUrl');
+            console.log("office.context.document.settings。targetUrl:", targetUrl);
+
+            if (targetUrl) {
+              return targetUrl;
+            }
+          }
         }
 
         try {
