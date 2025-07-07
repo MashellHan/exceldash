@@ -7,107 +7,82 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             background-color: #f5f5f5;
             color: #333;
         }
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background-color: #fff;
             padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            border-radius: 5px;
         }
         .header {
+            background-color: #10a37f;
+            color: white;
+            padding: 20px;
             text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
-        }
-        .header h1 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-        .header p {
-            color: #7f8c8d;
-            font-size: 16px;
+            border-radius: 5px;
+            margin-bottom: 20px;
         }
         .kpi-container {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
+            margin-bottom: 20px;
         }
         .kpi-card {
-            flex: 1;
-            min-width: 200px;
-            background-color: #fff;
-            padding: 20px;
-            margin: 10px;
+            background-color: white;
             border-radius: 5px;
+            padding: 20px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex: 1;
+            margin: 0 10px;
             text-align: center;
         }
-        .kpi-card h3 {
-            margin-top: 0;
-            color: #7f8c8d;
-            font-size: 14px;
-            text-transform: uppercase;
-        }
-        .kpi-card p {
+        .kpi-value {
             font-size: 24px;
             font-weight: bold;
-            margin: 10px 0 0;
-            color: #2c3e50;
+            margin: 10px 0;
+            color: #10a37f;
         }
         .chart-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            margin-bottom: 30px;
-        }
-        .chart-box {
-            flex: 1;
-            min-width: 300px;
-            height: 400px;
-            margin: 10px;
-            background-color: #fff;
-            padding: 20px;
+            background-color: white;
             border-radius: 5px;
+            padding: 20px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
         .chart {
+            height: 400px;
             width: 100%;
-            height: 100%;
+        }
+        .two-column {
+            display: flex;
+            justify-content: space-between;
+        }
+        .column {
+            flex: 1;
+            margin: 0 10px;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
         }
         .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 30px;
+            margin-top: 20px;
         }
         .data-table th, .data-table td {
-            padding: 12px 15px;
             border: 1px solid #ddd;
+            padding: 8px;
             text-align: left;
         }
         .data-table th {
-            background-color: #2c3e50;
-            color: white;
-        }
-        .data-table tr:nth-child(even) {
             background-color: #f2f2f2;
         }
-        .data-table tr:hover {
-            background-color: #e9e9e9;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-            color: #7f8c8d;
-            font-size: 14px;
+        .data-table tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
     </style>
 </head>
@@ -115,194 +90,279 @@
     <div class="container">
         <div class="header">
             <h1>ChatGPT Mobile App Download Analysis</h1>
-            <p>Comprehensive analysis of ChatGPT mobile app downloads from May 2023 to March 2025</p>
+            <p>Weekly download statistics for the past 24 months</p>
         </div>
 
         <div class="kpi-container">
             <div class="kpi-card">
                 <h3>Total Downloads</h3>
-                <p id="total-downloads">801,599,107</p>
+                <div class="kpi-value" id="total-downloads">598,681,674</div>
             </div>
             <div class="kpi-card">
-                <h3>Average Monthly Downloads</h3>
-                <p id="avg-downloads">34,852,135</p>
+                <h3>Average Weekly Downloads</h3>
+                <div class="kpi-value" id="avg-weekly-downloads">5,986,817</div>
             </div>
             <div class="kpi-card">
-                <h3>Peak Downloads</h3>
-                <p id="peak-downloads">64,267,938</p>
+                <h3>Peak Weekly Downloads</h3>
+                <div class="kpi-value" id="peak-weekly-downloads">16,100,000</div>
             </div>
             <div class="kpi-card">
-                <h3>Growth Rate (YoY)</h3>
-                <p id="growth-rate">83.50%</p>
+                <h3>iOS vs Android</h3>
+                <div class="kpi-value" id="platform-ratio">60% iOS / 40% Android</div>
             </div>
         </div>
 
         <div class="chart-container">
-            <div class="chart-box">
-                <div id="monthly-trend-chart" class="chart" _echarts_instance_="ec_1751867736452" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 540px; height: 400px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="540" height="400" style="position: absolute; left: 0px; top: 0px; width: 540px; height: 400px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class="" style="position: absolute; display: block; border-style: solid; white-space: nowrap; z-index: 9999999; box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 10px; transition: opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1), transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); background-color: rgb(255, 255, 255); border-width: 1px; border-radius: 4px; color: rgb(102, 102, 102); font: 14px / 21px &quot;Microsoft YaHei&quot;; padding: 10px; top: 0px; left: 0px; transform: translate3d(149px, 137px, 0px); border-color: rgb(255, 255, 255); pointer-events: none; visibility: hidden; opacity: 0;">2023-08<br>Downloads: 24,496,755</div></div>
+            <h2>Weekly Download Trends</h2>
+            <div id="weekly-trend-chart" class="chart" _echarts_instance_="ec_1751897560896" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 1160px; height: 400px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="1160" height="400" style="position: absolute; left: 0px; top: 0px; width: 1160px; height: 400px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class="" style="position: absolute; display: block; border-style: solid; white-space: nowrap; z-index: 9999999; box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 10px; transition: opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1), transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); background-color: rgb(255, 255, 255); border-width: 1px; border-radius: 4px; color: rgb(102, 102, 102); font: 14px / 21px &quot;Microsoft YaHei&quot;; padding: 10px; top: 0px; left: 0px; transform: translate3d(777px, 334px, 0px); border-color: rgb(255, 255, 255); pointer-events: none; visibility: hidden; opacity: 0;">2024-08-26<br>Downloads: 6,100,000</div></div>
+        </div>
+
+        <div class="two-column">
+            <div class="column chart-container">
+                <h2>Platform Comparison</h2>
+                <div id="platform-chart" class="chart" _echarts_instance_="ec_1751897560897" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 540px; height: 400px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="540" height="400" style="position: absolute; left: 0px; top: 0px; width: 540px; height: 400px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
             </div>
-            <div class="chart-box">
-                <div id="quarterly-chart" class="chart" _echarts_instance_="ec_1751867736453" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 540px; height: 400px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="540" height="400" style="position: absolute; left: 0px; top: 0px; width: 540px; height: 400px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class="" style="position: absolute; display: block; border-style: solid; white-space: nowrap; z-index: 9999999; box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 10px; transition: opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1), transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); background-color: rgb(255, 255, 255); border-width: 1px; border-radius: 4px; color: rgb(102, 102, 102); font: 14px / 21px &quot;Microsoft YaHei&quot;; padding: 10px; top: 0px; left: 0px; transform: translate3d(247px, 335px, 0px); border-color: rgb(255, 255, 255); pointer-events: none; visibility: hidden; opacity: 0;">2024 Q1<br>Downloads: 149,559,496</div></div>
+            <div class="column chart-container">
+                <h2>Monthly Growth Rate</h2>
+                <div id="growth-chart" class="chart" _echarts_instance_="ec_1751897560898" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 540px; height: 400px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="540" height="400" style="position: absolute; left: 0px; top: 0px; width: 540px; height: 400px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
             </div>
         </div>
 
         <div class="chart-container">
-            <div class="chart-box">
-                <div id="platform-comparison-chart" class="chart" _echarts_instance_="ec_1751867736454" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 540px; height: 400px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="540" height="400" style="position: absolute; left: 0px; top: 0px; width: 540px; height: 400px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
+            <h2>Weekly Downloads Data Table</h2>
+            <div style="max-height: 400px; overflow-y: auto;">
+                <table class="data-table" id="data-table">
+                    <thead>
+                        <tr>
+                            <th>Week</th>
+                            <th>Total Downloads</th>
+                            <th>iOS Downloads</th>
+                            <th>Android Downloads</th>
+                            <th>Growth Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Data will be inserted here -->
+                    <tr><td>2023-05-01</td><td>1,000,000</td><td>600,000</td><td>400,000</td><td>N/A</td></tr><tr><td>2023-05-08</td><td>1,050,000</td><td>630,000</td><td>420,000</td><td>5.00%</td></tr><tr><td>2023-05-15</td><td>950,000</td><td>570,000</td><td>380,000</td><td>-9.52%</td></tr><tr><td>2023-05-22</td><td>1,000,000</td><td>600,000</td><td>400,000</td><td>5.26%</td></tr><tr><td>2023-05-29</td><td>3,500,000</td><td>2,100,000</td><td>1,400,000</td><td>250.00%</td></tr><tr><td>2023-06-05</td><td>3,600,000</td><td>2,160,000</td><td>1,440,000</td><td>2.86%</td></tr><tr><td>2023-06-12</td><td>3,400,000</td><td>2,040,000</td><td>1,360,000</td><td>-5.56%</td></tr><tr><td>2023-06-19</td><td>3,500,000</td><td>2,100,000</td><td>1,400,000</td><td>2.94%</td></tr><tr><td>2023-06-26</td><td>2,500,000</td><td>1,500,000</td><td>1,000,000</td><td>-28.57%</td></tr><tr><td>2023-07-03</td><td>2,600,000</td><td>1,560,000</td><td>1,040,000</td><td>4.00%</td></tr><tr><td>2023-07-10</td><td>2,400,000</td><td>1,440,000</td><td>960,000</td><td>-7.69%</td></tr><tr><td>2023-07-17</td><td>2,500,000</td><td>1,500,000</td><td>1,000,000</td><td>4.17%</td></tr><tr><td>2023-07-24</td><td>3,500,000</td><td>2,100,000</td><td>1,400,000</td><td>40.00%</td></tr><tr><td>2023-07-31</td><td>3,600,000</td><td>2,160,000</td><td>1,440,000</td><td>2.86%</td></tr><tr><td>2023-08-07</td><td>3,400,000</td><td>2,040,000</td><td>1,360,000</td><td>-5.56%</td></tr><tr><td>2023-08-14</td><td>3,500,000</td><td>2,100,000</td><td>1,400,000</td><td>2.94%</td></tr><tr><td>2023-08-21</td><td>3,000,000</td><td>1,800,000</td><td>1,200,000</td><td>-14.29%</td></tr><tr><td>2023-08-28</td><td>3,100,000</td><td>1,860,000</td><td>1,240,000</td><td>3.33%</td></tr><tr><td>2023-09-04</td><td>2,900,000</td><td>1,740,000</td><td>1,160,000</td><td>-6.45%</td></tr><tr><td>2023-09-11</td><td>3,000,000</td><td>1,800,000</td><td>1,200,000</td><td>3.45%</td></tr><tr><td>2023-09-18</td><td>3,100,000</td><td>1,860,000</td><td>1,240,000</td><td>3.33%</td></tr><tr><td>2023-09-25</td><td>2,900,000</td><td>1,740,000</td><td>1,160,000</td><td>-6.45%</td></tr><tr><td>2023-10-02</td><td>2,500,000</td><td>1,500,000</td><td>1,000,000</td><td>-13.79%</td></tr><tr><td>2023-10-09</td><td>2,600,000</td><td>1,560,000</td><td>1,040,000</td><td>4.00%</td></tr><tr><td>2023-10-16</td><td>2,400,000</td><td>1,440,000</td><td>960,000</td><td>-7.69%</td></tr><tr><td>2023-10-23</td><td>2,500,000</td><td>1,500,000</td><td>1,000,000</td><td>4.17%</td></tr><tr><td>2023-10-30</td><td>2,200,000</td><td>1,320,000</td><td>880,000</td><td>-12.00%</td></tr><tr><td>2023-11-06</td><td>2,300,000</td><td>1,380,000</td><td>920,000</td><td>4.55%</td></tr><tr><td>2023-11-13</td><td>2,200,000</td><td>1,320,000</td><td>880,000</td><td>-4.35%</td></tr><tr><td>2023-11-20</td><td>2,300,000</td><td>1,380,000</td><td>920,000</td><td>4.55%</td></tr><tr><td>2023-11-27</td><td>2,700,000</td><td>1,620,000</td><td>1,080,000</td><td>17.39%</td></tr><tr><td>2023-12-04</td><td>2,800,000</td><td>1,680,000</td><td>1,120,000</td><td>3.70%</td></tr><tr><td>2023-12-11</td><td>2,700,000</td><td>1,620,000</td><td>1,080,000</td><td>-3.57%</td></tr><tr><td>2023-12-18</td><td>2,800,000</td><td>1,680,000</td><td>1,120,000</td><td>3.70%</td></tr><tr><td>2023-12-25</td><td>3,200,000</td><td>1,920,000</td><td>1,280,000</td><td>14.29%</td></tr><tr><td>2024-01-01</td><td>3,300,000</td><td>1,980,000</td><td>1,320,000</td><td>3.13%</td></tr><tr><td>2024-01-08</td><td>3,200,000</td><td>1,920,000</td><td>1,280,000</td><td>-3.03%</td></tr><tr><td>2024-01-15</td><td>3,300,000</td><td>1,980,000</td><td>1,320,000</td><td>3.13%</td></tr><tr><td>2024-01-22</td><td>3,500,000</td><td>2,100,000</td><td>1,400,000</td><td>6.06%</td></tr><tr><td>2024-01-29</td><td>3,600,000</td><td>2,160,000</td><td>1,440,000</td><td>2.86%</td></tr><tr><td>2024-02-05</td><td>3,400,000</td><td>2,040,000</td><td>1,360,000</td><td>-5.56%</td></tr><tr><td>2024-02-12</td><td>3,500,000</td><td>2,100,000</td><td>1,400,000</td><td>2.94%</td></tr><tr><td>2024-02-19</td><td>3,600,000</td><td>2,160,000</td><td>1,440,000</td><td>2.86%</td></tr><tr><td>2024-02-26</td><td>4,300,000</td><td>2,580,000</td><td>1,720,000</td><td>19.44%</td></tr><tr><td>2024-03-04</td><td>4,200,000</td><td>2,520,000</td><td>1,680,000</td><td>-2.33%</td></tr><tr><td>2024-03-11</td><td>4,300,000</td><td>2,580,000</td><td>1,720,000</td><td>2.38%</td></tr><tr><td>2024-03-18</td><td>4,341,382</td><td>2,604,829</td><td>1,736,553</td><td>0.96%</td></tr><tr><td>2024-03-25</td><td>3,800,000</td><td>2,280,000</td><td>1,520,000</td><td>-12.47%</td></tr><tr><td>2024-04-01</td><td>3,900,000</td><td>2,340,000</td><td>1,560,000</td><td>2.63%</td></tr><tr><td>2024-04-08</td><td>3,800,000</td><td>2,280,000</td><td>1,520,000</td><td>-2.56%</td></tr><tr><td>2024-04-15</td><td>3,843,241</td><td>2,305,945</td><td>1,537,296</td><td>1.14%</td></tr><tr><td>2024-04-22</td><td>5,700,000</td><td>3,420,000</td><td>2,280,000</td><td>48.31%</td></tr><tr><td>2024-04-29</td><td>5,800,000</td><td>3,480,000</td><td>2,320,000</td><td>1.75%</td></tr><tr><td>2024-05-06</td><td>5,600,000</td><td>3,360,000</td><td>2,240,000</td><td>-3.45%</td></tr><tr><td>2024-05-13</td><td>5,733,094</td><td>3,439,856</td><td>2,293,238</td><td>2.38%</td></tr><tr><td>2024-05-20</td><td>5,600,000</td><td>3,360,000</td><td>2,240,000</td><td>-2.32%</td></tr><tr><td>2024-05-27</td><td>5,700,000</td><td>3,420,000</td><td>2,280,000</td><td>1.79%</td></tr><tr><td>2024-06-03</td><td>5,500,000</td><td>3,300,000</td><td>2,200,000</td><td>-3.51%</td></tr><tr><td>2024-06-10</td><td>5,605,142</td><td>3,363,085</td><td>2,242,057</td><td>1.91%</td></tr><tr><td>2024-06-17</td><td>4,700,000</td><td>2,820,000</td><td>1,880,000</td><td>-16.15%</td></tr><tr><td>2024-06-24</td><td>4,800,000</td><td>2,880,000</td><td>1,920,000</td><td>2.13%</td></tr><tr><td>2024-07-01</td><td>4,700,000</td><td>2,820,000</td><td>1,880,000</td><td>-2.08%</td></tr><tr><td>2024-07-08</td><td>4,686,729</td><td>2,812,037</td><td>1,874,692</td><td>-0.28%</td></tr><tr><td>2024-07-15</td><td>6,100,000</td><td>3,660,000</td><td>2,440,000</td><td>30.15%</td></tr><tr><td>2024-07-22</td><td>6,200,000</td><td>3,720,000</td><td>2,480,000</td><td>1.64%</td></tr><tr><td>2024-07-29</td><td>6,100,000</td><td>3,660,000</td><td>2,440,000</td><td>-1.61%</td></tr><tr><td>2024-08-05</td><td>6,096,755</td><td>3,658,053</td><td>2,438,702</td><td>-0.05%</td></tr><tr><td>2024-08-12</td><td>6,200,000</td><td>3,720,000</td><td>2,480,000</td><td>1.69%</td></tr><tr><td>2024-08-19</td><td>6,100,000</td><td>3,660,000</td><td>2,440,000</td><td>-1.61%</td></tr><tr><td>2024-08-26</td><td>6,100,000</td><td>3,660,000</td><td>2,440,000</td><td>0.00%</td></tr><tr><td>2024-09-02</td><td>9,100,000</td><td>5,460,000</td><td>3,640,000</td><td>49.18%</td></tr><tr><td>2024-09-09</td><td>9,200,000</td><td>5,520,000</td><td>3,680,000</td><td>1.10%</td></tr><tr><td>2024-09-16</td><td>9,100,000</td><td>5,460,000</td><td>3,640,000</td><td>-1.09%</td></tr><tr><td>2024-09-23</td><td>9,147,733</td><td>5,488,640</td><td>3,659,093</td><td>0.52%</td></tr><tr><td>2024-09-30</td><td>11,500,000</td><td>6,900,000</td><td>4,600,000</td><td>25.71%</td></tr><tr><td>2024-10-07</td><td>11,600,000</td><td>6,960,000</td><td>4,640,000</td><td>0.87%</td></tr><tr><td>2024-10-14</td><td>11,500,000</td><td>6,900,000</td><td>4,600,000</td><td>-0.86%</td></tr><tr><td>2024-10-21</td><td>11,681,094</td><td>7,008,656</td><td>4,672,438</td><td>1.57%</td></tr><tr><td>2024-10-28</td><td>10,600,000</td><td>6,360,000</td><td>4,240,000</td><td>-9.26%</td></tr><tr><td>2024-11-04</td><td>10,700,000</td><td>6,420,000</td><td>4,280,000</td><td>0.94%</td></tr><tr><td>2024-11-11</td><td>10,600,000</td><td>6,360,000</td><td>4,240,000</td><td>-0.93%</td></tr><tr><td>2024-11-18</td><td>10,625,317</td><td>6,375,190</td><td>4,250,127</td><td>0.24%</td></tr><tr><td>2024-11-25</td><td>10,800,000</td><td>6,480,000</td><td>4,320,000</td><td>1.64%</td></tr><tr><td>2024-12-02</td><td>10,900,000</td><td>6,540,000</td><td>4,360,000</td><td>0.93%</td></tr><tr><td>2024-12-09</td><td>10,700,000</td><td>6,420,000</td><td>4,280,000</td><td>-1.83%</td></tr><tr><td>2024-12-16</td><td>10,861,691</td><td>6,517,015</td><td>4,344,676</td><td>1.51%</td></tr><tr><td>2024-12-23</td><td>10,100,000</td><td>6,060,000</td><td>4,040,000</td><td>-7.01%</td></tr><tr><td>2024-12-30</td><td>10,200,000</td><td>6,120,000</td><td>4,080,000</td><td>0.99%</td></tr><tr><td>2025-01-06</td><td>10,100,000</td><td>6,060,000</td><td>4,040,000</td><td>-0.98%</td></tr><tr><td>2025-01-13</td><td>10,199,434</td><td>6,119,660</td><td>4,079,774</td><td>0.98%</td></tr><tr><td>2025-01-20</td><td>10,100,000</td><td>6,060,000</td><td>4,040,000</td><td>-0.97%</td></tr><tr><td>2025-01-27</td><td>10,200,000</td><td>6,120,000</td><td>4,080,000</td><td>0.99%</td></tr><tr><td>2025-02-03</td><td>11,100,000</td><td>6,660,000</td><td>4,440,000</td><td>8.82%</td></tr><tr><td>2025-02-10</td><td>11,192,124</td><td>6,715,274</td><td>4,476,850</td><td>0.83%</td></tr><tr><td>2025-02-17</td><td>11,200,000</td><td>6,720,000</td><td>4,480,000</td><td>0.07%</td></tr><tr><td>2025-02-24</td><td>11,300,000</td><td>6,780,000</td><td>4,520,000</td><td>0.89%</td></tr><tr><td>2025-03-03</td><td>16,000,000</td><td>9,600,000</td><td>6,400,000</td><td>41.59%</td></tr><tr><td>2025-03-10</td><td>16,067,938</td><td>9,640,763</td><td>6,427,175</td><td>0.42%</td></tr><tr><td>2025-03-17</td><td>16,100,000</td><td>9,660,000</td><td>6,440,000</td><td>0.20%</td></tr><tr><td>2025-03-24</td><td>16,100,000</td><td>9,660,000</td><td>6,440,000</td><td>0.00%</td></tr></tbody>
+                </table>
             </div>
-            <div class="chart-box">
-                <div id="yearly-comparison-chart" class="chart" _echarts_instance_="ec_1751867736455" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 540px; height: 400px; padding: 0px; margin: 0px; border-width: 0px; cursor: pointer;"><canvas data-zr-dom-id="zr_0" width="540" height="400" style="position: absolute; left: 0px; top: 0px; width: 540px; height: 400px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class="" style="position: absolute; display: block; border-style: solid; white-space: nowrap; z-index: 9999999; box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 10px; background-color: rgb(255, 255, 255); border-width: 1px; border-radius: 4px; color: rgb(102, 102, 102); font: 14px / 21px &quot;Microsoft YaHei&quot;; padding: 10px; top: 0px; left: 0px; transform: translate3d(262px, 319px, 0px); border-color: rgb(255, 255, 255); pointer-events: none; visibility: hidden; opacity: 0;">2024<br>Downloads: 422,040,292</div></div>
-            </div>
-        </div>
-
-        <div class="chart-container">
-            <div class="chart-box" style="flex-basis: 100%;">
-                <div id="detailed-table" class="chart">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Downloads</th>
-                                <th>Month-over-Month Change</th>
-                                <th>Year-over-Year Change</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-body">
-                            <!-- Data will be inserted here by JavaScript -->
-                        <tr><td>2023-05</td><td>4,000,000</td><td>N/A</td><td>N/A</td></tr><tr><td>2023-06</td><td>14,000,000</td><td style="color: green;">250.00%</td><td>N/A</td></tr><tr><td>2023-07</td><td>18,886,729</td><td style="color: green;">34.91%</td><td>N/A</td></tr><tr><td>2023-08</td><td>24,496,755</td><td style="color: green;">29.70%</td><td>N/A</td></tr><tr><td>2023-09</td><td>36,547,733</td><td style="color: green;">49.19%</td><td>N/A</td></tr><tr><td>2023-10</td><td>46,281,094</td><td style="color: green;">26.63%</td><td>N/A</td></tr><tr><td>2023-11</td><td>42,525,317</td><td style="color: red;">-8.12%</td><td>N/A</td></tr><tr><td>2023-12</td><td>43,261,691</td><td style="color: green;">1.73%</td><td>N/A</td></tr><tr><td>2024-01</td><td>40,599,434</td><td style="color: red;">-6.15%</td><td>N/A</td></tr><tr><td>2024-02</td><td>44,692,124</td><td style="color: green;">10.08%</td><td>N/A</td></tr><tr><td>2024-03</td><td>64,267,938</td><td style="color: green;">43.80%</td><td>N/A</td></tr><tr><td>2024-04</td><td>15,343,241</td><td style="color: red;">-76.13%</td><td>N/A</td></tr><tr><td>2024-05</td><td>22,833,094</td><td style="color: green;">48.82%</td><td style="color: green;">470.83%</td></tr><tr><td>2024-06</td><td>22,305,142</td><td style="color: red;">-2.31%</td><td style="color: green;">59.32%</td></tr><tr><td>2024-07</td><td>18,886,729</td><td style="color: red;">-15.33%</td><td>0.00%</td></tr><tr><td>2024-08</td><td>24,496,755</td><td style="color: green;">29.70%</td><td>0.00%</td></tr><tr><td>2024-09</td><td>36,547,733</td><td style="color: green;">49.19%</td><td>0.00%</td></tr><tr><td>2024-10</td><td>46,281,094</td><td style="color: green;">26.63%</td><td>0.00%</td></tr><tr><td>2024-11</td><td>42,525,317</td><td style="color: red;">-8.12%</td><td>0.00%</td></tr><tr><td>2024-12</td><td>43,261,691</td><td style="color: green;">1.73%</td><td>0.00%</td></tr><tr><td>2025-01</td><td>40,599,434</td><td style="color: red;">-6.15%</td><td>0.00%</td></tr><tr><td>2025-02</td><td>44,692,124</td><td style="color: green;">10.08%</td><td>0.00%</td></tr><tr><td>2025-03</td><td>64,267,938</td><td style="color: green;">43.80%</td><td>0.00%</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">
-            <p>Data Source: Statista, AppMagic | Analysis Date: July 2025</p>
         </div>
     </div>
 
     <script>
-        // ChatGPT Mobile App Download Data
-        const downloadData = [
-            { date: '2023-05', downloads: 4000000 },
-            { date: '2023-06', downloads: 14000000 },
-            { date: '2023-07', downloads: 18886729 },
-            { date: '2023-08', downloads: 24496755 },
-            { date: '2023-09', downloads: 36547733 },
-            { date: '2023-10', downloads: 46281094 },
-            { date: '2023-11', downloads: 42525317 },
-            { date: '2023-12', downloads: 43261691 },
-            { date: '2024-01', downloads: 40599434 },
-            { date: '2024-02', downloads: 44692124 },
-            { date: '2024-03', downloads: 64267938 },
-            { date: '2024-04', downloads: 15343241 },
-            { date: '2024-05', downloads: 22833094 },
-            { date: '2024-06', downloads: 22305142 },
-            { date: '2024-07', downloads: 18886729 },
-            { date: '2024-08', downloads: 24496755 },
-            { date: '2024-09', downloads: 36547733 },
-            { date: '2024-10', downloads: 46281094 },
-            { date: '2024-11', downloads: 42525317 },
-            { date: '2024-12', downloads: 43261691 },
-            { date: '2025-01', downloads: 40599434 },
-            { date: '2025-02', downloads: 44692124 },
-            { date: '2025-03', downloads: 64267938 }
+        // CSV data for weekly downloads
+        const weeklyData = [
+            // Year, Week, Downloads, Week_Start, Week_Label, Growth_Rate, 4_Week_Moving_Avg, iOS_Downloads, Android_Downloads
+            [2023, 18, 1000000, "2023-05-01", "2023-05-01", null, null, 600000, 400000],
+            [2023, 19, 1050000, "2023-05-08", "2023-05-08", 5.0, null, 630000, 420000],
+            [2023, 20, 950000, "2023-05-15", "2023-05-15", -9.52, null, 570000, 380000],
+            [2023, 21, 1000000, "2023-05-22", "2023-05-22", 5.26, 1000000, 600000, 400000],
+            [2023, 22, 3500000, "2023-05-29", "2023-05-29", 250.0, 1625000, 2100000, 1400000],
+            [2023, 23, 3600000, "2023-06-05", "2023-06-05", 2.86, 2262500, 2160000, 1440000],
+            [2023, 24, 3400000, "2023-06-12", "2023-06-12", -5.56, 2875000, 2040000, 1360000],
+            [2023, 25, 3500000, "2023-06-19", "2023-06-19", 2.94, 3500000, 2100000, 1400000],
+            [2023, 26, 2500000, "2023-06-26", "2023-06-26", -28.57, 3250000, 1500000, 1000000],
+            [2023, 27, 2600000, "2023-07-03", "2023-07-03", 4.0, 3000000, 1560000, 1040000],
+            [2023, 28, 2400000, "2023-07-10", "2023-07-10", -7.69, 2750000, 1440000, 960000],
+            [2023, 29, 2500000, "2023-07-17", "2023-07-17", 4.17, 2500000, 1500000, 1000000],
+            [2023, 30, 3500000, "2023-07-24", "2023-07-24", 40.0, 2750000, 2100000, 1400000],
+            [2023, 31, 3600000, "2023-07-31", "2023-07-31", 2.86, 3000000, 2160000, 1440000],
+            [2023, 32, 3400000, "2023-08-07", "2023-08-07", -5.56, 3250000, 2040000, 1360000],
+            [2023, 33, 3500000, "2023-08-14", "2023-08-14", 2.94, 3500000, 2100000, 1400000],
+            [2023, 34, 3000000, "2023-08-21", "2023-08-21", -14.29, 3375000, 1800000, 1200000],
+            [2023, 35, 3100000, "2023-08-28", "2023-08-28", 3.33, 3250000, 1860000, 1240000],
+            [2023, 36, 2900000, "2023-09-04", "2023-09-04", -6.45, 3125000, 1740000, 1160000],
+            [2023, 37, 3000000, "2023-09-11", "2023-09-11", 3.45, 3000000, 1800000, 1200000],
+            [2023, 38, 3100000, "2023-09-18", "2023-09-18", 3.33, 3025000, 1860000, 1240000],
+            [2023, 39, 2900000, "2023-09-25", "2023-09-25", -6.45, 2975000, 1740000, 1160000],
+            [2023, 40, 2500000, "2023-10-02", "2023-10-02", -13.79, 2875000, 1500000, 1000000],
+            [2023, 41, 2600000, "2023-10-09", "2023-10-09", 4.0, 2775000, 1560000, 1040000],
+            [2023, 42, 2400000, "2023-10-16", "2023-10-16", -7.69, 2600000, 1440000, 960000],
+            [2023, 43, 2500000, "2023-10-23", "2023-10-23", 4.17, 2500000, 1500000, 1000000],
+            [2023, 44, 2200000, "2023-10-30", "2023-10-30", -12.0, 2425000, 1320000, 880000],
+            [2023, 45, 2300000, "2023-11-06", "2023-11-06", 4.55, 2350000, 1380000, 920000],
+            [2023, 46, 2200000, "2023-11-13", "2023-11-13", -4.35, 2300000, 1320000, 880000],
+            [2023, 47, 2300000, "2023-11-20", "2023-11-20", 4.55, 2250000, 1380000, 920000],
+            [2023, 48, 2700000, "2023-11-27", "2023-11-27", 17.39, 2375000, 1620000, 1080000],
+            [2023, 49, 2800000, "2023-12-04", "2023-12-04", 3.7, 2500000, 1680000, 1120000],
+            [2023, 50, 2700000, "2023-12-11", "2023-12-11", -3.57, 2625000, 1620000, 1080000],
+            [2023, 51, 2800000, "2023-12-18", "2023-12-18", 3.7, 2750000, 1680000, 1120000],
+            [2023, 52, 3200000, "2023-12-25", "2023-12-25", 14.29, 2875000, 1920000, 1280000],
+            [2024, 1, 3300000, "2024-01-01", "2024-01-01", 3.13, 3000000, 1980000, 1320000],
+            [2024, 2, 3200000, "2024-01-08", "2024-01-08", -3.03, 3125000, 1920000, 1280000],
+            [2024, 3, 3300000, "2024-01-15", "2024-01-15", 3.13, 3250000, 1980000, 1320000],
+            [2024, 4, 3500000, "2024-01-22", "2024-01-22", 6.06, 3325000, 2100000, 1400000],
+            [2024, 5, 3600000, "2024-01-29", "2024-01-29", 2.86, 3400000, 2160000, 1440000],
+            [2024, 6, 3400000, "2024-02-05", "2024-02-05", -5.56, 3450000, 2040000, 1360000],
+            [2024, 7, 3500000, "2024-02-12", "2024-02-12", 2.94, 3500000, 2100000, 1400000],
+            [2024, 8, 3600000, "2024-02-19", "2024-02-19", 2.86, 3525000, 2160000, 1440000],
+            [2024, 9, 4300000, "2024-02-26", "2024-02-26", 19.44, 3700000, 2580000, 1720000],
+            [2024, 10, 4200000, "2024-03-04", "2024-03-04", -2.33, 3900000, 2520000, 1680000],
+            [2024, 11, 4300000, "2024-03-11", "2024-03-11", 2.38, 4100000, 2580000, 1720000],
+            [2024, 12, 4341382, "2024-03-18", "2024-03-18", 0.96, 4285346, 2604829, 1736553],
+            [2024, 13, 3800000, "2024-03-25", "2024-03-25", -12.47, 4160346, 2280000, 1520000],
+            [2024, 14, 3900000, "2024-04-01", "2024-04-01", 2.63, 4085346, 2340000, 1560000],
+            [2024, 15, 3800000, "2024-04-08", "2024-04-08", -2.56, 3960346, 2280000, 1520000],
+            [2024, 16, 3843241, "2024-04-15", "2024-04-15", 1.14, 3835810, 2305945, 1537296],
+            [2024, 17, 5700000, "2024-04-22", "2024-04-22", 48.31, 4310810, 3420000, 2280000],
+            [2024, 18, 5800000, "2024-04-29", "2024-04-29", 1.75, 4785810, 3480000, 2320000],
+            [2024, 19, 5600000, "2024-05-06", "2024-05-06", -3.45, 5235810, 3360000, 2240000],
+            [2024, 20, 5733094, "2024-05-13", "2024-05-13", 2.38, 5708274, 3439856, 2293238],
+            [2024, 21, 5600000, "2024-05-20", "2024-05-20", -2.32, 5683274, 3360000, 2240000],
+            [2024, 22, 5700000, "2024-05-27", "2024-05-27", 1.79, 5658274, 3420000, 2280000],
+            [2024, 23, 5500000, "2024-06-03", "2024-06-03", -3.51, 5633274, 3300000, 2200000],
+            [2024, 24, 5605142, "2024-06-10", "2024-06-10", 1.91, 5601286, 3363085, 2242057],
+            [2024, 25, 4700000, "2024-06-17", "2024-06-17", -16.15, 5376286, 2820000, 1880000],
+            [2024, 26, 4800000, "2024-06-24", "2024-06-24", 2.13, 5151286, 2880000, 1920000],
+            [2024, 27, 4700000, "2024-07-01", "2024-07-01", -2.08, 4951286, 2820000, 1880000],
+            [2024, 28, 4686729, "2024-07-08", "2024-07-08", -0.28, 4721682, 2812037, 1874692],
+            [2024, 29, 6100000, "2024-07-15", "2024-07-15", 30.15, 5071682, 3660000, 2440000],
+            [2024, 30, 6200000, "2024-07-22", "2024-07-22", 1.64, 5421682, 3720000, 2480000],
+            [2024, 31, 6100000, "2024-07-29", "2024-07-29", -1.61, 5771682, 3660000, 2440000],
+            [2024, 32, 6096755, "2024-08-05", "2024-08-05", -0.05, 6124189, 3658053, 2438702],
+            [2024, 33, 6200000, "2024-08-12", "2024-08-12", 1.69, 6149189, 3720000, 2480000],
+            [2024, 34, 6100000, "2024-08-19", "2024-08-19", -1.61, 6124189, 3660000, 2440000],
+            [2024, 35, 6100000, "2024-08-26", "2024-08-26", 0.0, 6124189, 3660000, 2440000],
+            [2024, 36, 9100000, "2024-09-02", "2024-09-02", 49.18, 6875000, 5460000, 3640000],
+            [2024, 37, 9200000, "2024-09-09", "2024-09-09", 1.1, 7625000, 5520000, 3680000],
+            [2024, 38, 9100000, "2024-09-16", "2024-09-16", -1.09, 8375000, 5460000, 3640000],
+            [2024, 39, 9147733, "2024-09-23", "2024-09-23", 0.52, 9136933, 5488640, 3659093],
+            [2024, 40, 11500000, "2024-09-30", "2024-09-30", 25.71, 9736933, 6900000, 4600000],
+            [2024, 41, 11600000, "2024-10-07", "2024-10-07", 0.87, 10336933, 6960000, 4640000],
+            [2024, 42, 11500000, "2024-10-14", "2024-10-14", -0.86, 10936933, 6900000, 4600000],
+            [2024, 43, 11681094, "2024-10-21", "2024-10-21", 1.57, 11570274, 7008656, 4672438],
+            [2024, 44, 10600000, "2024-10-28", "2024-10-28", -9.26, 11345274, 6360000, 4240000],
+            [2024, 45, 10700000, "2024-11-04", "2024-11-04", 0.94, 11120274, 6420000, 4280000],
+            [2024, 46, 10600000, "2024-11-11", "2024-11-11", -0.93, 10895274, 6360000, 4240000],
+            [2024, 47, 10625317, "2024-11-18", "2024-11-18", 0.24, 10631329, 6375190, 4250127],
+            [2024, 48, 10800000, "2024-11-25", "2024-11-25", 1.64, 10681329, 6480000, 4320000],
+            [2024, 49, 10900000, "2024-12-02", "2024-12-02", 0.93, 10731329, 6540000, 4360000],
+            [2024, 50, 10700000, "2024-12-09", "2024-12-09", -1.83, 10756329, 6420000, 4280000],
+            [2024, 51, 10861691, "2024-12-16", "2024-12-16", 1.51, 10815423, 6517015, 4344676],
+            [2024, 52, 10100000, "2024-12-23", "2024-12-23", -7.01, 10640423, 6060000, 4040000],
+            [2025, 1, 10200000, "2024-12-30", "2024-12-30", 0.99, 10465423, 6120000, 4080000],
+            [2025, 2, 10100000, "2025-01-06", "2025-01-06", -0.98, 10315423, 6060000, 4040000],
+            [2025, 3, 10199434, "2025-01-13", "2025-01-13", 0.98, 10149859, 6119660, 4079774],
+            [2025, 4, 10100000, "2025-01-20", "2025-01-20", -0.97, 10149859, 6060000, 4040000],
+            [2025, 5, 10200000, "2025-01-27", "2025-01-27", 0.99, 10149859, 6120000, 4080000],
+            [2025, 6, 11100000, "2025-02-03", "2025-02-03", 8.82, 10399859, 6660000, 4440000],
+            [2025, 7, 11192124, "2025-02-10", "2025-02-10", 0.83, 10648031, 6715274, 4476850],
+            [2025, 8, 11200000, "2025-02-17", "2025-02-17", 0.07, 10923031, 6720000, 4480000],
+            [2025, 9, 11300000, "2025-02-24", "2025-02-24", 0.89, 11198031, 6780000, 4520000],
+            [2025, 10, 16000000, "2025-03-03", "2025-03-03", 41.59, 12423031, 9600000, 6400000],
+            [2025, 11, 16067938, "2025-03-10", "2025-03-10", 0.42, 13641985, 9640763, 6427175],
+            [2025, 12, 16100000, "2025-03-17", "2025-03-17", 0.2, 14866985, 9660000, 6440000],
+            [2025, 13, 16100000, "2025-03-24", "2025-03-24", 0.0, 16066985, 9660000, 6440000]
         ];
 
-        // Calculate KPIs
-        const totalDownloads = downloadData.reduce((sum, item) => sum + item.downloads, 0);
-        const avgDownloads = Math.round(totalDownloads / downloadData.length);
-        const peakDownloads = Math.max(...downloadData.map(item => item.downloads));
-        
-        // Calculate growth rate (comparing 2024 vs 2023)
-        const downloads2023 = downloadData
-            .filter(item => item.date.startsWith('2023'))
-            .reduce((sum, item) => sum + item.downloads, 0);
-        
-        const downloads2024 = downloadData
-            .filter(item => item.date.startsWith('2024'))
-            .reduce((sum, item) => sum + item.downloads, 0);
-        
-        const growthRate = ((downloads2024 - downloads2023) / downloads2023 * 100).toFixed(2);
+        // Calculate summary statistics
+        const totalDownloads = weeklyData.reduce((sum, row) => sum + row[2], 0);
+        const avgWeeklyDownloads = Math.round(totalDownloads / weeklyData.length);
+        const peakWeeklyDownloads = Math.max(...weeklyData.map(row => row[2]));
+        const totalIOS = weeklyData.reduce((sum, row) => sum + row[7], 0);
+        const totalAndroid = weeklyData.reduce((sum, row) => sum + row[8], 0);
+        const iosPercentage = Math.round((totalIOS / totalDownloads) * 100);
+        const androidPercentage = Math.round((totalAndroid / totalDownloads) * 100);
 
         // Update KPI values
         document.getElementById('total-downloads').textContent = totalDownloads.toLocaleString();
-        document.getElementById('avg-downloads').textContent = avgDownloads.toLocaleString();
-        document.getElementById('peak-downloads').textContent = peakDownloads.toLocaleString();
-        document.getElementById('growth-rate').textContent = `${growthRate}%`;
+        document.getElementById('avg-weekly-downloads').textContent = avgWeeklyDownloads.toLocaleString();
+        document.getElementById('peak-weekly-downloads').textContent = peakWeeklyDownloads.toLocaleString();
+        document.getElementById('platform-ratio').textContent = `${iosPercentage}% iOS / ${androidPercentage}% Android`;
 
         // Prepare data for charts
-        const dates = downloadData.map(item => item.date);
-        const downloads = downloadData.map(item => item.downloads);
+        const dates = weeklyData.map(row => row[4]);
+        const downloads = weeklyData.map(row => row[2]);
+        const iosDownloads = weeklyData.map(row => row[7]);
+        const androidDownloads = weeklyData.map(row => row[8]);
+        const growthRates = weeklyData.map(row => row[5]).filter(rate => rate !== null);
+        const growthDates = weeklyData.filter(row => row[5] !== null).map(row => row[4]);
 
-        // Prepare quarterly data
-        const quarterlyData = [];
-        const quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
-        
-        for (let year = 2023; year <= 2025; year++) {
-            for (let quarter = 1; quarter <= 4; quarter++) {
-                // Skip Q1 2023 (app launched in May 2023)
-                if (year === 2023 && quarter === 1) continue;
-                
-                // Skip Q2-Q4 2025 (data only until March 2025)
-                if (year === 2025 && quarter > 1) continue;
-                
-                const startMonth = (quarter - 1) * 3 + 1;
-                const endMonth = quarter * 3;
-                
-                let quarterSum = 0;
-                for (let month = startMonth; month <= endMonth; month++) {
-                    const monthStr = month < 10 ? `0${month}` : `${month}`;
-                    const dateStr = `${year}-${monthStr}`;
-                    
-                    const monthData = downloadData.find(item => item.date === dateStr);
-                    if (monthData) {
-                        quarterSum += monthData.downloads;
-                    }
-                }
-                
-                quarterlyData.push({
-                    quarter: `${year} ${quarters[quarter-1]}`,
-                    downloads: quarterSum
-                });
-            }
-        }
+        // Initialize ECharts instances
+        const weeklyTrendChart = echarts.init(document.getElementById('weekly-trend-chart'));
+        const platformChart = echarts.init(document.getElementById('platform-chart'));
+        const growthChart = echarts.init(document.getElementById('growth-chart'));
 
-        // Prepare yearly data
-        const yearlyData = [];
-        for (let year = 2023; year <= 2025; year++) {
-            const yearSum = downloadData
-                .filter(item => item.date.startsWith(`${year}`))
-                .reduce((sum, item) => sum + item.downloads, 0);
-            
-            yearlyData.push({
-                year: year.toString(),
-                downloads: yearSum
-            });
-        }
-
-        // Prepare platform comparison data (estimated based on market trends)
-        // iOS typically has higher downloads for ChatGPT
-        const platformData = [
-            { platform: 'iOS', downloads: Math.round(totalDownloads * 0.6) },
-            { platform: 'Android', downloads: Math.round(totalDownloads * 0.4) }
-        ];
-
-        // Initialize Monthly Trend Chart
-        const monthlyTrendChart = echarts.init(document.getElementById('monthly-trend-chart'));
-        const monthlyTrendOption = {
+        // Weekly trend chart
+        weeklyTrendChart.setOption({
             title: {
-                text: 'Monthly Download Trend',
-                left: 'center'
+                text: 'ChatGPT Mobile App Weekly Downloads'
             },
             tooltip: {
                 trigger: 'axis',
                 formatter: function(params) {
-                    return `${params[0].name}<br/>${params[0].seriesName}: ${params[0].value.toLocaleString()}`;
+                    const date = params[0].axisValue;
+                    const downloads = params[0].data.toLocaleString();
+                    return `${date}<br/>Downloads: ${downloads}`;
                 }
             },
             xAxis: {
                 type: 'category',
                 data: dates,
+                axisLabel: {
+                    rotate: 45,
+                    interval: 4
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Downloads',
+                axisLabel: {
+                    formatter: function(value) {
+                        return (value / 1000000).toFixed(1) + 'M';
+                    }
+                }
+            },
+            series: [{
+                name: 'Weekly Downloads',
+                type: 'line',
+                data: downloads,
+                smooth: true,
+                lineStyle: {
+                    width: 3,
+                    color: '#10a37f'
+                },
+                areaStyle: {
+                    color: {
+                        type: 'linear',
+                        x: 0,
+                        y: 0,
+                        x2: 0,
+                        y2: 1,
+                        colorStops: [{
+                            offset: 0,
+                            color: 'rgba(16, 163, 127, 0.5)'
+                        }, {
+                            offset: 1,
+                            color: 'rgba(16, 163, 127, 0.1)'
+                        }]
+                    }
+                },
+                markPoint: {
+                    data: [
+                        { type: 'max', name: 'Max' }
+                    ]
+                }
+            }]
+        });
+
+        // Platform comparison chart
+        platformChart.setOption({
+            title: {
+                text: 'iOS vs Android Downloads'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            legend: {
+                data: ['iOS', 'Android']
+            },
+            xAxis: {
+                type: 'category',
+                data: dates.filter((_, i) => i % 4 === 0),
                 axisLabel: {
                     rotate: 45,
                     interval: 1
@@ -317,233 +377,97 @@
                     }
                 }
             },
+            series: [
+                {
+                    name: 'iOS',
+                    type: 'bar',
+                    stack: 'total',
+                    data: iosDownloads.filter((_, i) => i % 4 === 0),
+                    color: '#10a37f'
+                },
+                {
+                    name: 'Android',
+                    type: 'bar',
+                    stack: 'total',
+                    data: androidDownloads.filter((_, i) => i % 4 === 0),
+                    color: '#74b9ff'
+                }
+            ]
+        });
+
+        // Growth rate chart
+        growthChart.setOption({
+            title: {
+                text: 'Weekly Growth Rate (%)'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            xAxis: {
+                type: 'category',
+                data: growthDates,
+                axisLabel: {
+                    rotate: 45,
+                    interval: 4
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Growth Rate (%)',
+                axisLabel: {
+                    formatter: '{value}%'
+                }
+            },
             series: [{
-                name: 'Downloads',
-                data: downloads,
+                name: 'Growth Rate',
                 type: 'line',
+                data: growthRates,
                 smooth: true,
                 lineStyle: {
-                    width: 3,
-                    color: '#3498db'
+                    width: 2,
+                    color: '#ff7675'
                 },
-                areaStyle: {
-                    color: {
-                        type: 'linear',
-                        x: 0,
-                        y: 0,
-                        x2: 0,
-                        y2: 1,
-                        colorStops: [{
-                            offset: 0,
-                            color: 'rgba(52, 152, 219, 0.5)'
-                        }, {
-                            offset: 1,
-                            color: 'rgba(52, 152, 219, 0.1)'
-                        }]
-                    }
-                },
-                markPoint: {
+                markLine: {
                     data: [
-                        { type: 'max', name: 'Max' },
-                        { type: 'min', name: 'Min' }
+                        { type: 'average', name: 'Average' }
                     ]
                 }
             }]
-        };
-        monthlyTrendChart.setOption(monthlyTrendOption);
-
-        // Initialize Quarterly Chart
-        const quarterlyChart = echarts.init(document.getElementById('quarterly-chart'));
-        const quarterlyOption = {
-            title: {
-                text: 'Quarterly Download Analysis',
-                left: 'center'
-            },
-            tooltip: {
-                trigger: 'axis',
-                formatter: function(params) {
-                    return `${params[0].name}<br/>${params[0].seriesName}: ${params[0].value.toLocaleString()}`;
-                }
-            },
-            xAxis: {
-                type: 'category',
-                data: quarterlyData.map(item => item.quarter)
-            },
-            yAxis: {
-                type: 'value',
-                name: 'Downloads',
-                axisLabel: {
-                    formatter: function(value) {
-                        return (value / 1000000).toFixed(1) + 'M';
-                    }
-                }
-            },
-            series: [{
-                name: 'Downloads',
-                data: quarterlyData.map(item => item.downloads),
-                type: 'bar',
-                barWidth: '60%',
-                itemStyle: {
-                    color: '#2ecc71'
-                },
-                label: {
-                    show: true,
-                    position: 'top',
-                    formatter: function(params) {
-                        return (params.value / 1000000).toFixed(1) + 'M';
-                    }
-                }
-            }]
-        };
-        quarterlyChart.setOption(quarterlyOption);
-
-        // Initialize Platform Comparison Chart
-        const platformChart = echarts.init(document.getElementById('platform-comparison-chart'));
-        const platformOption = {
-            title: {
-                text: 'Downloads by Platform (Estimated)',
-                left: 'center'
-            },
-            tooltip: {
-                trigger: 'item',
-                formatter: function(params) {
-                    return `${params.name}: ${params.value.toLocaleString()} (${params.percent}%)`;
-                }
-            },
-            legend: {
-                orient: 'vertical',
-                left: 'left',
-                top: 'middle'
-            },
-            series: [{
-                name: 'Platform',
-                type: 'pie',
-                radius: '70%',
-                center: ['50%', '50%'],
-                data: platformData.map(item => ({
-                    name: item.platform,
-                    value: item.downloads
-                })),
-                emphasis: {
-                    itemStyle: {
-                        shadowBlur: 10,
-                        shadowOffsetX: 0,
-                        shadowColor: 'rgba(0, 0, 0, 0.5)'
-                    }
-                },
-                label: {
-                    formatter: '{b}: {d}%'
-                }
-            }]
-        };
-        platformChart.setOption(platformOption);
-
-        // Initialize Yearly Comparison Chart
-        const yearlyChart = echarts.init(document.getElementById('yearly-comparison-chart'));
-        const yearlyOption = {
-            title: {
-                text: 'Yearly Download Comparison',
-                left: 'center'
-            },
-            tooltip: {
-                trigger: 'axis',
-                formatter: function(params) {
-                    return `${params[0].name}<br/>${params[0].seriesName}: ${params[0].value.toLocaleString()}`;
-                }
-            },
-            xAxis: {
-                type: 'category',
-                data: yearlyData.map(item => item.year)
-            },
-            yAxis: {
-                type: 'value',
-                name: 'Downloads',
-                axisLabel: {
-                    formatter: function(value) {
-                        return (value / 1000000).toFixed(0) + 'M';
-                    }
-                }
-            },
-            series: [{
-                name: 'Downloads',
-                data: yearlyData.map(item => item.downloads),
-                type: 'bar',
-                barWidth: '60%',
-                itemStyle: {
-                    color: '#9b59b6'
-                },
-                label: {
-                    show: true,
-                    position: 'top',
-                    formatter: function(params) {
-                        return (params.value / 1000000).toFixed(1) + 'M';
-                    }
-                }
-            }]
-        };
-        yearlyChart.setOption(yearlyOption);
-
-        // Populate detailed table
-        const tableBody = document.getElementById('table-body');
-        let previousMonthDownloads = null;
-        
-        downloadData.forEach((item, index) => {
-            const row = document.createElement('tr');
-            
-            // Date
-            const dateCell = document.createElement('td');
-            dateCell.textContent = item.date;
-            row.appendChild(dateCell);
-            
-            // Downloads
-            const downloadsCell = document.createElement('td');
-            downloadsCell.textContent = item.downloads.toLocaleString();
-            row.appendChild(downloadsCell);
-            
-            // Month-over-Month Change
-            const momCell = document.createElement('td');
-            if (previousMonthDownloads !== null) {
-                const momChange = ((item.downloads - previousMonthDownloads) / previousMonthDownloads * 100).toFixed(2);
-                momCell.textContent = `${momChange}%`;
-                
-                if (parseFloat(momChange) > 0) {
-                    momCell.style.color = 'green';
-                } else if (parseFloat(momChange) < 0) {
-                    momCell.style.color = 'red';
-                }
-            } else {
-                momCell.textContent = 'N/A';
-            }
-            row.appendChild(momCell);
-            
-            // Year-over-Year Change
-            const yoyCell = document.createElement('td');
-            const yearAgoIndex = index - 12;
-            if (yearAgoIndex >= 0) {
-                const yearAgoDownloads = downloadData[yearAgoIndex].downloads;
-                const yoyChange = ((item.downloads - yearAgoDownloads) / yearAgoDownloads * 100).toFixed(2);
-                yoyCell.textContent = `${yoyChange}%`;
-                
-                if (parseFloat(yoyChange) > 0) {
-                    yoyCell.style.color = 'green';
-                } else if (parseFloat(yoyChange) < 0) {
-                    yoyCell.style.color = 'red';
-                }
-            } else {
-                yoyCell.textContent = 'N/A';
-            }
-            row.appendChild(yoyCell);
-            
-            tableBody.appendChild(row);
-            previousMonthDownloads = item.downloads;
         });
 
-        // Resize charts when window is resized
+        // Populate data table
+        const tableBody = document.getElementById('table-body');
+        weeklyData.forEach(row => {
+            const tr = document.createElement('tr');
+            
+            const weekCell = document.createElement('td');
+            weekCell.textContent = row[4];
+            tr.appendChild(weekCell);
+            
+            const downloadsCell = document.createElement('td');
+            downloadsCell.textContent = row[2].toLocaleString();
+            tr.appendChild(downloadsCell);
+            
+            const iosCell = document.createElement('td');
+            iosCell.textContent = row[7].toLocaleString();
+            tr.appendChild(iosCell);
+            
+            const androidCell = document.createElement('td');
+            androidCell.textContent = row[8].toLocaleString();
+            tr.appendChild(androidCell);
+            
+            const growthCell = document.createElement('td');
+            growthCell.textContent = row[5] !== null ? row[5].toFixed(2) + '%' : 'N/A';
+            tr.appendChild(growthCell);
+            
+            tableBody.appendChild(tr);
+        });
+
+        // Handle window resize
         window.addEventListener('resize', function() {
-            monthlyTrendChart.resize();
-            quarterlyChart.resize();
+            weeklyTrendChart.resize();
             platformChart.resize();
-            yearlyChart.resize();
+            growthChart.resize();
         });
     </script>
 
