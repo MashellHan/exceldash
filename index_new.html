@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>URL Renderer</title>
+  <!-- Office.js - 确保在 Office 环境中正确加载 -->
+  <script src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
   <style>
     * {
       margin: 0;
@@ -15,6 +17,28 @@
       height: 100%;
       overflow: hidden;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    /* 确保页面能够获取焦点 */
+    html {
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    
+    body {
+      position: relative;
+      -webkit-overflow-scrolling: touch;
+      cursor: default;
+    }
+    
+    /* 添加可聚焦属性 */
+    body[tabindex] {
+      outline: none;
     }
     
     .container {
@@ -39,14 +63,14 @@
       display: block;
     }
     
-    /* Focus overlay for iframe activation */
+    /* 简化的焦点覆盖层 */
     .focus-overlay {
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.02);
+      background: transparent;
       z-index: 10;
       cursor: pointer;
       display: flex;
@@ -55,13 +79,12 @@
       transition: all 0.3s ease;
     }
     
-    .focus-overlay:hover {
-      background: rgba(0, 0, 0, 0.05);
+    .focus-overlay.active {
+      background: rgba(0, 122, 204, 0.1);
     }
     
     .focus-overlay.hidden {
-      opacity: 0;
-      pointer-events: none;
+      display: none;
     }
     
     .focus-hint {
@@ -72,14 +95,17 @@
       color: #007acc;
       font-weight: 600;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      animation: pulse 2s infinite;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 0.3s ease;
       user-select: none;
+      pointer-events: none;
     }
     
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
+    .focus-overlay.show-hint .focus-hint {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
     }
     
     .loading {
@@ -140,28 +166,27 @@
       margin-bottom: 15px;
     }
     
-    /* Focus helper for better accessibility */
-    .focus-helper {
+    /* 状态指示器 */
+    .status-indicator {
       position: absolute;
-      top: 10px;
+      bottom: 10px;
       right: 10px;
-      background: rgba(0, 122, 204, 0.1);
-      border: 1px solid #007acc;
-      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
       padding: 5px 10px;
+      border-radius: 4px;
       font-size: 12px;
-      color: #007acc;
-      z-index: 15;
+      z-index: 25;
       opacity: 0;
       transition: opacity 0.3s ease;
     }
     
-    .focus-helper.visible {
+    .status-indicator.visible {
       opacity: 1;
     }
   </style>
 </head>
-<body>
+<body tabindex="0">
   <div class="container">
     <div class="iframe-container" id="iframeContainer">
       <div class="loading" id="loading">
@@ -169,16 +194,16 @@
         <div>Loading content...</div>
       </div>
       
-      <!-- Focus overlay to help iframe get focus -->
+      <!-- 简化的焦点覆盖层 -->
       <div class="focus-overlay" id="focusOverlay">
         <div class="focus-hint">
           👆 Click to activate content
         </div>
       </div>
       
-      <!-- Focus helper indicator -->
-      <div class="focus-helper" id="focusHelper">
-        Click to focus iframe
+      <!-- 状态指示器 -->
+      <div class="status-indicator" id="statusIndicator">
+        Initializing...
       </div>
     </div>
   </div>
@@ -189,9 +214,93 @@
     
     let currentIframe = null;
     let focusOverlay = null;
-    let focusHelper = null;
+    let statusIndicator = null;
     let isIframeFocused = false;
-    let interactionTimeout = null;
+    let isOfficeEnvironment = false;
+    let pageInitialized = false;
+    
+    // 日志功能
+    function debugLog(message, data = null) {
+      const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
+      console.log(`[${timestamp}] ${message}`, data || '');
+      
+      if (statusIndicator) {
+        statusIndicator.textContent = message;
+        statusIndicator.classList.add('visible');
+        setTimeout(() => {
+          statusIndicator.classList.remove('visible');
+        }, 3000);
+      }
+    }
+    
+    // 检查 Office.js 环境
+    function checkOfficeEnvironment() {
+      if (typeof Office !== 'undefined') {
+        debugLog('Office.js detected - running in Office environment');
+        return true;
+      } else {
+        debugLog('Running in standalone browser mode');
+        return false;
+      }
+    }
+    
+    // Office.js 初始化（如果可用）
+    if (typeof Office !== 'undefined') {
+      Office.onReady((info) => {
+        isOfficeEnvironment = true;
+        debugLog('Office.js initialized', {
+          host: info.host,
+          platform: info.platform
+        });
+        
+        // 确保页面能够接收焦点
+        ensurePageFocus();
+        initializeApp();
+      });
+    } else {
+      // 非 Office 环境直接初始化
+      debugLog('Non-Office environment - direct initialization');
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeApp);
+      } else {
+        initializeApp();
+      }
+    }
+    
+    // 确保页面能够获取焦点
+    function ensurePageFocus() {
+      debugLog('Ensuring page focus capability...');
+      
+      // 设置页面为可聚焦
+      document.body.setAttribute('tabindex', '0');
+      document.body.focus();
+      
+      // 添加页面级别的事件监听器
+      document.addEventListener('click', () => {
+        debugLog('Page clicked - ensuring focus');
+        document.body.focus();
+      }, true);
+      
+      document.addEventListener('mousedown', () => {
+        debugLog('Page mousedown - ensuring focus');
+        document.body.focus();
+      }, true);
+      
+      // 键盘事件监听
+      document.addEventListener('keydown', (e) => {
+        debugLog('Page keydown detected', e.key);
+      });
+      
+      // 窗口焦点事件
+      window.addEventListener('focus', () => {
+        debugLog('Window gained focus');
+        if (currentIframe && !isIframeFocused) {
+          setTimeout(() => attemptIframeFocus(), 100);
+        }
+      });
+      
+      debugLog('Page focus handlers established');
+    }
     
     // Get target URL from various sources
     function getTargetUrl() {
@@ -235,7 +344,7 @@
           <div>${message}</div>
         </div>
       `;
-      console.error('Error:', message);
+      debugLog('Error displayed: ' + message);
     }
     
     // Show placeholder
@@ -249,209 +358,78 @@
       `;
     }
     
-    // Focus iframe and hide overlay
-    function focusIframe() {
-      if (currentIframe) {
-        try {
-          // Multiple focus attempts for better compatibility
-          currentIframe.focus();
-          
-          // Try to focus the iframe content window
-          if (currentIframe.contentWindow) {
+    // 尝试聚焦 iframe
+    function attemptIframeFocus() {
+      if (!currentIframe) return;
+      
+      debugLog('Attempting to focus iframe...');
+      
+      try {
+        // 确保页面先有焦点
+        document.body.focus();
+        
+        // 然后聚焦 iframe
+        currentIframe.focus();
+        
+        // 尝试聚焦 iframe 内容窗口
+        if (currentIframe.contentWindow) {
+          try {
             currentIframe.contentWindow.focus();
+          } catch (e) {
+            debugLog('Cannot focus iframe contentWindow due to CORS');
           }
-          
-          // Try to dispatch focus events
-          currentIframe.dispatchEvent(new FocusEvent('focus', { bubbles: true }));
-          
-          isIframeFocused = true;
-          console.log('Iframe focused successfully');
-          
-          // Hide focus overlay after successful focus
-          if (focusOverlay) {
-            focusOverlay.classList.add('hidden');
-            setTimeout(() => {
-              focusOverlay.style.display = 'none';
-            }, 300);
-          }
-          
-          // Hide focus helper
-          if (focusHelper) {
-            focusHelper.classList.remove('visible');
-          }
-          
-        } catch (error) {
-          console.warn('Failed to focus iframe:', error);
         }
+        
+        isIframeFocused = true;
+        debugLog('Iframe focus attempt completed');
+        
+        // 隐藏焦点覆盖层
+        if (focusOverlay) {
+          focusOverlay.classList.add('hidden');
+        }
+        
+      } catch (error) {
+        debugLog('Failed to focus iframe', error.message);
       }
     }
     
-    // Setup focus handling for iframe
-    function setupIframeFocus() {
-      if (!currentIframe) return;
-      
-      // Setup focus overlay click handler
+    // 设置焦点覆盖层
+    function setupFocusOverlay() {
       focusOverlay = document.getElementById('focusOverlay');
-      focusHelper = document.getElementById('focusHelper');
       
       if (focusOverlay) {
+        debugLog('Setting up focus overlay...');
+        
+        // 点击事件
         focusOverlay.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();
-          focusIframe();
+          debugLog('Focus overlay clicked');
+          attemptIframeFocus();
         });
         
-        // Auto-hide overlay after some time
+        // 鼠标悬停显示提示
+        focusOverlay.addEventListener('mouseenter', () => {
+          focusOverlay.classList.add('show-hint');
+        });
+        
+        focusOverlay.addEventListener('mouseleave', () => {
+          focusOverlay.classList.remove('show-hint');
+        });
+        
+        // 5秒后自动显示提示
         setTimeout(() => {
-          if (focusOverlay && !isIframeFocused) {
-            focusHelper.classList.add('visible');
+          if (!isIframeFocused && focusOverlay) {
+            focusOverlay.classList.add('show-hint');
+            debugLog('Auto-showing focus hint');
           }
-        }, 3000);
-      }
-      
-      // Monitor iframe focus state
-      currentIframe.addEventListener('focus', () => {
-        isIframeFocused = true;
-        console.log('Iframe received focus');
-      });
-      
-      currentIframe.addEventListener('blur', () => {
-        isIframeFocused = false;
-        console.log('Iframe lost focus');
-      });
-      
-      // Try to auto-focus after load
-      currentIframe.addEventListener('load', () => {
-        setTimeout(() => {
-          if (!isIframeFocused) {
-            attemptAutoFocus();
-          }
-        }, 500);
-      });
-      
-      // Setup interaction detection
-      setupInteractionDetection();
-    }
-    
-    // Attempt automatic focus with various strategies
-    function attemptAutoFocus() {
-      console.log('Attempting auto-focus...');
-      
-      // Strategy 1: Direct focus
-      setTimeout(() => focusIframe(), 100);
-      
-      // Strategy 2: Simulated user interaction
-      setTimeout(() => {
-        if (!isIframeFocused) {
-          simulateUserInteraction();
-        }
-      }, 500);
-      
-      // Strategy 3: Focus with tabindex
-      setTimeout(() => {
-        if (!isIframeFocused && currentIframe) {
-          currentIframe.setAttribute('tabindex', '0');
-          currentIframe.focus();
-        }
-      }, 1000);
-      
-      // Strategy 4: Mouse event simulation
-      setTimeout(() => {
-        if (!isIframeFocused) {
-          simulateMouseClick();
-        }
-      }, 1500);
-    }
-    
-    // Simulate user interaction to trigger focus
-    function simulateUserInteraction() {
-      if (!currentIframe) return;
-      
-      try {
-        // Create and dispatch a mouse event
-        const mouseEvent = new MouseEvent('mousedown', {
-          bubbles: true,
-          cancelable: true,
-          clientX: 100,
-          clientY: 100
-        });
-        
-        currentIframe.dispatchEvent(mouseEvent);
-        
-        setTimeout(() => {
-          const mouseUpEvent = new MouseEvent('mouseup', {
-            bubbles: true,
-            cancelable: true,
-            clientX: 100,
-            clientY: 100
-          });
-          currentIframe.dispatchEvent(mouseUpEvent);
-          focusIframe();
-        }, 50);
-        
-        console.log('Simulated user interaction');
-      } catch (error) {
-        console.warn('Failed to simulate user interaction:', error);
-      }
-    }
-    
-    // Simulate mouse click to activate iframe
-    function simulateMouseClick() {
-      if (!currentIframe) return;
-      
-      try {
-        const rect = currentIframe.getBoundingClientRect();
-        const clickEvent = new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-          clientX: rect.left + rect.width / 2,
-          clientY: rect.top + rect.height / 2
-        });
-        
-        currentIframe.dispatchEvent(clickEvent);
-        focusIframe();
-        
-        console.log('Simulated mouse click on iframe');
-      } catch (error) {
-        console.warn('Failed to simulate mouse click:', error);
-      }
-    }
-    
-    // Setup interaction detection
-    function setupInteractionDetection() {
-      // Listen for any user interaction on the page
-      const interactionEvents = ['mousedown', 'touchstart', 'keydown'];
-      
-      interactionEvents.forEach(eventType => {
-        document.addEventListener(eventType, () => {
-          if (!isIframeFocused && currentIframe) {
-            // Clear any existing timeout
-            if (interactionTimeout) {
-              clearTimeout(interactionTimeout);
-            }
-            
-            // Focus iframe after a short delay
-            interactionTimeout = setTimeout(() => {
-              focusIframe();
-            }, 100);
-          }
-        }, { passive: true });
-      });
-      
-      // Listen for iframe container interactions
-      const iframeContainer = document.getElementById('iframeContainer');
-      if (iframeContainer) {
-        iframeContainer.addEventListener('click', (e) => {
-          if (e.target !== currentIframe && !isIframeFocused) {
-            focusIframe();
-          }
-        });
+        }, 5000);
       }
     }
     
     // Load URL in iframe
     function loadUrl(url) {
-      console.log('Loading URL:', url);
+      debugLog('Loading URL: ' + url);
       
       if (!isValidUrl(url)) {
         showError(`Invalid URL: ${url}`);
@@ -471,7 +449,7 @@
       currentIframe.src = url;
       currentIframe.style.display = 'none';
       
-      // Set iframe attributes for better compatibility and focus
+      // 设置 iframe 属性
       currentIframe.setAttribute('allow', 'autoplay; camera; microphone; geolocation; fullscreen');
       currentIframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-top-navigation-by-user-activation allow-pointer-lock');
       currentIframe.setAttribute('tabindex', '0');
@@ -482,10 +460,17 @@
       currentIframe.onload = () => {
         loading.style.display = 'none';
         currentIframe.style.display = 'block';
-        console.log('Content loaded successfully:', url);
+        debugLog('Content loaded successfully');
         
-        // Setup focus handling after load
-        setupIframeFocus();
+        // 设置焦点处理
+        setupFocusOverlay();
+        
+        // 自动尝试聚焦
+        setTimeout(() => {
+          if (!isIframeFocused) {
+            attemptIframeFocus();
+          }
+        }, 1000);
       };
       
       // Handle iframe error
@@ -494,14 +479,25 @@
         showError(`Failed to load content: ${url}`);
       };
       
+      // 监听 iframe 焦点事件
+      currentIframe.addEventListener('focus', () => {
+        isIframeFocused = true;
+        debugLog('Iframe gained focus');
+      });
+      
+      currentIframe.addEventListener('blur', () => {
+        isIframeFocused = false;
+        debugLog('Iframe lost focus');
+      });
+      
       // Handle load timeout
       const loadTimeout = setTimeout(() => {
         if (loading.style.display !== 'none') {
           loading.style.display = 'none';
           if (currentIframe.style.display === 'none') {
             currentIframe.style.display = 'block';
-            console.log('Content loaded with potential issues:', url);
-            setupIframeFocus();
+            debugLog('Content loaded with timeout');
+            setupFocusOverlay();
           }
         }
       }, 10000); // 10 second timeout
@@ -516,12 +512,23 @@
     
     // Initialize app
     function initializeApp() {
+      if (pageInitialized) return;
+      pageInitialized = true;
+      
+      debugLog('Initializing application...');
+      
+      // 获取状态指示器引用
+      statusIndicator = document.getElementById('statusIndicator');
+      
+      // 确保页面焦点
+      if (!isOfficeEnvironment) {
+        ensurePageFocus();
+      }
+      
       const targetUrl = getTargetUrl();
       
-      console.log('Target URL:', targetUrl);
-      console.log('Page URL:', window.location.href);
-      console.log('URL Parameters:', Object.fromEntries(new URLSearchParams(window.location.search)));
-      console.log('Hash Fragment:', window.location.hash);
+      debugLog('Target URL: ' + targetUrl);
+      debugLog('Office Environment: ' + isOfficeEnvironment);
       
       if (targetUrl) {
         loadUrl(targetUrl);
@@ -541,19 +548,21 @@
       }
     });
     
-    // Handle page focus events
-    window.addEventListener('focus', () => {
-      if (currentIframe && !isIframeFocused) {
-        setTimeout(() => focusIframe(), 100);
+    // 添加全局点击监听器来确保焦点
+    document.addEventListener('click', (e) => {
+      debugLog('Document clicked');
+      if (!isIframeFocused && currentIframe) {
+        setTimeout(() => attemptIframeFocus(), 100);
+      }
+    }, true);
+    
+    // 页面可见性变化处理
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && currentIframe && !isIframeFocused) {
+        debugLog('Page became visible - attempting iframe focus');
+        setTimeout(() => attemptIframeFocus(), 500);
       }
     });
-    
-    // Start the app when DOM is ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initializeApp);
-    } else {
-      initializeApp();
-    }
   </script>
 </body>
 </html>
