@@ -136,8 +136,10 @@
       // Try to get from Office Add-in settings
       if (isOfficeEnvironment) {
         console.log("office roamingsettings:", Office.context.roamingSettings);
-        const settings = Office.context.document.settings;
-        console.log("office.context.document.settings:", settings);
+        const document = Office.context.document;
+        if (document) {
+          console.log("office.context.document.settings:", document.settings);
+        }
 
         try {
           if (Office.context && Office.context.roamingSettings) {
@@ -267,8 +269,11 @@
     // Office.js initialization (if available)
     if (typeof Office !== 'undefined') {
       Office.onReady((info) => {
-        isOfficeEnvironment = true;
-        console.log('Office.js initialized:', info.host, info.platform);
+        console.log('Office.js initialized:', info, info.platform);
+        if (info.host) {
+          isOfficeEnvironment = true;
+        }
+
         initializeApp();
       });
     } else {
