@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HTML URL Renderer with Office.js Support</title>
-  <!-- Office.js -->
-  <script src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+  <title>URL Renderer</title>
   <style>
     * {
       margin: 0;
@@ -16,17 +14,14 @@
     html, body {
       height: 100%;
       overflow: hidden;
-    }
-    
-    body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f5f5f5;
     }
     
     .container {
       width: 100%;
       height: 100vh;
       position: relative;
+      background: #f5f5f5;
     }
     
     .iframe-container {
@@ -43,19 +38,14 @@
       display: block;
     }
     
-    .loading-overlay {
+    .loading {
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(255, 255, 255, 0.95);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
       color: #666;
-      z-index: 1000;
+      font-size: 16px;
     }
     
     .loading-spinner {
@@ -65,7 +55,7 @@
       width: 40px;
       height: 40px;
       animation: spin 1s linear infinite;
-      margin-right: 15px;
+      margin: 0 auto 15px;
     }
     
     @keyframes spin {
@@ -73,7 +63,7 @@
       100% { transform: rotate(360deg); }
     }
     
-    .error-message {
+    .error {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -85,7 +75,6 @@
       color: #c62828;
       text-align: center;
       max-width: 400px;
-      z-index: 1001;
     }
     
     .placeholder {
@@ -103,801 +92,48 @@
       opacity: 0.5;
       margin-bottom: 15px;
     }
-    
-    .office-bridge {
-      position: absolute;
-      top: -1000px;
-      left: -1000px;
-      width: 1px;
-      height: 1px;
-      opacity: 0;
-      pointer-events: none;
-    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="iframe-container" id="iframeContainer">
-      <div class="placeholder" id="placeholder">
-        <div class="placeholder-icon">🌐</div>
+      <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
         <div>Loading content...</div>
       </div>
-      <div class="loading-overlay" id="loadingOverlay" style="display: none;">
-        <div class="loading-spinner"></div>
-        <span>Loading content...</span>
-      </div>
     </div>
-    
-    <!-- Hidden iframe for Office.js bridge -->
-    <iframe id="officeBridge" class="office-bridge" src="about:blank"></iframe>
   </div>
 
   <script>
+    // Default URL if no parameter is provided
+    const DEFAULT_URL = 'https://mashellhan.github.io/exceldash/index.html';
+    
     let currentIframe = null;
-    let isOfficeEnvironment = false;
-    let officeContext = null;
-    let messageQueue = [];
-    let appSettings = new Map();
     
-    // Default URL to load if no parameter is provided
-    const DEFAULT_URL = 'https://www.example.com';
-    
-    // Office.js bridge for iframe communication
-    let officeBridge = {
-      workbook: null,
-      worksheets: null,
-      bindings: new Map(),
-      
-      // Initialize Office context
-      async initialize() {
-        if (typeof Office !== 'undefined' && Office.context) {
-          this.workbook = Office.context.workbook;
-          if (this.workbook) {
-            this.worksheets = this.workbook.worksheets;
-          }
-          return true;
-        }
-        return false;
-      },
-      
-      // Get selected range data
-      async getSelectedData() {
-        return new Promise((resolve, reject) => {
-          try {
-            Office.context.document.getSelectedDataAsync(
-              Office.CoercionType.Matrix,
-              (result) => {
-                if (result.status === Office.AsyncResultStatus.Succeeded) {
-                  resolve(result.value);
-                } else {
-                  reject(new Error(result.error.message));
-                }
-              }
-            );
-          } catch (error) {
-            reject(error);
-          }
-        });
-      },
-      
-      // Set data to selected range
-      async setSelectedData(data) {
-        return new Promise((resolve, reject) => {
-          try {
-            Office.context.document.setSelectedDataAsync(
-              data,
-              { coercionType: Office.CoercionType.Matrix },
-              (result) => {
-                if (result.status === Office.AsyncResultStatus.Succeeded) {
-                  resolve(true);
-                } else {
-                  reject(new Error(result.error.message));
-                }
-              }
-            );
-          } catch (error) {
-            reject(error);
-          }
-        });
-      },
-      
-      // Create binding to range
-      async createBinding(id, range) {
-        return new Promise((resolve, reject) => {
-          try {
-            const bindingType = range ? Office.BindingType.Matrix : Office.BindingType.Matrix;
-            const options = range ? { id: id, columns: range.columns, rows: range.rows } : { id: id };
-            
-            Office.context.document.bindings.addFromSelectionAsync(
-              bindingType,
-              options,
-              (result) => {
-                if (result.status === Office.AsyncResultStatus.Succeeded) {
-                  this.bindings.set(id, result.value);
-                  resolve(result.value);
-                } else {
-                  reject(new Error(result.error.message));
-                }
-              }
-            );
-          } catch (error) {
-            reject(error);
-          }
-        });
-      },
-      
-      // Get binding data
-      async getBindingData(id) {
-        return new Promise((resolve, reject) => {
-          try {
-            const binding = this.bindings.get(id);
-            if (!binding) {
-              reject(new Error(`Binding ${id} not found`));
-              return;
-            }
-            
-            binding.getDataAsync({ coercionType: Office.CoercionType.Matrix }, (result) => {
-              if (result.status === Office.AsyncResultStatus.Succeeded) {
-                resolve(result.value);
-              } else {
-                reject(new Error(result.error.message));
-              }
-            });
-          } catch (error) {
-            reject(error);
-          }
-        });
-      },
-      
-      // Add event handler to binding
-      async addBindingEventHandler(id, eventType, handler) {
-        try {
-          const binding = this.bindings.get(id);
-          if (binding) {
-            binding.addHandlerAsync(eventType, handler);
-            return true;
-          }
-          return false;
-        } catch (error) {
-          console.error('Error adding binding event handler:', error);
-          return false;
-        }
-      }
-    };
-    
-    // Function to load app settings from manifest
-    async function loadAppSettings() {
-      if (!isOfficeEnvironment || !Office.context.roamingSettings) {
-        console.log('App settings not available - using URL parameters only');
-        return;
-      }
-      
-      try {
-        // Try to get settings from Office.context.roamingSettings
-        const settings = Office.context.roamingSettings;
-        
-        // Read predefined settings from manifest
-        const settingNames = [
-          'targetUrl', 'dashboardMode', 'dataSource', 
-          'theme', 'autoRefresh', 'refreshInterval'
-        ];
-        
-        settingNames.forEach(name => {
-          const value = settings.get(name);
-          if (value !== null && value !== undefined) {
-            appSettings.set(name, value);
-            console.log(`Loaded app setting: ${name} = ${value}`);
-          }
-        });
-        
-        // Also check for custom settings passed via document properties
-        if (Office.context.document && Office.context.document.settings) {
-          const docSettings = Office.context.document.settings;
-          settingNames.forEach(name => {
-            const value = docSettings.get(name);
-            if (value !== null && value !== undefined) {
-              appSettings.set(name, value);
-              console.log(`Loaded document setting: ${name} = ${value}`);
-            }
-          });
-        }
-        
-        // NEW: Try to get targetUrl from WebExtension properties
-        await loadWebExtensionSettings();
-        
-      } catch (error) {
-        console.warn('Error loading app settings:', error);
-      }
-    }
-    
-    // Function to load settings from WebExtension properties
-    async function loadWebExtensionSettings() {
-      try {
-        if (Office.context && Office.context.contentControls) {
-          // For content apps, try to get WebExtension properties
-          return new Promise((resolve) => {
-            Office.context.document.getSelectedDataAsync(
-              Office.CoercionType.Text,
-              { asyncContext: 'webext-props' },
-              (result) => {
-                if (result.status === Office.AsyncResultStatus.Succeeded) {
-                  // Try to extract WebExtension properties if available
-                  try {
-                    // This is a workaround to read WebExtension properties
-                    // In real scenarios, these might be available through different APIs
-                    console.log('Checking for embedded WebExtension properties...');
-                    
-                    // Check if Office provides direct access to WebExtension properties
-                    if (Office.context.officeTheme && Office.context.officeTheme.bodyBackgroundColor) {
-                      // Office context is available, try to get custom properties
-                      checkOfficeCustomProperties();
-                    }
-                  } catch (e) {
-                    console.log('WebExtension properties not directly accessible:', e.message);
-                  }
-                }
-                resolve();
-              }
-            );
-          });
-        }
-      } catch (error) {
-        console.warn('Error loading WebExtension settings:', error);
-      }
-    }
-    
-    // Function to check Office custom properties for embedded targetUrl
-    function checkOfficeCustomProperties() {
-      try {
-        // Check Office.context.document.settings for embedded values
-        if (Office.context.document && Office.context.document.settings) {
-          const docSettings = Office.context.document.settings;
-          
-          // Try common property names that might contain the embedded targetUrl
-          const possibleKeys = ['targetUrl', 'webext.targetUrl', 'addin.targetUrl', 'customUrl'];
-          possibleKeys.forEach(key => {
-            const value = docSettings.get(key);
-            if (value && isValidUrl(value)) {
-              appSettings.set('webext.targetUrl', value); // Store with webext prefix
-              console.log(`Loaded targetUrl from document settings [${key}]:`, value);
-            }
-          });
-        }
-        
-        // Try to access WebExtension context if available
-        if (Office.context && Office.context.webExtension) {
-          const webExt = Office.context.webExtension;
-          if (webExt.properties) {
-            const targetUrl = webExt.properties.get('targetUrl') || 
-                             webExt.properties.get('webext.targetUrl') ||
-                             webExt.properties.get('addin.targetUrl');
-            if (targetUrl && isValidUrl(targetUrl)) {
-              appSettings.set('webext.targetUrl', targetUrl);
-              console.log('Loaded targetUrl from WebExtension context:', targetUrl);
-            }
-          }
-        }
-        
-        // Alternative: Try to access via Office ribbon or add-in context
-        if (Office.ribbon && Office.ribbon.requestUpdate) {
-          // This is a modern Office.js approach
-          try {
-            const addInContext = Office.context.addIn;
-            if (addInContext && addInContext.config) {
-              const targetUrl = addInContext.config.targetUrl;
-              if (targetUrl && isValidUrl(targetUrl)) {
-                appSettings.set('webext.targetUrl', targetUrl);
-                console.log('Loaded targetUrl from add-in context:', targetUrl);
-              }
-            }
-          } catch (e) {
-            console.log('Modern Office.js add-in context not available:', e.message);
-          }
-        }
-        
-        // Fallback: Try window properties that might be set by the host
-        if (window.OfficeExtension && window.OfficeExtension.settings) {
-          const extSettings = window.OfficeExtension.settings;
-          const targetUrl = extSettings.targetUrl || extSettings['webext.targetUrl'] || extSettings['addin.targetUrl'];
-          if (targetUrl && isValidUrl(targetUrl)) {
-            appSettings.set('webext.targetUrl', targetUrl);
-            console.log('Loaded targetUrl from OfficeExtension settings:', targetUrl);
-          }
-        }
-        
-      } catch (error) {
-        console.warn('Error checking Office custom properties:', error);
-      }
-    }
-    
-    // Function to save app settings
-    async function saveAppSettings() {
-      if (!isOfficeEnvironment || !Office.context.roamingSettings) {
-        return;
-      }
-      
-      try {
-        const settings = Office.context.roamingSettings;
-        
-        appSettings.forEach((value, key) => {
-          settings.set(key, value);
-        });
-        
-        settings.saveAsync((result) => {
-          if (result.status === Office.AsyncResultStatus.Succeeded) {
-            console.log('App settings saved successfully');
-          } else {
-            console.error('Failed to save app settings:', result.error);
-          }
-        });
-        
-      } catch (error) {
-        console.error('Error saving app settings:', error);
-      }
-    }
-    
-    // Initialize Office.js if available
-    if (typeof Office !== 'undefined') {
-      Office.onReady(async (info) => {
-        isOfficeEnvironment = true;
-        officeContext = info;
-        console.log('Office environment detected:', info);
-        
-        // Initialize Office bridge
-        await officeBridge.initialize();
-        
-        // Load app settings from manifest
-        await loadAppSettings();
-        
-        initializeApp();
-      });
-    } else {
-      console.log('Running in standalone mode');
-      // Wait for DOM to be ready
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeApp);
-      } else {
-        initializeApp();
-      }
-    }
-    
-    function initializeApp() {
-      // Get URL from multiple sources in priority order:
-      // 1. URL parameters (?url=, ?src=, etc.)
-      // 2. Hash fragment (#https://...)
-      // 3. WebExtension embedded properties (from embed_addin_right.py)
-      // 4. App settings from manifest
-      // 5. Default URL
-      const targetUrl = getUrlFromParameters() || 
-                       getUrlFromHashFragment() ||
-                       getUrlFromWebExtensionProperties() ||
-                       getUrlFromAppSettings() || 
-                       DEFAULT_URL;
-      
-      console.log('Final target URL selected:', targetUrl);
-      console.log('URL source priority: 1=URLParams, 2=Hash, 3=WebExt, 4=AppSettings, 5=Default');
-      
-      if (targetUrl) {
-        loadUrl(targetUrl);
-      } else {
-        showError('No valid URL provided');
-      }
-      
-      // Set up message listener for iframe communication
-      setupMessageListener();
-    }
-    
-    function getUrlFromParameters() {
-      // Get URL from query parameters
+    // Get target URL from various sources
+    function getTargetUrl() {
+      // Priority 1: URL parameters
       const urlParams = new URLSearchParams(window.location.search);
+      let targetUrl = urlParams.get('targetUrl') || 
+                     urlParams.get('url') || 
+                     urlParams.get('src') || 
+                     urlParams.get('source') || 
+                     urlParams.get('link') ||
+                     urlParams.get('target');
       
-      // Check various parameter names
-      let url = urlParams.get('url') || 
-                urlParams.get('src') || 
-                urlParams.get('source') || 
-                urlParams.get('link') ||
-                urlParams.get('target');
-      
-      // Validate URL
-      if (url && isValidUrl(url)) {
-        console.log('URL found in parameters:', url);
-        return url;
-      }
-      
-      return null;
-    }
-    
-    function getUrlFromAppSettings() {
-      const targetUrl = appSettings.get('targetUrl');
-      
-      if (targetUrl && isValidUrl(targetUrl)) {
-        // Build URL with additional parameters from app settings
-        const url = new URL(targetUrl);
-        
-        // Add other settings as URL parameters
-        appSettings.forEach((value, key) => {
-          if (key !== 'targetUrl' && key !== 'webext.targetUrl' && value) {
-            url.searchParams.set(key, value);
-          }
-        });
-        
-        console.log('Built URL from app settings:', url.toString());
-        console.log('Available app settings:', Object.fromEntries(appSettings));
-        return url.toString();
-      }
-      
-      console.log('No valid targetUrl found in app settings');
-      console.log('Available app settings:', Object.fromEntries(appSettings));
-      return null;
-    }
-    
-         function getUrlFromHashFragment() {
-       // Extract URL from hash fragment
-       if (window.location.hash) {
-         const hash = window.location.hash.substring(1);
-         
-         // Validate URL
-         if (isValidUrl(hash)) {
-           console.log('URL found in hash fragment:', hash);
-           return hash;
-         }
-       }
-       
-       return null;
-     }
-     
-     function getUrlFromWebExtensionProperties() {
-       // Get URL from WebExtension properties (embedded by embed_addin_right.py)
-       const webExtUrl = appSettings.get('webext.targetUrl') || 
-                        appSettings.get('targetUrl.embedded') ||
-                        appSettings.get('addin.targetUrl');
-       
-       if (webExtUrl && isValidUrl(webExtUrl)) {
-         console.log('URL found in WebExtension properties:', webExtUrl);
-         return webExtUrl;
-       }
-       
-       return null;
-     }
-    
-    function loadUrl(url) {
-      console.log('Loading URL:', url);
-      
-      const container = document.getElementById('iframeContainer');
-      const placeholder = document.getElementById('placeholder');
-      const loadingOverlay = document.getElementById('loadingOverlay');
-      
-      // Show loading
-      placeholder.style.display = 'none';
-      loadingOverlay.style.display = 'flex';
-      hideError();
-      
-      // Remove existing iframe
-      if (currentIframe) {
-        currentIframe.remove();
-      }
-      
-      // Create new iframe with Office.js support
-      currentIframe = document.createElement('iframe');
-      currentIframe.src = url;
-      currentIframe.style.display = 'none';
-      
-      // Set iframe attributes for Office.js compatibility
-      currentIframe.setAttribute('allow', 'autoplay; camera; microphone; geolocation; clipboard-read; clipboard-write');
-      currentIframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-top-navigation-by-user-activation');
-      
-      // Add Office.js injection if needed
-      currentIframe.onload = () => {
-        loadingOverlay.style.display = 'none';
-        currentIframe.style.display = 'block';
-        console.log('Content loaded successfully:', url);
-        
-        // Try to inject Office.js support into iframe
-        injectOfficeSupport();
-      };
-      
-      currentIframe.onerror = () => {
-        loadingOverlay.style.display = 'none';
-        placeholder.style.display = 'flex';
-        showError(`Failed to load content: ${url}`);
-      };
-      
-      // Handle iframe load timeout
-      const loadTimeout = setTimeout(() => {
-        if (loadingOverlay.style.display === 'flex') {
-          loadingOverlay.style.display = 'none';
-          if (currentIframe.style.display === 'none') {
-            currentIframe.style.display = 'block';
-            console.log('Content loaded with potential issues:', url);
-            injectOfficeSupport();
-          }
+      // Priority 2: Hash fragment
+      if (!targetUrl && window.location.hash) {
+        const hash = window.location.hash.substring(1);
+        if (isValidUrl(hash)) {
+          targetUrl = hash;
         }
-      }, 15000); // 15 second timeout
-      
-      // Clear timeout when iframe loads
-      currentIframe.addEventListener('load', () => {
-        clearTimeout(loadTimeout);
-      });
-      
-      container.appendChild(currentIframe);
-    }
-    
-    function injectOfficeSupport() {
-      if (!currentIframe || !isOfficeEnvironment) {
-        return;
       }
       
-      try {
-        // Get iframe document
-        const iframeDoc = currentIframe.contentDocument || currentIframe.contentWindow.document;
-        
-        if (iframeDoc) {
-          // Check if Office.js is already loaded in iframe
-          const existingOfficeScript = iframeDoc.querySelector('script[src*="office.js"]');
-          
-          if (!existingOfficeScript) {
-            // Inject Office.js script
-            const officeScript = iframeDoc.createElement('script');
-            officeScript.src = 'https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js';
-            officeScript.onload = () => {
-              console.log('Office.js injected into iframe');
-              setupIframeBridge();
-            };
-            iframeDoc.head.appendChild(officeScript);
-          } else {
-            setupIframeBridge();
-          }
-        }
-      } catch (error) {
-        console.warn('Cannot inject Office.js due to CORS restrictions:', error);
-        // Setup message-based communication instead
-        setupMessageBridge();
-      }
+      // Priority 3: Default URL
+      return targetUrl || DEFAULT_URL;
     }
     
-    function setupIframeBridge() {
-      if (!currentIframe) return;
-      
-      try {
-        const iframeWindow = currentIframe.contentWindow;
-        
-        // Inject Office bridge functions into iframe
-        const bridgeScript = `
-          window.parentOffice = {
-            isAvailable: true,
-            context: ${JSON.stringify(officeContext)},
-            settings: ${JSON.stringify(Object.fromEntries(appSettings))},
-            
-            async getSelectedData() {
-              return new Promise((resolve, reject) => {
-                window.parent.postMessage({
-                  type: 'office-request',
-                  method: 'getSelectedData',
-                  id: Date.now()
-                }, '*');
-                
-                const handler = (event) => {
-                  if (event.data.type === 'office-response' && event.data.method === 'getSelectedData') {
-                    window.removeEventListener('message', handler);
-                    if (event.data.success) {
-                      resolve(event.data.result);
-                    } else {
-                      reject(new Error(event.data.error));
-                    }
-                  }
-                };
-                window.addEventListener('message', handler);
-              });
-            },
-            
-            async setSelectedData(data) {
-              return new Promise((resolve, reject) => {
-                window.parent.postMessage({
-                  type: 'office-request',
-                  method: 'setSelectedData',
-                  data: data,
-                  id: Date.now()
-                }, '*');
-                
-                const handler = (event) => {
-                  if (event.data.type === 'office-response' && event.data.method === 'setSelectedData') {
-                    window.removeEventListener('message', handler);
-                    if (event.data.success) {
-                      resolve(event.data.result);
-                    } else {
-                      reject(new Error(event.data.error));
-                    }
-                  }
-                };
-                window.addEventListener('message', handler);
-              });
-            },
-            
-            async createBinding(id, range) {
-              return new Promise((resolve, reject) => {
-                window.parent.postMessage({
-                  type: 'office-request',
-                  method: 'createBinding',
-                  id: Date.now(),
-                  bindingId: id,
-                  range: range
-                }, '*');
-                
-                const handler = (event) => {
-                  if (event.data.type === 'office-response' && event.data.method === 'createBinding') {
-                    window.removeEventListener('message', handler);
-                    if (event.data.success) {
-                      resolve(event.data.result);
-                    } else {
-                      reject(new Error(event.data.error));
-                    }
-                  }
-                };
-                window.addEventListener('message', handler);
-              });
-            },
-            
-            async getBindingData(id) {
-              return new Promise((resolve, reject) => {
-                window.parent.postMessage({
-                  type: 'office-request',
-                  method: 'getBindingData',
-                  bindingId: id,
-                  id: Date.now()
-                }, '*');
-                
-                const handler = (event) => {
-                  if (event.data.type === 'office-response' && event.data.method === 'getBindingData') {
-                    window.removeEventListener('message', handler);
-                    if (event.data.success) {
-                      resolve(event.data.result);
-                    } else {
-                      reject(new Error(event.data.error));
-                    }
-                  }
-                };
-                window.addEventListener('message', handler);
-              });
-            },
-            
-            // Function to update app settings
-            async updateSetting(key, value) {
-              return new Promise((resolve, reject) => {
-                window.parent.postMessage({
-                  type: 'office-request',
-                  method: 'updateSetting',
-                  key: key,
-                  value: value,
-                  id: Date.now()
-                }, '*');
-                
-                const handler = (event) => {
-                  if (event.data.type === 'office-response' && event.data.method === 'updateSetting') {
-                    window.removeEventListener('message', handler);
-                    if (event.data.success) {
-                      resolve(event.data.result);
-                    } else {
-                      reject(new Error(event.data.error));
-                    }
-                  }
-                };
-                window.addEventListener('message', handler);
-              });
-            }
-          };
-          
-          // Dispatch ready event
-          window.dispatchEvent(new CustomEvent('parentOfficeReady', { 
-            detail: window.parentOffice 
-          }));
-          
-          console.log('Parent Office bridge established with settings:', window.parentOffice.settings);
-        `;
-        
-        // Execute bridge script in iframe
-        const script = iframeWindow.document.createElement('script');
-        script.textContent = bridgeScript;
-        iframeWindow.document.head.appendChild(script);
-        
-      } catch (error) {
-        console.warn('Cannot setup iframe bridge due to CORS:', error);
-        setupMessageBridge();
-      }
-    }
-    
-    function setupMessageBridge() {
-      // Setup postMessage communication
-      console.log('Setting up message-based Office bridge');
-      
-      // Send initial message to iframe indicating Office.js availability
-      setTimeout(() => {
-        if (currentIframe && currentIframe.contentWindow) {
-          currentIframe.contentWindow.postMessage({
-            type: 'office-available',
-            context: officeContext,
-            isOfficeEnvironment: isOfficeEnvironment,
-            settings: Object.fromEntries(appSettings)
-          }, '*');
-        }
-      }, 1000);
-    }
-    
-    function setupMessageListener() {
-      window.addEventListener('message', async (event) => {
-        // Handle iframe requests for Office.js functionality
-        if (event.data.type === 'office-request') {
-          const { method, id, data, bindingId, range, key, value } = event.data;
-          
-          try {
-            let result;
-            
-            switch (method) {
-              case 'getSelectedData':
-                result = await officeBridge.getSelectedData();
-                break;
-              case 'setSelectedData':
-                result = await officeBridge.setSelectedData(data);
-                break;
-              case 'createBinding':
-                result = await officeBridge.createBinding(bindingId, range);
-                break;
-              case 'getBindingData':
-                result = await officeBridge.getBindingData(bindingId);
-                break;
-              case 'updateSetting':
-                appSettings.set(key, value);
-                await saveAppSettings();
-                result = { key, value, saved: true };
-                break;
-              default:
-                throw new Error(`Unknown method: ${method}`);
-            }
-            
-            // Send response back to iframe
-            event.source.postMessage({
-              type: 'office-response',
-              method: method,
-              id: id,
-              success: true,
-              result: result
-            }, '*');
-            
-          } catch (error) {
-            // Send error response back to iframe
-            event.source.postMessage({
-              type: 'office-response',
-              method: method,
-              id: id,
-              success: false,
-              error: error.message
-            }, '*');
-          }
-        }
-      });
-    }
-    
-    function showError(message) {
-      hideError(); // Remove any existing error
-      
-      const errorDiv = document.createElement('div');
-      errorDiv.className = 'error-message';
-      errorDiv.id = 'errorMessage';
-      errorDiv.innerHTML = `
-        <div style="font-weight: bold; margin-bottom: 10px;">⚠️ Error</div>
-        <div>${message}</div>
-      `;
-      
-      document.body.appendChild(errorDiv);
-      console.error('Error:', message);
-    }
-    
-    function hideError() {
-      const existingError = document.getElementById('errorMessage');
-      if (existingError) {
-        existingError.remove();
-      }
-    }
-    
+    // Validate URL
     function isValidUrl(string) {
       try {
         const url = new URL(string);
@@ -907,7 +143,104 @@
       }
     }
     
-    // Handle window resize to ensure iframe stays responsive
+    // Show error message
+    function showError(message) {
+      const container = document.getElementById('iframeContainer');
+      container.innerHTML = `
+        <div class="error">
+          <div style="font-weight: bold; margin-bottom: 10px;">⚠️ Error</div>
+          <div>${message}</div>
+        </div>
+      `;
+      console.error('Error:', message);
+    }
+    
+    // Show placeholder
+    function showPlaceholder(message) {
+      const container = document.getElementById('iframeContainer');
+      container.innerHTML = `
+        <div class="placeholder">
+          <div class="placeholder-icon">🌐</div>
+          <div>${message}</div>
+        </div>
+      `;
+    }
+    
+    // Load URL in iframe
+    function loadUrl(url) {
+      console.log('Loading URL:', url);
+      
+      if (!isValidUrl(url)) {
+        showError(`Invalid URL: ${url}`);
+        return;
+      }
+      
+      const container = document.getElementById('iframeContainer');
+      const loading = document.getElementById('loading');
+      
+      // Remove existing iframe
+      if (currentIframe) {
+        currentIframe.remove();
+      }
+      
+      // Create new iframe
+      currentIframe = document.createElement('iframe');
+      currentIframe.src = url;
+      currentIframe.style.display = 'none';
+      
+      // Set iframe attributes for better compatibility
+      currentIframe.setAttribute('allow', 'autoplay; camera; microphone; geolocation');
+      currentIframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-top-navigation-by-user-activation');
+      
+      // Handle iframe load
+      currentIframe.onload = () => {
+        loading.style.display = 'none';
+        currentIframe.style.display = 'block';
+        console.log('Content loaded successfully:', url);
+      };
+      
+      // Handle iframe error
+      currentIframe.onerror = () => {
+        loading.style.display = 'none';
+        showError(`Failed to load content: ${url}`);
+      };
+      
+      // Handle load timeout
+      const loadTimeout = setTimeout(() => {
+        if (loading.style.display !== 'none') {
+          loading.style.display = 'none';
+          if (currentIframe.style.display === 'none') {
+            currentIframe.style.display = 'block';
+            console.log('Content loaded with potential issues:', url);
+          }
+        }
+      }, 10000); // 10 second timeout
+      
+      // Clear timeout when iframe loads
+      currentIframe.addEventListener('load', () => {
+        clearTimeout(loadTimeout);
+      });
+      
+      container.appendChild(currentIframe);
+    }
+    
+    // Initialize app
+    function initializeApp() {
+      const targetUrl = getTargetUrl();
+      
+      console.log('Target URL:', targetUrl);
+      console.log('Page URL:', window.location.href);
+      console.log('URL Parameters:', Object.fromEntries(new URLSearchParams(window.location.search)));
+      console.log('Hash Fragment:', window.location.hash);
+      
+      if (targetUrl) {
+        loadUrl(targetUrl);
+      } else {
+        showPlaceholder('No URL specified');
+      }
+    }
+    
+    // Handle window resize
     window.addEventListener('resize', () => {
       if (currentIframe) {
         // Force iframe to recalculate its size
@@ -918,16 +251,12 @@
       }
     });
     
-    // Expose Office bridge and settings for debugging
-    window.officeBridge = officeBridge;
-    window.appSettings = appSettings;
-    
-    // Log page parameters for debugging
-    console.log('Page URL:', window.location.href);
-    console.log('URL Parameters:', new URLSearchParams(window.location.search));
-    console.log('Hash Fragment:', window.location.hash);
-    console.log('Office Environment:', isOfficeEnvironment);
-    console.log('App Settings:', Object.fromEntries(appSettings));
+    // Start the app when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeApp);
+    } else {
+      initializeApp();
+    }
   </script>
 </body>
 </html>
