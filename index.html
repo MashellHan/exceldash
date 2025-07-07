@@ -114,25 +114,45 @@
     let currentIframe = null;
     let isOfficeEnvironment = false;
     
-    // Get target URL from parameters or default
+    // Get target URL from URL parameters or Office Add-in
     function getTargetUrl() {
+      // Check URL parameters first
       const urlParams = new URLSearchParams(window.location.search);
       let targetUrl = urlParams.get('targetUrl') || 
-                     urlParams.get('url') || 
-                     urlParams.get('src') || 
-                     urlParams.get('source') || 
-                     urlParams.get('link') ||
-                     urlParams.get('target');
+                     urlParams.get('url') 
+      
+      if (targetUrl) {
+        return targetUrl;
+      }
       
       // Check hash fragment
-      if (!targetUrl && window.location.hash) {
+      if (window.location.hash) {
         const hash = window.location.hash.substring(1);
         if (isValidUrl(hash)) {
-          targetUrl = hash;
+          return hash;
         }
       }
       
-      return targetUrl || DEFAULT_URL;
+      // Try to get from Office Add-in settings
+      if (isOfficeEnvironment) {
+        console.log("office roamingsettings:", Office.context.roamingSettings.get('targetUrl'));
+        const settings = Office.context.document.settings;
+        const customValue = settings.get("targetUrl");
+        console.log("office.context.document.settings:", customValue);
+
+        try {
+          if (Office.context && Office.context.roamingSettings) {
+            targetUrl = Office.context.roamingSettings.get('targetUrl');
+            if (targetUrl) {
+              return targetUrl;
+            }
+          }
+        } catch (error) {
+          console.log('Could not read Office settings:', error.message);
+        }
+      }
+      
+      return DEFAULT_URL;
     }
     
     // Validate URL
