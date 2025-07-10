@@ -89,8 +89,8 @@
     .placeholder {
       color: #999;
       font-size: 18px;
-    }
-    
+      }
+      
     .placeholder-icon {
       font-size: 48px;
       opacity: 0.5;
@@ -135,8 +135,8 @@
           for (let i = 0; i < customProperties.items.length; i++) {
             const property = customProperties.items[i];
             console.log("属性名:", property.key, "属性值:", property.value, "属性类型:", property.type);
-          }
-          
+    }
+
           // 查找特定属性
           const targetProperty = customProperties.getItemOrNullObject("WebExtensionProperty");
           targetProperty.load("key,value,type");
@@ -146,7 +146,7 @@
           if (!targetProperty.isNullObject) {
             console.log("找到属性:", targetProperty.value);
             return targetProperty.value;
-          } else {
+      } else {
             console.log("未找到WebExtensionProperty属性");
             return null;
           }
@@ -156,7 +156,7 @@
         return null;
       }
     }
-    
+
     // Get target URL from URL parameters or Office Add-in
     async function getTargetUrl() {
       // Check URL parameters first
@@ -173,7 +173,7 @@
         const hash = window.location.hash.substring(1);
         if (isValidUrl(hash)) {
           return hash;
-        }
+      }
       }
       
       // Try to get from Office Add-in settings
@@ -186,7 +186,7 @@
           if (settings) {
             targetUrl = Office.context.document.settings.get('targetUrl');
             console.log("office.context.document.settings.targetUrl:", targetUrl);
-
+                
             if (targetUrl) {
               return targetUrl;
             }
@@ -198,11 +198,11 @@
             targetUrl = Office.context.roamingSettings.get('targetUrl');
             if (targetUrl) {
               return targetUrl;
-            }
+                }
           }
-        } catch (error) {
+      } catch (error) {
           console.log('Could not read Office settings:', error.message);
-        }
+      }
         
         // 尝试从Excel自定义属性读取
         try {
@@ -214,9 +214,9 @@
           }
         } catch (error) {
           console.log('Could not read Excel custom properties:', error.message);
-        }
       }
-      
+    }
+
       return DEFAULT_URL;
     }
     
@@ -227,7 +227,7 @@
         return url.protocol === 'http:' || url.protocol === 'https:';
       } catch (_) {
         return false;
-      }
+        }
     }
     
     // Show error message
@@ -248,8 +248,8 @@
           <div>${message}</div>
         </div>
       `;
-    }
-    
+      }
+      
     // Load URL in iframe
     async function loadUrl(url) {
       console.log('Loading URL:', url);
@@ -303,7 +303,7 @@
           if (currentIframe.style.display === 'none') {
             currentIframe.style.display = 'block';
             console.log('Content loaded with timeout');
-          }
+        }
         }
       }, 10000);
       
@@ -326,7 +326,7 @@
         await loadUrl(targetUrl);
       } else {
         showPlaceholder('No URL specified');
-      }
+    }
     }
     
     // 点击事件处理函数 - 重新读取Excel属性并刷新页面
@@ -357,7 +357,7 @@
         const targetUrl = await getTargetUrl();
         if (targetUrl) {
           await loadUrl(targetUrl);
-        }
+    }
       }
     }
     
@@ -367,8 +367,8 @@
         console.log('Office.js initialized:', info, info.platform);
         if (info.host) {
           isOfficeEnvironment = true;
-        }
-
+      }
+      
         initializeApp();
       });
     } else {
