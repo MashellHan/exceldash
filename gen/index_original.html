@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Societas DataViz (Multiple Series)</title>
+  <!-- Office.js - 更新到最新版本以支持 WebView2 -->
+  <script src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+  <!-- ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #10a37f;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .kpi-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .kpi-card {
+            background-color: white;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex: 1;
+            margin: 0 10px;
+            text-align: center;
+        }
+        .kpi-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #10a37f;
+        }
+        .chart-container {
+            background-color: white;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .chart {
+            height: 400px;
+            width: 100%;
+        }
+        .two-column {
+            display: flex;
+            justify-content: space-between;
+        }
+        .column {
+            flex: 1;
+            margin: 0 10px;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .data-table th, .data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .data-table th {
+            background-color: #f2f2f2;
+        }
+        .data-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ChatGPT Mobile App Download Analysis</h1>
+            <p id="status">default status</p>
+            <p>Weekly download statistics for the past 24 months</p>
+        </div>
+
+        <div class="kpi-container">
+            <div class="kpi-card">
+                <h3>Total Downloads</h3>
+                <div class="kpi-value" id="total-downloads">598,681,674</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Average Weekly Downloads</h3>
+                <div class="kpi-value" id="avg-weekly-downloads">5,986,817</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Peak Weekly Downloads</h3>
+                <div class="kpi-value" id="peak-weekly-downloads">16,100,000</div>
+            </div>
+            <div class="kpi-card">
+                <h3>iOS vs Android</h3>
+                <div class="kpi-value" id="platform-ratio">60% iOS / 40% Android</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h2>Weekly Download Trends</h2>
+            <div id="weekly-trend-chart" class="chart" _echarts_instance_="ec_1751897560896" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 1160px; height: 400px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="1160" height="400" style="position: absolute; left: 0px; top: 0px; width: 1160px; height: 400px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class="" style="position: absolute; display: block; border-style: solid; white-space: nowrap; z-index: 9999999; box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 10px; transition: opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1), transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); background-color: rgb(255, 255, 255); border-width: 1px; border-radius: 4px; color: rgb(102, 102, 102); font: 14px / 21px &quot;Microsoft YaHei&quot;; padding: 10px; top: 0px; left: 0px; transform: translate3d(777px, 334px, 0px); border-color: rgb(255, 255, 255); pointer-events: none; visibility: hidden; opacity: 0;">2024-08-26<br>Downloads: 6,100,000</div></div>
+        </div>
+
+        <div class="two-column">
+            <div class="column chart-container">
+                <h2>Platform Comparison</h2>
+                <div id="platform-chart" class="chart" _echarts_instance_="ec_1751897560897" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 540px; height: 400px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="540" height="400" style="position: absolute; left: 0px; top: 0px; width: 540px; height: 400px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
+            </div>
+            <div class="column chart-container">
+                <h2>Monthly Growth Rate</h2>
+                <div id="growth-chart" class="chart" _echarts_instance_="ec_1751897560898" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 540px; height: 400px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="540" height="400" style="position: absolute; left: 0px; top: 0px; width: 540px; height: 400px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h2>Weekly Downloads Data Table</h2>
+            <div style="max-height: 400px; overflow-y: auto;">
+                <table class="data-table" id="data-table">
+                    <thead>
+                        <tr>
+                            <th>Week</th>
+                            <th>Total Downloads</th>
+                            <th>iOS Downloads</th>
+                            <th>Android Downloads</th>
+                            <th>Growth Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Data will be inserted here -->
+                    <tr><td>2023-05-01</td><td>1,000,000</td><td>600,000</td><td>400,000</td><td>N/A</td></tr><tr><td>2023-05-08</td><td>1,050,000</td><td>630,000</td><td>420,000</td><td>5.00%</td></tr><tr><td>2023-05-15</td><td>950,000</td><td>570,000</td><td>380,000</td><td>-9.52%</td></tr><tr><td>2023-05-22</td><td>1,000,000</td><td>600,000</td><td>400,000</td><td>5.26%</td></tr><tr><td>2023-05-29</td><td>3,500,000</td><td>2,100,000</td><td>1,400,000</td><td>250.00%</td></tr><tr><td>2023-06-05</td><td>3,600,000</td><td>2,160,000</td><td>1,440,000</td><td>2.86%</td></tr><tr><td>2023-06-12</td><td>3,400,000</td><td>2,040,000</td><td>1,360,000</td><td>-5.56%</td></tr><tr><td>2023-06-19</td><td>3,500,000</td><td>2,100,000</td><td>1,400,000</td><td>2.94%</td></tr><tr><td>2023-06-26</td><td>2,500,000</td><td>1,500,000</td><td>1,000,000</td><td>-28.57%</td></tr><tr><td>2023-07-03</td><td>2,600,000</td><td>1,560,000</td><td>1,040,000</td><td>4.00%</td></tr><tr><td>2023-07-10</td><td>2,400,000</td><td>1,440,000</td><td>960,000</td><td>-7.69%</td></tr><tr><td>2023-07-17</td><td>2,500,000</td><td>1,500,000</td><td>1,000,000</td><td>4.17%</td></tr><tr><td>2023-07-24</td><td>3,500,000</td><td>2,100,000</td><td>1,400,000</td><td>40.00%</td></tr><tr><td>2023-07-31</td><td>3,600,000</td><td>2,160,000</td><td>1,440,000</td><td>2.86%</td></tr><tr><td>2023-08-07</td><td>3,400,000</td><td>2,040,000</td><td>1,360,000</td><td>-5.56%</td></tr><tr><td>2023-08-14</td><td>3,500,000</td><td>2,100,000</td><td>1,400,000</td><td>2.94%</td></tr><tr><td>2023-08-21</td><td>3,000,000</td><td>1,800,000</td><td>1,200,000</td><td>-14.29%</td></tr><tr><td>2023-08-28</td><td>3,100,000</td><td>1,860,000</td><td>1,240,000</td><td>3.33%</td></tr><tr><td>2023-09-04</td><td>2,900,000</td><td>1,740,000</td><td>1,160,000</td><td>-6.45%</td></tr><tr><td>2023-09-11</td><td>3,000,000</td><td>1,800,000</td><td>1,200,000</td><td>3.45%</td></tr><tr><td>2023-09-18</td><td>3,100,000</td><td>1,860,000</td><td>1,240,000</td><td>3.33%</td></tr><tr><td>2023-09-25</td><td>2,900,000</td><td>1,740,000</td><td>1,160,000</td><td>-6.45%</td></tr><tr><td>2023-10-02</td><td>2,500,000</td><td>1,500,000</td><td>1,000,000</td><td>-13.79%</td></tr><tr><td>2023-10-09</td><td>2,600,000</td><td>1,560,000</td><td>1,040,000</td><td>4.00%</td></tr><tr><td>2023-10-16</td><td>2,400,000</td><td>1,440,000</td><td>960,000</td><td>-7.69%</td></tr><tr><td>2023-10-23</td><td>2,500,000</td><td>1,500,000</td><td>1,000,000</td><td>4.17%</td></tr><tr><td>2023-10-30</td><td>2,200,000</td><td>1,320,000</td><td>880,000</td><td>-12.00%</td></tr><tr><td>2023-11-06</td><td>2,300,000</td><td>1,380,000</td><td>920,000</td><td>4.55%</td></tr><tr><td>2023-11-13</td><td>2,200,000</td><td>1,320,000</td><td>880,000</td><td>-4.35%</td></tr><tr><td>2023-11-20</td><td>2,300,000</td><td>1,380,000</td><td>920,000</td><td>4.55%</td></tr><tr><td>2023-11-27</td><td>2,700,000</td><td>1,620,000</td><td>1,080,000</td><td>17.39%</td></tr><tr><td>2023-12-04</td><td>2,800,000</td><td>1,680,000</td><td>1,120,000</td><td>3.70%</td></tr><tr><td>2023-12-11</td><td>2,700,000</td><td>1,620,000</td><td>1,080,000</td><td>-3.57%</td></tr><tr><td>2023-12-18</td><td>2,800,000</td><td>1,680,000</td><td>1,120,000</td><td>3.70%</td></tr><tr><td>2023-12-25</td><td>3,200,000</td><td>1,920,000</td><td>1,280,000</td><td>14.29%</td></tr><tr><td>2024-01-01</td><td>3,300,000</td><td>1,980,000</td><td>1,320,000</td><td>3.13%</td></tr><tr><td>2024-01-08</td><td>3,200,000</td><td>1,920,000</td><td>1,280,000</td><td>-3.03%</td></tr><tr><td>2024-01-15</td><td>3,300,000</td><td>1,980,000</td><td>1,320,000</td><td>3.13%</td></tr><tr><td>2024-01-22</td><td>3,500,000</td><td>2,100,000</td><td>1,400,000</td><td>6.06%</td></tr><tr><td>2024-01-29</td><td>3,600,000</td><td>2,160,000</td><td>1,440,000</td><td>2.86%</td></tr><tr><td>2024-02-05</td><td>3,400,000</td><td>2,040,000</td><td>1,360,000</td><td>-5.56%</td></tr><tr><td>2024-02-12</td><td>3,500,000</td><td>2,100,000</td><td>1,400,000</td><td>2.94%</td></tr><tr><td>2024-02-19</td><td>3,600,000</td><td>2,160,000</td><td>1,440,000</td><td>2.86%</td></tr><tr><td>2024-02-26</td><td>4,300,000</td><td>2,580,000</td><td>1,720,000</td><td>19.44%</td></tr><tr><td>2024-03-04</td><td>4,200,000</td><td>2,520,000</td><td>1,680,000</td><td>-2.33%</td></tr><tr><td>2024-03-11</td><td>4,300,000</td><td>2,580,000</td><td>1,720,000</td><td>2.38%</td></tr><tr><td>2024-03-18</td><td>4,341,382</td><td>2,604,829</td><td>1,736,553</td><td>0.96%</td></tr><tr><td>2024-03-25</td><td>3,800,000</td><td>2,280,000</td><td>1,520,000</td><td>-12.47%</td></tr><tr><td>2024-04-01</td><td>3,900,000</td><td>2,340,000</td><td>1,560,000</td><td>2.63%</td></tr><tr><td>2024-04-08</td><td>3,800,000</td><td>2,280,000</td><td>1,520,000</td><td>-2.56%</td></tr><tr><td>2024-04-15</td><td>3,843,241</td><td>2,305,945</td><td>1,537,296</td><td>1.14%</td></tr><tr><td>2024-04-22</td><td>5,700,000</td><td>3,420,000</td><td>2,280,000</td><td>48.31%</td></tr><tr><td>2024-04-29</td><td>5,800,000</td><td>3,480,000</td><td>2,320,000</td><td>1.75%</td></tr><tr><td>2024-05-06</td><td>5,600,000</td><td>3,360,000</td><td>2,240,000</td><td>-3.45%</td></tr><tr><td>2024-05-13</td><td>5,733,094</td><td>3,439,856</td><td>2,293,238</td><td>2.38%</td></tr><tr><td>2024-05-20</td><td>5,600,000</td><td>3,360,000</td><td>2,240,000</td><td>-2.32%</td></tr><tr><td>2024-05-27</td><td>5,700,000</td><td>3,420,000</td><td>2,280,000</td><td>1.79%</td></tr><tr><td>2024-06-03</td><td>5,500,000</td><td>3,300,000</td><td>2,200,000</td><td>-3.51%</td></tr><tr><td>2024-06-10</td><td>5,605,142</td><td>3,363,085</td><td>2,242,057</td><td>1.91%</td></tr><tr><td>2024-06-17</td><td>4,700,000</td><td>2,820,000</td><td>1,880,000</td><td>-16.15%</td></tr><tr><td>2024-06-24</td><td>4,800,000</td><td>2,880,000</td><td>1,920,000</td><td>2.13%</td></tr><tr><td>2024-07-01</td><td>4,700,000</td><td>2,820,000</td><td>1,880,000</td><td>-2.08%</td></tr><tr><td>2024-07-08</td><td>4,686,729</td><td>2,812,037</td><td>1,874,692</td><td>-0.28%</td></tr><tr><td>2024-07-15</td><td>6,100,000</td><td>3,660,000</td><td>2,440,000</td><td>30.15%</td></tr><tr><td>2024-07-22</td><td>6,200,000</td><td>3,720,000</td><td>2,480,000</td><td>1.64%</td></tr><tr><td>2024-07-29</td><td>6,100,000</td><td>3,660,000</td><td>2,440,000</td><td>-1.61%</td></tr><tr><td>2024-08-05</td><td>6,096,755</td><td>3,658,053</td><td>2,438,702</td><td>-0.05%</td></tr><tr><td>2024-08-12</td><td>6,200,000</td><td>3,720,000</td><td>2,480,000</td><td>1.69%</td></tr><tr><td>2024-08-19</td><td>6,100,000</td><td>3,660,000</td><td>2,440,000</td><td>-1.61%</td></tr><tr><td>2024-08-26</td><td>6,100,000</td><td>3,660,000</td><td>2,440,000</td><td>0.00%</td></tr><tr><td>2024-09-02</td><td>9,100,000</td><td>5,460,000</td><td>3,640,000</td><td>49.18%</td></tr><tr><td>2024-09-09</td><td>9,200,000</td><td>5,520,000</td><td>3,680,000</td><td>1.10%</td></tr><tr><td>2024-09-16</td><td>9,100,000</td><td>5,460,000</td><td>3,640,000</td><td>-1.09%</td></tr><tr><td>2024-09-23</td><td>9,147,733</td><td>5,488,640</td><td>3,659,093</td><td>0.52%</td></tr><tr><td>2024-09-30</td><td>11,500,000</td><td>6,900,000</td><td>4,600,000</td><td>25.71%</td></tr><tr><td>2024-10-07</td><td>11,600,000</td><td>6,960,000</td><td>4,640,000</td><td>0.87%</td></tr><tr><td>2024-10-14</td><td>11,500,000</td><td>6,900,000</td><td>4,600,000</td><td>-0.86%</td></tr><tr><td>2024-10-21</td><td>11,681,094</td><td>7,008,656</td><td>4,672,438</td><td>1.57%</td></tr><tr><td>2024-10-28</td><td>10,600,000</td><td>6,360,000</td><td>4,240,000</td><td>-9.26%</td></tr><tr><td>2024-11-04</td><td>10,700,000</td><td>6,420,000</td><td>4,280,000</td><td>0.94%</td></tr><tr><td>2024-11-11</td><td>10,600,000</td><td>6,360,000</td><td>4,240,000</td><td>-0.93%</td></tr><tr><td>2024-11-18</td><td>10,625,317</td><td>6,375,190</td><td>4,250,127</td><td>0.24%</td></tr><tr><td>2024-11-25</td><td>10,800,000</td><td>6,480,000</td><td>4,320,000</td><td>1.64%</td></tr><tr><td>2024-12-02</td><td>10,900,000</td><td>6,540,000</td><td>4,360,000</td><td>0.93%</td></tr><tr><td>2024-12-09</td><td>10,700,000</td><td>6,420,000</td><td>4,280,000</td><td>-1.83%</td></tr><tr><td>2024-12-16</td><td>10,861,691</td><td>6,517,015</td><td>4,344,676</td><td>1.51%</td></tr><tr><td>2024-12-23</td><td>10,100,000</td><td>6,060,000</td><td>4,040,000</td><td>-7.01%</td></tr><tr><td>2024-12-30</td><td>10,200,000</td><td>6,120,000</td><td>4,080,000</td><td>0.99%</td></tr><tr><td>2025-01-06</td><td>10,100,000</td><td>6,060,000</td><td>4,040,000</td><td>-0.98%</td></tr><tr><td>2025-01-13</td><td>10,199,434</td><td>6,119,660</td><td>4,079,774</td><td>0.98%</td></tr><tr><td>2025-01-20</td><td>10,100,000</td><td>6,060,000</td><td>4,040,000</td><td>-0.97%</td></tr><tr><td>2025-01-27</td><td>10,200,000</td><td>6,120,000</td><td>4,080,000</td><td>0.99%</td></tr><tr><td>2025-02-03</td><td>11,100,000</td><td>6,660,000</td><td>4,440,000</td><td>8.82%</td></tr><tr><td>2025-02-10</td><td>11,192,124</td><td>6,715,274</td><td>4,476,850</td><td>0.83%</td></tr><tr><td>2025-02-17</td><td>11,200,000</td><td>6,720,000</td><td>4,480,000</td><td>0.07%</td></tr><tr><td>2025-02-24</td><td>11,300,000</td><td>6,780,000</td><td>4,520,000</td><td>0.89%</td></tr><tr><td>2025-03-03</td><td>16,000,000</td><td>9,600,000</td><td>6,400,000</td><td>41.59%</td></tr><tr><td>2025-03-10</td><td>16,067,938</td><td>9,640,763</td><td>6,427,175</td><td>0.42%</td></tr><tr><td>2025-03-17</td><td>16,100,000</td><td>9,660,000</td><td>6,440,000</td><td>0.20%</td></tr><tr><td>2025-03-24</td><td>16,100,000</td><td>9,660,000</td><td>6,440,000</td><td>0.00%</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+  <script src="./bundle.js"></script>
+</body>
+</html>

@@ -267,4 +267,5 @@ docs/_build/
 
 # Test outputs
 test-results/
-test-output/ 
+test-output/
+bundle.js
