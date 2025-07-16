@@ -279,13 +279,13 @@
           const newUrl = await readExcelCustomProperties();
           if (newUrl && isValidUrl(newUrl)) {
             console.log('Found new URL from Excel properties:', newUrl);
-            window.location.replace(targetUrl);
+            window.location.replace(newUrl);
           } else {
             console.log('No valid URL found in Excel properties, using fallback');
             // 使用其他方式获取URL
             const fallbackUrl = await getTargetUrl();
             if (fallbackUrl) {
-              window.location.replace(targetUrl);
+              window.location.replace(fallbackUrl);
             }
           }
         } catch (error) {
