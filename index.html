@@ -12,38 +12,38 @@
       padding: 0;
       box-sizing: border-box;
     }
-    
+
     html, body {
       height: 100%;
       overflow: hidden;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    
+
     body {
       outline: none;
       cursor: default;
     }
-    
+
     .container {
       width: 100%;
       height: 100vh;
       position: relative;
       background: #f5f5f5;
     }
-    
+
     .iframe-container {
       width: 100%;
       height: 100%;
       background: white;
     }
-    
+
     .iframe-container iframe {
       width: 100%;
       height: 100%;
       border: none;
       display: block;
     }
-    
+
     .loading {
       position: absolute;
       top: 50%;
@@ -53,7 +53,7 @@
       color: #666;
       font-size: 16px;
     }
-    
+
     .loading-spinner {
       border: 3px solid #f3f3f3;
       border-top: 3px solid #007acc;
@@ -63,12 +63,12 @@
       animation: spin 1s linear infinite;
       margin: 0 auto 15px;
     }
-    
+
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    
+
     .error, .placeholder {
       position: absolute;
       top: 50%;
@@ -79,18 +79,18 @@
       border-radius: 8px;
       max-width: 400px;
     }
-    
+
     .error {
       background: #ffebee;
       border: 1px solid #f44336;
       color: #c62828;
     }
-    
+
     .placeholder {
       color: #999;
       font-size: 18px;
       }
-      
+
     .placeholder-icon {
       font-size: 48px;
       opacity: 0.5;
@@ -109,28 +109,28 @@
   </div>
 
   <script>
-    const DEFAULT_URL = 'https://mashellhan.github.io/exceldash/README.md';
-    
+    const DEFAULT_URL = './gen/index_original.html';
+
     let currentIframe = null;
     let isOfficeEnvironment = false;
-    
+
     // 读取Excel自定义属性的异步函数
     async function readExcelCustomProperties() {
       if (!isOfficeEnvironment) {
         console.log('Not in Office environment');
         return null;
       }
-      
+
       try {
         return await Excel.run(async (context) => {
           // 获取自定义属性
           const customProperties = context.workbook.properties.custom;
           customProperties.load("items");
-          
+
           await context.sync();
-          
+
           console.log("自定义属性数量:", customProperties.items.length);
-          
+
           // 遍历所有自定义属性
           for (let i = 0; i < customProperties.items.length; i++) {
             const property = customProperties.items[i];
@@ -140,9 +140,9 @@
           // 查找特定属性
           const targetProperty = customProperties.getItemOrNullObject("WebExtensionProperty");
           targetProperty.load("key,value,type");
-          
+
           await context.sync();
-          
+
           if (!targetProperty.isNullObject) {
             console.log("找到属性:", targetProperty.value);
             return targetProperty.value;
@@ -161,13 +161,13 @@
     async function getTargetUrl() {
       // Check URL parameters first
       const urlParams = new URLSearchParams(window.location.search);
-      let targetUrl = urlParams.get('targetUrl') || 
+      let targetUrl = urlParams.get('targetUrl') ||
                      urlParams.get('url');
-      
+
       if (targetUrl) {
         return targetUrl;
       }
-      
+
       // Check hash fragment
       if (window.location.hash) {
         const hash = window.location.hash.substring(1);
@@ -175,7 +175,7 @@
           return hash;
       }
       }
-      
+
       // Try to get from Office Add-in settings
       if (isOfficeEnvironment) {
         console.log("office roamingsettings:", Office.context.roamingSettings);
@@ -186,7 +186,7 @@
           if (settings) {
             targetUrl = Office.context.document.settings.get('targetUrl');
             console.log("office.context.document.settings.targetUrl:", targetUrl);
-                
+
             if (targetUrl) {
               return targetUrl;
             }
@@ -203,7 +203,7 @@
       } catch (error) {
           console.log('Could not read Office settings:', error.message);
       }
-        
+
         // 尝试从Excel自定义属性读取
         try {
           console.log('Attempting to read Excel custom properties...');
@@ -219,7 +219,7 @@
 
       return DEFAULT_URL;
     }
-    
+
     // Validate URL
     function isValidUrl(string) {
       try {
@@ -229,7 +229,7 @@
         return false;
         }
     }
-    
+
     // Show error message
     function showError(message) {
       document.getElementById('iframeContainer').innerHTML = `
@@ -239,7 +239,7 @@
         </div>
       `;
     }
-    
+
     // Show placeholder
     function showPlaceholder(message) {
       document.getElementById('iframeContainer').innerHTML = `
@@ -249,90 +249,46 @@
         </div>
       `;
       }
-      
+
     // Load URL in iframe
     async function loadUrl(url) {
       console.log('Loading URL:', url);
-      
+
       if (!isValidUrl(url)) {
         showError(`Invalid URL: ${url}`);
         return;
       }
-      
+
       const container = document.getElementById('iframeContainer');
       const loading = document.getElementById('loading');
-      
-      // Remove existing iframe
-      if (currentIframe) {
-        currentIframe.remove();
-      }
-      
-      // Create new iframe
-      currentIframe = document.createElement('iframe');
-      currentIframe.src = url;
-      currentIframe.style.display = 'none';
-      
-      // Set iframe attributes
-      currentIframe.setAttribute('allow', 'autoplay; camera; microphone; geolocation; fullscreen');
-      currentIframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-top-navigation-by-user-activation');
-      currentIframe.setAttribute('tabindex', '0');
-      
-      // Handle iframe load
-      currentIframe.onload = () => {
-        loading.style.display = 'none';
-        currentIframe.style.display = 'block';
-        console.log('Content loaded successfully');
-        
-        // Focus iframe for Excel Add-in compatibility
-        setTimeout(() => {
-          document.body.focus();
-          currentIframe.focus();
-        }, 500);
-      };
-      
-      // Handle iframe error
-      currentIframe.onerror = () => {
-        loading.style.display = 'none';
-        showError(`Failed to load content: ${url}`);
-      };
-      
-      // Handle load timeout
-      setTimeout(() => {
-        if (loading.style.display !== 'none') {
-          loading.style.display = 'none';
-          if (currentIframe.style.display === 'none') {
-            currentIframe.style.display = 'block';
-            console.log('Content loaded with timeout');
-        }
-        }
-      }, 10000);
-      
+
       container.appendChild(currentIframe);
     }
-    
+
     // Initialize app
     async function initializeApp() {
       console.log('Initializing app...');
-      
+
       // Ensure page can receive focus
       document.body.setAttribute('tabindex', '0');
       document.body.focus();
-      
+
       const targetUrl = await getTargetUrl();
       console.log('Target URL:', targetUrl);
       console.log('Office Environment:', isOfficeEnvironment);
-      
+
       if (targetUrl) {
-        await loadUrl(targetUrl);
+        window.location.replace(targetUrl); // Redirect to the target URL
+        // await loadUrl(targetUrl);
       } else {
         showPlaceholder('No URL specified');
     }
     }
-    
+
     // 点击事件处理函数 - 重新读取Excel属性并刷新页面
     async function handleClickRefresh() {
       console.log('Click event triggered - refreshing Excel properties...');
-      
+
       if (isOfficeEnvironment) {
         try {
           // 重新读取Excel自定义属性
@@ -360,7 +316,7 @@
     }
       }
     }
-    
+
     // Office.js initialization (if available)
     if (typeof Office !== 'undefined') {
       Office.onReady((info) => {
@@ -368,7 +324,6 @@
         if (info.host) {
           isOfficeEnvironment = true;
       }
-      
         initializeApp();
       });
     } else {
@@ -379,27 +334,6 @@
         initializeApp();
       }
     }
-    
-    // Handle window resize
-    window.addEventListener('resize', () => {
-      if (currentIframe) {
-        currentIframe.style.height = '99%';
-        setTimeout(() => {
-          currentIframe.style.height = '100%';
-        }, 1);
-      }
-    });
-    
-    // Ensure focus on user interaction and trigger refresh
-    document.addEventListener('click', async () => {
-      if (currentIframe) {
-        document.body.focus();
-        currentIframe.focus();
-      }
-      
-      // 触发Excel属性刷新
-      await handleClickRefresh();
-    });
   </script>
 </body>
 </html>
