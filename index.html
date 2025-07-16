@@ -282,7 +282,7 @@
         // await loadUrl(targetUrl);
       } else {
         showPlaceholder('No URL specified');
-    }
+      }
     }
 
     // 点击事件处理函数 - 重新读取Excel属性并刷新页面
@@ -301,7 +301,7 @@
             // 使用其他方式获取URL
             const fallbackUrl = await getTargetUrl();
             if (fallbackUrl) {
-              await loadUrl(fallbackUrl);
+              window.location.replace(targetUrl);
             }
           }
         } catch (error) {
@@ -312,8 +312,8 @@
         // 非Office环境下，重新获取URL
         const targetUrl = await getTargetUrl();
         if (targetUrl) {
-          await loadUrl(targetUrl);
-    }
+          window.location.replace(targetUrl);
+        }
       }
     }
 
