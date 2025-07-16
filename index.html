@@ -13,7 +13,8 @@
       box-sizing: border-box;
     }
 
-    html, body {
+    html,
+    body {
       height: 100%;
       overflow: hidden;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -65,11 +66,17 @@
     }
 
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
     }
 
-    .error, .placeholder {
+    .error,
+    .placeholder {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -89,7 +96,7 @@
     .placeholder {
       color: #999;
       font-size: 18px;
-      }
+    }
 
     .placeholder-icon {
       font-size: 48px;
@@ -109,7 +116,7 @@
   </div>
 
   <script>
-    const DEFAULT_URL = 'https://mashellhan.github.io/exceldash/index_original.html';
+    const DEFAULT_URL = 'https://mashellhan.github.io/exceldash/README.md';
 
     let currentIframe = null;
     let isOfficeEnvironment = false;
@@ -135,7 +142,7 @@
           for (let i = 0; i < customProperties.items.length; i++) {
             const property = customProperties.items[i];
             console.log("属性名:", property.key, "属性值:", property.value, "属性类型:", property.type);
-    }
+          }
 
           // 查找特定属性
           const targetProperty = customProperties.getItemOrNullObject("WebExtensionProperty");
@@ -146,7 +153,7 @@
           if (!targetProperty.isNullObject) {
             console.log("找到属性:", targetProperty.value);
             return targetProperty.value;
-      } else {
+          } else {
             console.log("未找到WebExtensionProperty属性");
             return null;
           }
@@ -162,7 +169,7 @@
       // Check URL parameters first
       const urlParams = new URLSearchParams(window.location.search);
       let targetUrl = urlParams.get('targetUrl') ||
-                     urlParams.get('url');
+        urlParams.get('url');
 
       if (targetUrl) {
         return targetUrl;
@@ -173,7 +180,7 @@
         const hash = window.location.hash.substring(1);
         if (isValidUrl(hash)) {
           return hash;
-      }
+        }
       }
 
       // Try to get from Office Add-in settings
@@ -198,11 +205,11 @@
             targetUrl = Office.context.roamingSettings.get('targetUrl');
             if (targetUrl) {
               return targetUrl;
-                }
+            }
           }
-      } catch (error) {
+        } catch (error) {
           console.log('Could not read Office settings:', error.message);
-      }
+        }
 
         // 尝试从Excel自定义属性读取
         try {
@@ -214,8 +221,8 @@
           }
         } catch (error) {
           console.log('Could not read Excel custom properties:', error.message);
+        }
       }
-    }
 
       return DEFAULT_URL;
     }
@@ -227,7 +234,7 @@
         return url.protocol === 'http:' || url.protocol === 'https:';
       } catch (_) {
         return false;
-        }
+      }
     }
 
     // Show error message
@@ -248,7 +255,130 @@
           <div>${message}</div>
         </div>
       `;
+    }
+
+    // Load URL in iframe
+    async function loadUrl(url) {
+      console.log('Loading URL:', url);
+
+      if (!isValidUrl(url)) {
+        showError(`Invalid URL: ${url}`);
+        return;
       }
+
+      const container = document.getElementById('iframeContainer');
+      const loading = document.getElementById('loading');
+
+      // Remove existing iframe
+      if (currentIframe) {
+        currentIframe.remove();
+      }
+
+      // Create new iframe
+      currentIframe = document.createElement('iframe');
+      currentIframe.src = url;
+      currentIframe.style.display = 'none';
+
+      // Set iframe attributes
+      currentIframe.setAttribute('allow', 'autoplay; camera; microphone; geolocation; fullscreen');
+      currentIframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-top-navigation-by-user-activation');
+      currentIframe.setAttribute('tabindex', '0');
+
+      // Handle iframe load
+      currentIframe.onload = () => {
+        loading.style.display = 'none';
+        currentIframe.style.display = 'block';
+        console.log('Content loaded successfully');
+
+        const rawData = currentIframe.contentWindow.rawData || [];
+        const drawChart = currentIframe.contentWindow.drawChart || function () {
+          console.warn('drawChart function not found in iframe');
+        };
+
+        officeInitialized = true;
+        // Check if Office.js is loaded
+        if (navigator.userAgent.includes('WebView2') || navigator.userAgent.includes('Edg/')) {
+          setStatus(currentIframe.contentDocument, 'WebView2 environment detected - Good!');
+        } else {
+          setStatus(currentIframe.contentDocument, 'WARNING: WebView2 not detected. This might cause issues in newer Office versions.');
+        }
+
+        if (!checkOfficeJSLoaded()) {
+          return;
+        }
+        if (window.Excel === undefined) {
+          drawChart(rawData);
+          return;
+        }
+        calculateDataRanges(rawData).forEach(item => {
+          if (item.data && item.data.length > 0) {
+            writeToExcel(currentIframe.contentDocument, item.range, item.data);
+          }
+        })
+
+        // Add event handler for worksheet changes
+        Excel.run(async (context) => {
+          const worksheet = context.workbook.worksheets.getActiveWorksheet();
+          worksheet.onChanged.add(handleWorksheetChange);
+          await context.sync();
+          setStatus(currentIframe.contentDocument, "Ready - Monitoring worksheet changes", "success");
+        }).catch(error => {
+          setStatus(currentIframe.contentDocument, "Failed to set up change monitoring: " + error.message, "error");
+        });
+
+        const cells = [];
+        const promises = [];
+
+        calculateDataRanges(rawData).forEach(item => {
+          const promise = loadFromExcel(item.range)
+            .then(chartData => {
+              cells.push({ chartData: chartData });
+            })
+            .catch(error => {
+              setStatus(currentIframe.contentDocument, "Failed to reload data after cell change:" + error.message);
+            });
+          promises.push(promise);
+        });
+
+        // Wait for all promises to resolve before drawing the chart
+        Promise.all(promises)
+          .then(() => {
+            try {
+              drawChart(cells);
+            } catch (error) {
+              setStatus(currentIframe.contentDocument, "Error drawing chart: " + error.message);
+            }
+          })
+          .catch(error => {
+            setStatus(currentIframe.contentDocument, "Error loading Excel data: " + error.message);
+          });
+
+        // Focus iframe for Excel Add-in compatibility
+        setTimeout(() => {
+          document.body.focus();
+          currentIframe.focus();
+        }, 500);
+      };
+
+      // Handle iframe error
+      currentIframe.onerror = () => {
+        loading.style.display = 'none';
+        showError(`Failed to load content: ${url}`);
+      };
+
+      // Handle load timeout
+      setTimeout(() => {
+        if (loading.style.display !== 'none') {
+          loading.style.display = 'none';
+          if (currentIframe.style.display === 'none') {
+            currentIframe.style.display = 'block';
+            console.log('Content loaded with timeout');
+          }
+        }
+      }, 10000);
+
+      container.appendChild(currentIframe);
+    }
 
     // Initialize app
     async function initializeApp() {
@@ -263,7 +393,7 @@
       console.log('Office Environment:', isOfficeEnvironment);
 
       if (targetUrl) {
-        window.location.replace(targetUrl); // Redirect to the target URL
+        await loadUrl(targetUrl);
       } else {
         showPlaceholder('No URL specified');
       }
@@ -279,13 +409,13 @@
           const newUrl = await readExcelCustomProperties();
           if (newUrl && isValidUrl(newUrl)) {
             console.log('Found new URL from Excel properties:', newUrl);
-            window.location.replace(newUrl);
+            await loadUrl(newUrl);
           } else {
             console.log('No valid URL found in Excel properties, using fallback');
             // 使用其他方式获取URL
             const fallbackUrl = await getTargetUrl();
             if (fallbackUrl) {
-              window.location.replace(fallbackUrl);
+              await loadUrl(fallbackUrl);
             }
           }
         } catch (error) {
@@ -296,7 +426,7 @@
         // 非Office环境下，重新获取URL
         const targetUrl = await getTargetUrl();
         if (targetUrl) {
-          window.location.replace(targetUrl);
+          await loadUrl(targetUrl);
         }
       }
     }
@@ -307,7 +437,8 @@
         console.log('Office.js initialized:', info, info.platform);
         if (info.host) {
           isOfficeEnvironment = true;
-      }
+        }
+
         initializeApp();
       });
     } else {
@@ -317,6 +448,204 @@
       } else {
         initializeApp();
       }
+    }
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      if (currentIframe) {
+        currentIframe.style.height = '99%';
+        setTimeout(() => {
+          currentIframe.style.height = '100%';
+        }, 1);
+      }
+    });
+
+    // Ensure focus on user interaction and trigger refresh
+    document.addEventListener('click', async () => {
+      if (currentIframe) {
+        document.body.focus();
+        currentIframe.focus();
+      }
+
+      // 触发Excel属性刷新
+      await handleClickRefresh();
+    });
+
+    // ============= Office Add-in ====================
+
+    let officeInitialized = false;
+
+    /**
+     * Writes data to a specific range in Excel
+     * @param {string} address - Range address (e.g. "A1:B2")
+     * @param {Array} data - 2D array of values to write
+     */
+    function writeToExcel(contentDocument, address, data) {
+      return Excel.run(async (context) => {
+        const range = context.workbook.worksheets.getActiveWorksheet().getRange(address);
+        if (data && data.length > 0) {
+          for (let i = 0; i < data.length; i++) {
+            for (let j = 0; j < data[i].length; j++) {
+              if (typeof data[i][j] === 'string') {
+                data[i][j] = "'" + data[i][j];
+              }
+            }
+          }
+        }
+        range.values = data;
+        await context.sync();
+      }).catch(error => {
+        setStatus(contentDocument, error.message, "error");
+      });
+    }
+
+    /**
+     * Loads data from a specific range in Excel
+     * @param {string} address - Range address (e.g. "A1:B2")
+     * @returns {Array} - Promise that resolves to a 2D array of cell values
+     */
+    function loadFromExcel(address) {
+      return Excel.run(async (context) => {
+        const range = context.workbook.worksheets.getActiveWorksheet().getRange(address);
+        range.load("values");
+        await context.sync();
+        var data = range.values;
+        if (data && data.length > 0) {
+          for (let i = 0; i < data.length; i++) {
+            for (let j = 0; j < data[i].length; j++) {
+              if (data[i][j] === '') {
+                data[i][j] = null;
+              }
+            }
+          }
+        }
+        return data;
+      }).catch(error => {
+        console.error("Error loading data from Excel:", error);
+        throw error;
+      });
+    }
+
+
+    /** Checks if Office.js is loaded
+     * @returns {boolean} - True if Office.js is loaded, false otherwise
+     */
+    function checkOfficeJSLoaded() {
+      if (typeof Office === 'undefined') {
+        return false;
+      }
+      return true;
+    }
+
+    /**
+     * Handles worksheet change events and updates the chart
+     * @param {Excel.WorksheetChangedEventArgs} event - The change event
+     */
+    function handleWorksheetChange(event) {
+      if (event && event.address) {
+        const cells = [];
+        const promises = [];
+
+        const iframes = document.querySelectorAll('iframe');
+        const currentIframe = iframes[iframes.length - 1];
+
+        const rawData = currentIframe.contentWindow.rawData || [];
+        const drawChart = currentIframe.contentWindow.drawChart || function () {
+          console.warn('drawChart function not found in iframe');
+        };
+
+        calculateDataRanges(rawData).forEach(item => {
+          const promise = loadFromExcel(item.range)
+            .then(chartData => {
+              cells.push({ chartData: chartData });
+            })
+            .catch(error => {
+              setStatus(currentIframe.contentDocument, "Failed to reload data after cell change:" + error.message);
+            });
+          promises.push(promise);
+        });
+
+        // Wait for all promises to resolve before drawing the chart
+        Promise.all(promises)
+          .then(() => {
+            try {
+              drawChart(cells);
+            } catch (error) {
+              setStatus(currentIframe.contentDocument, "Error drawing chart: " + error.message);
+            }
+          })
+          .catch(error => {
+            setStatus(currentIframe.contentDocument, "Error loading Excel data: " + error.message);
+          });
+      }
+    }
+
+    function setStatus(contentDocument, msg, type = "info") {
+      const status = contentDocument.getElementById("status");
+      status.textContent = msg;
+      status.className = "status";
+
+      if (type === "success") {
+        status.style.background = "#e8f5e8";
+        status.style.borderColor = "#4caf50";
+        status.style.color = "#2e7d32";
+      } else if (type === "error") {
+        status.style.background = "#ffebee";
+        status.style.borderColor = "#f44336";
+        status.style.color = "#c62828";
+      } else if (type === "loading") {
+        status.style.background = "#fff3e0";
+        status.style.borderColor = "#ff9800";
+        status.style.color = "#ef6c00";
+      } else if (type === "warning") {
+        status.style.background = "#fff3e0";
+        status.style.borderColor = "#ff9800";
+        status.style.color = "#ef6c00";
+      } else {
+        status.style.background = "#e3f2fd";
+        status.style.borderColor = "#2196f3";
+        status.style.color = "#1565c0";
+      }
+    }
+
+    /**
+     * Define a function to calculate cell ranges for multiple datasets
+     * @param {Array<Object<any>} rawData
+     * @returns {Array<{
+     *     index: number,
+     *     range: string,
+     *     data: Array<Array<any>>,
+     *     startRow: number,
+     *     endRow: number}
+     * >}
+     */
+    function calculateDataRanges(rawData) {
+      let ranges = [];
+      let currentRow = 1;
+
+      rawData.forEach((item, index) => {
+        if (item.chartData && item.chartData.length > 0) {
+          // Calculate rows and columns needed
+          const rows = item.chartData.length;
+          const columns = item.chartData[0].length;
+          // Calculate the range (e.g., "A1:I50")
+          const startCell = `A${currentRow}`;
+          const endColumn = String.fromCharCode('A'.charCodeAt(0) + columns - 1);
+          const endRow = currentRow + rows - 1;
+          const endCell = `${endColumn}${endRow}`;
+          const range = `${startCell}:${endCell}`;
+          ranges.push({
+            index,
+            range,
+            data: item.chartData,
+            startRow: currentRow,
+            endRow
+          });
+          currentRow = endRow + 3;
+        }
+      });
+
+      return ranges;
     }
   </script>
 </body>
