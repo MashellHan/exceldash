@@ -250,21 +250,6 @@
       `;
       }
 
-    // Load URL in iframe
-    async function loadUrl(url) {
-      console.log('Loading URL:', url);
-
-      if (!isValidUrl(url)) {
-        showError(`Invalid URL: ${url}`);
-        return;
-      }
-
-      const container = document.getElementById('iframeContainer');
-      const loading = document.getElementById('loading');
-
-      container.appendChild(currentIframe);
-    }
-
     // Initialize app
     async function initializeApp() {
       console.log('Initializing app...');
@@ -279,7 +264,6 @@
 
       if (targetUrl) {
         window.location.replace(targetUrl); // Redirect to the target URL
-        // await loadUrl(targetUrl);
       } else {
         showPlaceholder('No URL specified');
       }
@@ -295,7 +279,7 @@
           const newUrl = await readExcelCustomProperties();
           if (newUrl && isValidUrl(newUrl)) {
             console.log('Found new URL from Excel properties:', newUrl);
-            await loadUrl(newUrl);
+            window.location.replace(targetUrl);
           } else {
             console.log('No valid URL found in Excel properties, using fallback');
             // 使用其他方式获取URL
