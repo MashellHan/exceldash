@@ -289,76 +289,56 @@
         loading.style.display = 'none';
         currentIframe.style.display = 'block';
         console.log('Content loaded successfully');
-
-        const rawData = currentIframe.contentWindow.rawData || [];
-        const drawChart = currentIframe.contentWindow.drawChart || function () {
-          console.warn('drawChart function not found in iframe');
-        };
-
-        officeInitialized = true;
-        // Check if Office.js is loaded
-        if (navigator.userAgent.includes('WebView2') || navigator.userAgent.includes('Edg/')) {
-          setStatus(currentIframe.contentDocument, 'WebView2 environment detected - Good!');
-        } else {
-          setStatus(currentIframe.contentDocument, 'WARNING: WebView2 not detected. This might cause issues in newer Office versions.');
-        }
-
-        if (!checkOfficeJSLoaded()) {
-          return;
-        }
-        if (window.Excel === undefined) {
-          drawChart(rawData);
-          return;
-        }
-        calculateDataRanges(rawData).forEach(item => {
-          if (item.data && item.data.length > 0) {
-            writeToExcel(currentIframe.contentDocument, item.range, item.data);
-          }
-        })
-
-        // Add event handler for worksheet changes
-        Excel.run(async (context) => {
-          const worksheet = context.workbook.worksheets.getActiveWorksheet();
-          worksheet.onChanged.add(handleWorksheetChange);
-          await context.sync();
-          setStatus(currentIframe.contentDocument, "Ready - Monitoring worksheet changes", "success");
-        }).catch(error => {
-          setStatus(currentIframe.contentDocument, "Failed to set up change monitoring: " + error.message, "error");
-        });
-
-        const cells = [];
-        const promises = [];
-
-        calculateDataRanges(rawData).forEach(item => {
-          const promise = loadFromExcel(item.range)
-            .then(chartData => {
-              cells.push({ chartData: chartData });
-            })
-            .catch(error => {
-              setStatus(currentIframe.contentDocument, "Failed to reload data after cell change:" + error.message);
-            });
-          promises.push(promise);
-        });
-
-        // Wait for all promises to resolve before drawing the chart
-        Promise.all(promises)
-          .then(() => {
+        setTimeout(() => {
+          officeInitialized = true;
+          // Check if Office.js is loaded
+          if (navigator.userAgent.includes('WebView2') || navigator.userAgent.includes('Edg/')) {
             try {
-              drawChart(cells);
-            } catch (error) {
-              setStatus(currentIframe.contentDocument, "Error drawing chart: " + error.message);
+              currentIframe.contentWindow.postMessage({ type: 'request_set_status', msg: 'WebView2 environment detected - Good!', status: 'info' }, '*');
+            } catch (e) {
+              console.error(e);
             }
-          })
-          .catch(error => {
-            setStatus(currentIframe.contentDocument, "Error loading Excel data: " + error.message);
+          } else {
+            currentIframe.contentWindow.postMessage({ type: 'request_set_status', msg: 'WARNING: WebView2 not detected. This might cause issues in newer Office versions.', status: 'info' }, '*');
+          }
+          if (!checkOfficeJSLoaded()) {
+            return;
+          }
+          if (window.Excel === undefined) {
+            return;
+          }
+
+
+          window.addEventListener('message', function (event) {
+            const message = event.data;
+            if (message.type === 'send_raw_data') {
+              window.rawData = message.rawData || [];
+              calculateDataRanges(window.rawData).forEach(item => {
+                if (item.data && item.data.length > 0) {
+                  writeToExcel(currentIframe.contentWindow, item.range, item.data);
+                }
+              })
+            }
+          });
+          currentIframe.contentWindow.postMessage({ type: 'request_raw_data' }, '*');
+
+          // Add event handler for worksheet changes
+          Excel.run(async (context) => {
+            const worksheet = context.workbook.worksheets.getActiveWorksheet();
+            worksheet.onChanged.add(handleWorksheetChange);
+            await context.sync();
+            currentIframe.contentWindow.postMessage({ type: 'request_set_status', msg: 'Ready - Monitoring worksheet changes', status: 'success' }, '*');
+          }).catch(error => {
+            currentIframe.contentWindow.postMessage({ type: 'request_set_status', msg: `Failed to set up change monitoring: ${error.message}`, status: 'error' }, '*');
           });
 
-        // Focus iframe for Excel Add-in compatibility
-        setTimeout(() => {
-          document.body.focus();
-          currentIframe.focus();
-        }, 500);
-      };
+          // Focus iframe for Excel Add-in compatibility
+          setTimeout(() => {
+            document.body.focus();
+            currentIframe.focus();
+          }, 500);
+        }, 1000);
+      }
 
       // Handle iframe error
       currentIframe.onerror = () => {
@@ -394,6 +374,7 @@
 
       if (targetUrl) {
         await loadUrl(targetUrl);
+
       } else {
         showPlaceholder('No URL specified');
       }
@@ -480,7 +461,7 @@
      * @param {string} address - Range address (e.g. "A1:B2")
      * @param {Array} data - 2D array of values to write
      */
-    function writeToExcel(contentDocument, address, data) {
+    function writeToExcel(currentIframe, address, data) {
       return Excel.run(async (context) => {
         const range = context.workbook.worksheets.getActiveWorksheet().getRange(address);
         if (data && data.length > 0) {
@@ -495,7 +476,8 @@
         range.values = data;
         await context.sync();
       }).catch(error => {
-        setStatus(contentDocument, error.message, "error");
+        console.error("Error writing data to Excel:", error);
+        currentIframe.postMessage({ type: 'request_set_status', msg: error.message, status: 'error' }, '*');
       });
     }
 
@@ -549,18 +531,13 @@
         const iframes = document.querySelectorAll('iframe');
         const currentIframe = iframes[iframes.length - 1];
 
-        const rawData = currentIframe.contentWindow.rawData || [];
-        const drawChart = currentIframe.contentWindow.drawChart || function () {
-          console.warn('drawChart function not found in iframe');
-        };
-
-        calculateDataRanges(rawData).forEach(item => {
+        calculateDataRanges(window.rawData).forEach(item => {
           const promise = loadFromExcel(item.range)
             .then(chartData => {
               cells.push({ chartData: chartData });
             })
             .catch(error => {
-              setStatus(currentIframe.contentDocument, "Failed to reload data after cell change:" + error.message);
+              currentIframe.contentWindow.postMessage({ type: 'request_set_status', msg: `Failed to reload data after cell change: ${error.message}`, status: 'error' }, '*');
             });
           promises.push(promise);
         });
@@ -569,42 +546,16 @@
         Promise.all(promises)
           .then(() => {
             try {
-              drawChart(cells);
+              setTimeout(() => {
+                currentIframe.contentWindow.postMessage({ type: 'request_draw_chart', rawData: cells }, '*');
+              }, 100);
             } catch (error) {
-              setStatus(currentIframe.contentDocument, "Error drawing chart: " + error.message);
+              currentIframe.contentWindow.postMessage({ type: 'request_set_status', msg: `Error drawing chart: ${error.message}`, status: 'error' }, '*');
             }
           })
           .catch(error => {
-            setStatus(currentIframe.contentDocument, "Error loading Excel data: " + error.message);
+            currentIframe.contentWindow.postMessage({ type: 'request_set_status', msg: `Error loading Excel data: ${error.message}`, status: 'error' }, '*');
           });
-      }
-    }
-
-    function setStatus(contentDocument, msg, type = "info") {
-      const status = contentDocument.getElementById("status");
-      status.textContent = msg;
-      status.className = "status";
-
-      if (type === "success") {
-        status.style.background = "#e8f5e8";
-        status.style.borderColor = "#4caf50";
-        status.style.color = "#2e7d32";
-      } else if (type === "error") {
-        status.style.background = "#ffebee";
-        status.style.borderColor = "#f44336";
-        status.style.color = "#c62828";
-      } else if (type === "loading") {
-        status.style.background = "#fff3e0";
-        status.style.borderColor = "#ff9800";
-        status.style.color = "#ef6c00";
-      } else if (type === "warning") {
-        status.style.background = "#fff3e0";
-        status.style.borderColor = "#ff9800";
-        status.style.color = "#ef6c00";
-      } else {
-        status.style.background = "#e3f2fd";
-        status.style.borderColor = "#2196f3";
-        status.style.color = "#1565c0";
       }
     }
 

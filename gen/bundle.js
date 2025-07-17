@@ -346,6 +346,51 @@ function drawChart(data) {
   });
 };
 
-window.rawData = rawData;
-window.drawChart = drawChart;
 drawChart(rawData);
+
+function setStatus(msg, msgType = "info") {
+  const status = document.getElementById("status");
+  status.textContent = msg;
+  status.className = "status";
+
+  if (msgType === "success") {
+    status.style.background = "#e8f5e8";
+    status.style.borderColor = "#4caf50";
+    status.style.color = "#2e7d32";
+  } else if (msgType === "error") {
+    status.style.background = "#ffebee";
+    status.style.borderColor = "#f44336";
+    status.style.color = "#c62828";
+  } else if (msgType === "loading") {
+    status.style.background = "#fff3e0";
+    status.style.borderColor = "#ff9800";
+    status.style.color = "#ef6c00";
+  } else if (msgType === "warning") {
+    status.style.background = "#fff3e0";
+    status.style.borderColor = "#ff9800";
+    status.style.color = "#ef6c00";
+  } else {
+    status.style.background = "#e3f2fd";
+    status.style.borderColor = "#2196f3";
+    status.style.color = "#1565c0";
+  }
+}
+
+window.addEventListener('message', function (event) {
+  if (typeof event.data !== 'object' || !event.data.type) {
+    console.warn("Invalid message received:", event.data);
+    return;
+  }
+  if (event.data.type === 'request_raw_data') {
+    window.parent.postMessage({
+      type: 'send_raw_data',
+      rawData: rawData,
+    }, event.origin);
+  }
+  if (event.data.type === 'request_draw_chart') {
+    drawChart(event.data.rawData);
+  }
+  if (event.data.type === 'request_set_status') {
+    setStatus(event.data.msg, event.data.status ? event.data.status : "info");
+  }
+});

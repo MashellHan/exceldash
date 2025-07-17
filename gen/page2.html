@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<!-- saved from url=(0075)https://societas-static-page-jdi94qu4u-steins-projects-cd5f391e.vercel.app/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Mobile App Analysis Dashboard</title>
+    <script src="./echarts.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .dashboard-header h1 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .dashboard-header p {
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+        .kpi-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .kpi-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            width: 23%;
+            text-align: center;
+        }
+        .kpi-card h3 {
+            margin-top: 0;
+            color: #7f8c8d;
+            font-size: 14px;
+            font-weight: normal;
+        }
+        .kpi-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .kpi-change {
+            font-size: 14px;
+        }
+        .positive-change {
+            color: #27ae60;
+        }
+        .negative-change {
+            color: #e74c3c;
+        }
+        .chart-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .chart-container h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .chart-medium {
+            width: 32%;
+            height: 300px;
+        }
+        .chart-large {
+            width: 49%;
+            height: 350px;
+        }
+        .chart-full {
+            width: 100%;
+            height: 400px;
+        }
+        .chart {
+            width: 100%;
+            height: calc(100% - 30px);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>AI Mobile App Analysis Dashboard</h1>
+            <p>Weekly download rankings and ratings analysis for ChatGPT and Microsoft Copilot mobile apps</p>
+        </div>
+
+        <div class="kpi-container">
+            <div class="kpi-card">
+                <h3>Total ChatGPT Downloads</h3>
+                <div class="kpi-value" id="chatgpt-total-downloads">572.2M</div>
+                <div class="kpi-change positive-change" id="chatgpt-growth">+4.4%</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Total Copilot Downloads</h3>
+                <div class="kpi-value" id="copilot-total-downloads">39.9M</div>
+                <div class="kpi-change negative-change" id="copilot-growth">-18.8%</div>
+            </div>
+            <div class="kpi-card">
+                <h3>ChatGPT Average Rating</h3>
+                <div class="kpi-value" id="chatgpt-rating">4.84</div>
+                <div class="kpi-change">Based on <span id="chatgpt-rating-count">14.2M</span> ratings</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Copilot Average Rating</h3>
+                <div class="kpi-value" id="copilot-rating">4.81</div>
+                <div class="kpi-change">Based on <span id="copilot-rating-count">858.5K</span> ratings</div>
+            </div>
+        </div>
+
+        <div class="chart-row">
+            <div class="chart-container chart-large">
+                <h2>Weekly Downloads Trend</h2>
+                <div id="downloads-trend-chart" class="chart" _echarts_instance_="ec_1752720014172" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 529px; height: 320px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="529" height="320" style="position: absolute; left: 0px; top: 0px; width: 529px; height: 320px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class="" style="position: absolute; display: block; border-style: solid; white-space: nowrap; z-index: 9999999; box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 10px; transition: opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1), transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); background-color: rgb(255, 255, 255); border-width: 1px; border-radius: 4px; color: rgb(102, 102, 102); font: 14px / 21px &quot;Microsoft YaHei&quot;; padding: 10px; top: 0px; left: 0px; transform: translate3d(421px, 218px, 0px); border-color: rgb(255, 255, 255); pointer-events: none; visibility: hidden; opacity: 0;">2025-05-11<br><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#3498db;"></span> ChatGPT: 16.3M<br><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#2ecc71;"></span> Microsoft Copilot: 1.1M<br></div></div>
+            </div>
+            <div class="chart-container chart-large">
+                <h2>Market Share Evolution</h2>
+                <div id="market-share-chart" class="chart" _echarts_instance_="ec_1752720014173" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 532px; height: 320px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="532" height="320" style="position: absolute; left: 0px; top: 0px; width: 532px; height: 320px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class="" style="position: absolute; display: block; border-style: solid; white-space: nowrap; z-index: 9999999; box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 10px; transition: opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1), transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); background-color: rgb(255, 255, 255); border-width: 1px; border-radius: 4px; color: rgb(102, 102, 102); font: 14px / 21px &quot;Microsoft YaHei&quot;; padding: 10px; top: 0px; left: 0px; transform: translate3d(527px, 116px, 0px); border-color: rgb(255, 255, 255); pointer-events: none; visibility: hidden; opacity: 0;">2025-03-02<br><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#3498db;"></span> ChatGPT: 93.5%<br><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#2ecc71;"></span> Microsoft Copilot: 6.5%<br></div></div>
+            </div>
+        </div>
+
+        <div class="chart-row">
+            <div class="chart-container chart-medium">
+                <h2>Platform Distribution - ChatGPT</h2>
+                <div id="chatgpt-platform-chart" class="chart" _echarts_instance_="ec_1752720014174" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 341px; height: 270px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="341" height="270" style="position: absolute; left: 0px; top: 0px; width: 341px; height: 270px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
+            </div>
+            <div class="chart-container chart-medium">
+                <h2>Platform Distribution - Copilot</h2>
+                <div id="copilot-platform-chart" class="chart" _echarts_instance_="ec_1752720014175" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 344px; height: 270px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="344" height="270" style="position: absolute; left: 0px; top: 0px; width: 344px; height: 270px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
+            </div>
+            <div class="chart-container chart-medium">
+                <h2>Ratings Comparison</h2>
+                <div id="ratings-chart" class="chart" _echarts_instance_="ec_1752720014176" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 345px; height: 270px; padding: 0px; margin: 0px; border-width: 0px; cursor: pointer;"><canvas data-zr-dom-id="zr_0" width="345" height="270" style="position: absolute; left: 0px; top: 0px; width: 345px; height: 270px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class="" style="position: absolute; display: block; border-style: solid; white-space: nowrap; z-index: 9999999; will-change: transform; box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 10px; transition: opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1), transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); background-color: rgb(255, 255, 255); border-width: 1px; border-radius: 4px; color: rgb(102, 102, 102); font: 14px / 21px &quot;Microsoft YaHei&quot;; padding: 10px; top: 0px; left: 0px; transform: translate3d(100px, 117px, 0px); border-color: rgb(255, 255, 255); pointer-events: none;">2025-06-01<br><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#3498db;"></span> ChatGPT: 4.84<br><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#2ecc71;"></span> Microsoft Copilot: 4.81<br></div></div>
+            </div>
+        </div>
+
+        <div class="chart-row">
+            <div class="chart-container chart-full">
+                <h2>Detailed Weekly Downloads Data</h2>
+                <div id="detailed-data-chart" class="chart" _echarts_instance_="ec_1752720014177" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;"><div style="position: relative; width: 1094px; height: 370px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="1094" height="370" style="position: absolute; left: 0px; top: 0px; width: 1094px; height: 370px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class=""></div></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Data source: Data.ai | Generated on July 17, 2025</p>
+        </div>
+    </div>
+
+    <script>
+        // Raw data for all charts
+        const rawData = [
+            {
+                chartData: [
+                    // ChatGPT weekly downloads data
+                    {
+                        dates: [
+                            "2024-07-14", "2024-07-21", "2024-07-28", "2024-08-04", "2024-08-11", "2024-08-18", "2024-08-25",
+                            "2024-09-01", "2024-09-08", "2024-09-15", "2024-09-22", "2024-09-29", "2024-10-06", "2024-10-13",
+                            "2024-10-20", "2024-10-27", "2024-11-03", "2024-11-10", "2024-11-17", "2024-11-24", "2024-12-01",
+                            "2024-12-08", "2024-12-15", "2024-12-22", "2024-12-29", "2025-01-05", "2025-01-12", "2025-01-19",
+                            "2025-01-26", "2025-02-02", "2025-02-09", "2025-02-16", "2025-02-23", "2025-03-02", "2025-03-09",
+                            "2025-03-16", "2025-03-23", "2025-03-30", "2025-04-06", "2025-04-13", "2025-04-20", "2025-04-27",
+                            "2025-05-04", "2025-05-11", "2025-05-18", "2025-05-25", "2025-06-01", "2025-06-08", "2025-06-15",
+                            "2025-06-22", "2025-06-29", "2025-07-06"
+                        ],
+                        chatgpt: [
+                            4217544, 4438505, 4475619, 4577879, 5378364, 7134178, 6776615, 6547095, 7020162, 7772440, 7742828,
+                            8839586, 8921610, 9017330, 9451408, 9569353, 8850538, 9313682, 9321073, 10174602, 9541530, 9741385,
+                            9216500, 8137372, 7303200, 8539160, 8475197, 8853127, 8163306, 8837920, 10225149, 11227094, 10647097,
+                            9963864, 10810219, 11857788, 11767744, 17249447, 19681363, 17426058, 15924873, 16167953, 16664720,
+                            16302412, 17516909, 17909421, 16424630, 16601671, 17067716, 18391841, 18279725, 17743091
+                        ],
+                        copilot: [
+                            508081, 485680, 434521, 431272, 459903, 461840, 502927, 521988, 582788, 609662, 677906, 670024,
+                            723037, 830466, 846993, 761906, 745731, 718206, 763961, 798934, 820455, 955884, 883168, 848777,
+                            758341, 669022, 689754, 724241, 803599, 787975, 718723, 770975, 754203, 687318, 803852, 774616,
+                            861872, 849709, 725224, 722254, 782688, 800640, 973082, 1067707, 1106946, 1160667, 1069997, 1154403,
+                            1136495, 949075, 791255, 771089
+                        ]
+                    }
+                ]
+            },
+            {
+                chartData: [
+                    // Market share data
+                    {
+                        dates: [
+                            "2024-07-14", "2024-07-21", "2024-07-28", "2024-08-04", "2024-08-11", "2024-08-18", "2024-08-25",
+                            "2024-09-01", "2024-09-08", "2024-09-15", "2024-09-22", "2024-09-29", "2024-10-06", "2024-10-13",
+                            "2024-10-20", "2024-10-27", "2024-11-03", "2024-11-10", "2024-11-17", "2024-11-24", "2024-12-01",
+                            "2024-12-08", "2024-12-15", "2024-12-22", "2024-12-29", "2025-01-05", "2025-01-12", "2025-01-19",
+                            "2025-01-26", "2025-02-02", "2025-02-09", "2025-02-16", "2025-02-23", "2025-03-02", "2025-03-09",
+                            "2025-03-16", "2025-03-23", "2025-03-30", "2025-04-06", "2025-04-13", "2025-04-20", "2025-04-27",
+                            "2025-05-04", "2025-05-11", "2025-05-18", "2025-05-25", "2025-06-01", "2025-06-08", "2025-06-15",
+                            "2025-06-22", "2025-06-29", "2025-07-06"
+                        ],
+                        chatgptShare: [
+                            89.3, 90.1, 91.2, 91.4, 92.1, 93.9, 93.1, 92.6, 92.3, 92.7, 91.9, 93.0, 92.5, 91.6, 91.8, 92.6,
+                            92.2, 92.8, 92.4, 92.7, 92.1, 91.1, 91.3, 90.6, 90.6, 92.7, 92.5, 92.4, 91.0, 91.8, 93.4, 93.6,
+                            93.4, 93.5, 93.1, 93.9, 93.2, 95.3, 96.4, 96.0, 95.3, 95.3, 94.5, 93.9, 94.1, 93.9, 93.9, 93.5,
+                            93.8, 95.1, 95.9, 95.8
+                        ],
+                        copilotShare: [
+                            10.7, 9.9, 8.8, 8.6, 7.9, 6.1, 6.9, 7.4, 7.7, 7.3, 8.1, 7.0, 7.5, 8.4, 8.2, 7.4, 7.8, 7.2, 7.6,
+                            7.3, 7.9, 8.9, 8.7, 9.4, 9.4, 7.3, 7.5, 7.6, 9.0, 8.2, 6.6, 6.4, 6.6, 6.5, 6.9, 6.1, 6.8, 4.7,
+                            3.6, 4.0, 4.7, 4.7, 5.5, 6.1, 5.9, 6.1, 6.1, 6.5, 6.2, 4.9, 4.1, 4.2
+                        ]
+                    }
+                ]
+            },
+            {
+                chartData: [
+                    // Platform distribution - ChatGPT
+                    {
+                        platforms: ["iOS", "Android"],
+                        chatgptIOS: [46.1],
+                        chatgptAndroid: [53.9]
+                    }
+                ]
+            },
+            {
+                chartData: [
+                    // Platform distribution - Copilot
+                    {
+                        platforms: ["iOS", "Android"],
+                        copilotIOS: [31.5],
+                        copilotAndroid: [68.5]
+                    }
+                ]
+            },
+            {
+                chartData: [
+                    // Ratings data
+                    {
+                        dates: [
+                            "2024-07-14", "2024-07-21", "2024-07-28", "2024-08-04", "2024-08-11", "2024-08-18", "2024-08-25",
+                            "2024-09-01", "2024-09-08", "2024-09-15", "2024-09-22", "2024-09-29", "2024-10-06", "2024-10-13",
+                            "2024-10-20", "2024-10-27", "2024-11-03", "2024-11-10", "2024-11-17", "2024-11-24", "2024-12-01",
+                            "2024-12-08", "2024-12-15", "2024-12-22", "2024-12-29", "2025-01-05", "2025-01-12", "2025-01-19",
+                            "2025-01-26", "2025-02-02", "2025-02-09", "2025-02-16", "2025-02-23", "2025-03-02", "2025-03-09",
+                            "2025-03-16", "2025-03-23", "2025-03-30", "2025-04-06", "2025-04-13", "2025-04-20", "2025-04-27",
+                            "2025-05-04", "2025-05-11", "2025-05-18", "2025-05-25", "2025-06-01", "2025-06-08", "2025-06-15",
+                            "2025-06-22", "2025-06-29", "2025-07-06"
+                        ],
+                        chatgptRating: [
+                            4.84, 4.84, 4.84, 4.84, 4.84, 4.84, 4.84, 4.84, 4.84, 4.84, 4.84, 4.84, 4.84, 4.84, 4.84, 4.85,
+                            4.85, 4.85, 4.85, 4.85, 4.85, 4.85, 4.85, 4.85, 4.85, 4.85, 4.85, 4.85, 4.85, 4.85, 4.85, 4.85,
+                            4.85, 4.85, 4.85, 4.84, 4.84, 4.84, 4.84, 4.84, 4.84, 4.84, 4.84, 4.84, 4.84, 4.84, 4.84, 4.84,
+                            4.84, 4.84, 4.84, 4.84
+                        ],
+                        copilotRating: [
+                            4.82, 4.82, 4.82, 4.82, 4.82, 4.82, 4.82, 4.82, 4.82, 4.81, 4.82, 4.81, 4.81, 4.80, 4.80, 4.80,
+                            4.80, 4.81, 4.81, 4.81, 4.81, 4.81, 4.81, 4.81, 4.82, 4.82, 4.82, 4.82, 4.80, 4.80, 4.80, 4.80,
+                            4.80, 4.80, 4.80, 4.80, 4.80, 4.80, 4.80, 4.80, 4.80, 4.80, 4.81, 4.81, 4.81, 4.81, 4.81, 4.81,
+                            4.81, 4.81, 4.81, 4.81
+                        ]
+                    }
+                ]
+            },
+            {
+                chartData: [
+                    // Detailed weekly data
+                    {
+                        dates: [
+                            "2024-07-14", "2024-07-21", "2024-07-28", "2024-08-04", "2024-08-11", "2024-08-18", "2024-08-25",
+                            "2024-09-01", "2024-09-08", "2024-09-15", "2024-09-22", "2024-09-29", "2024-10-06", "2024-10-13",
+                            "2024-10-20", "2024-10-27", "2024-11-03", "2024-11-10", "2024-11-17", "2024-11-24", "2024-12-01",
+                            "2024-12-08", "2024-12-15", "2024-12-22", "2024-12-29", "2025-01-05", "2025-01-12", "2025-01-19",
+                            "2025-01-26", "2025-02-02", "2025-02-09", "2025-02-16", "2025-02-23", "2025-03-02", "2025-03-09",
+                            "2025-03-16", "2025-03-23", "2025-03-30", "2025-04-06", "2025-04-13", "2025-04-20", "2025-04-27",
+                            "2025-05-04", "2025-05-11", "2025-05-18", "2025-05-25", "2025-06-01", "2025-06-08", "2025-06-15",
+                            "2025-06-22", "2025-06-29", "2025-07-06"
+                        ],
+                        chatgptIOS: [
+                            1944196, 2115740, 1912523, 2109396, 2848318, 3599629, 3183707, 3274849, 3642247, 4200457, 4021316,
+                            4109795, 4373095, 4423074, 4512591, 4168410, 4123992, 4316883, 4271347, 4758911, 4290088, 4560282,
+                            4352740, 3577855, 3075725, 3732644, 3704675, 3920004, 3415919, 3739118, 4248368, 4463516, 4182294,
+                            4172683, 4597381, 4450232, 4703673, 6712483, 6857804, 6170119, 5504278, 5662551, 5638211, 5570470,
+                            5494724, 5497504, 5601708, 5608497, 5766409, 6178288, 5814893, 5697305
+                        ],
+                        chatgptAndroid: [
+                            2273348, 2322765, 2563096, 2468483, 2530046, 3534549, 3592908, 3272246, 3377915, 3571983, 3721512,
+                            4729791, 4548515, 4594256, 4938817, 5400943, 4726546, 4996799, 5049726, 5415691, 5251442, 5181103,
+                            4863760, 4559517, 4227475, 4806516, 4770522, 4933123, 4747387, 5098802, 5976781, 6763578, 6464803,
+                            5791181, 6212838, 7407556, 7064071, 10536964, 12823559, 11255939, 10420595, 10505402, 11026509,
+                            10731942, 12022185, 12411917, 10822922, 10993174, 11301307, 12213553, 12464832, 12045786
+                        ],
+                        copilotIOS: [
+                            164759, 161906, 152616, 152573, 162092, 167177, 186981, 188589, 209328, 220803, 235775, 230149,
+                            244796, 275103, 261599, 263317, 233695, 238652, 235026, 238357, 250805, 265000, 225005, 192187,
+                            181746, 189556, 208348, 233314, 243077, 238718, 242391, 236047, 236464, 238020, 240574, 234985,
+                            258022, 241940, 221223, 225627, 220581, 254752, 311580, 331862, 299979, 328893, 324603, 392518,
+                            360464, 309393, 255955, 236247
+                        ],
+                        copilotAndroid: [
+                            343322, 323774, 281905, 278699, 297811, 294663, 315946, 333399, 373460, 388859, 442131, 439875,
+                            478241, 555363, 585394, 498589, 512036, 479554, 528935, 560577, 569650, 690884, 658163, 656590,
+                            576595, 479466, 481406, 490927, 560522, 549257, 476332, 534928, 517739, 449298, 563278, 539631,
+                            603850, 607769, 504001, 496627, 562107, 545888, 661502, 735845, 806967, 831774, 745394, 761885,
+                            776031, 639682, 535300, 534842
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        // Initialize ECharts instances
+        const downloadsTrendChart = echarts.init(document.getElementById('downloads-trend-chart'));
+        const marketShareChart = echarts.init(document.getElementById('market-share-chart'));
+        const chatgptPlatformChart = echarts.init(document.getElementById('chatgpt-platform-chart'));
+        const copilotPlatformChart = echarts.init(document.getElementById('copilot-platform-chart'));
+        const ratingsChart = echarts.init(document.getElementById('ratings-chart'));
+        const detailedDataChart = echarts.init(document.getElementById('detailed-data-chart'));
+
+        // Update KPI values
+        function updateKPIs() {
+            const chatgptData = rawData[0].chartData[0].chatgpt;
+            const copilotData = rawData[0].chartData[0].copilot;
+            const chatgptRatingData = rawData[4].chartData[0].chatgptRating;
+            const copilotRatingData = rawData[4].chartData[0].copilotRating;
+
+            // Calculate totals
+            const chatgptTotal = chatgptData.reduce((sum, val) => sum + val, 0);
+            const copilotTotal = copilotData.reduce((sum, val) => sum + val, 0);
+
+            // Calculate growth (last 4 weeks vs previous 4 weeks)
+            const chatgptLastFour = chatgptData.slice(-4).reduce((sum, val) => sum + val, 0);
+            const chatgptPrevFour = chatgptData.slice(-8, -4).reduce((sum, val) => sum + val, 0);
+            const chatgptGrowth = ((chatgptLastFour / chatgptPrevFour) - 1) * 100;
+
+            const copilotLastFour = copilotData.slice(-4).reduce((sum, val) => sum + val, 0);
+            const copilotPrevFour = copilotData.slice(-8, -4).reduce((sum, val) => sum + val, 0);
+            const copilotGrowth = ((copilotLastFour / copilotPrevFour) - 1) * 100;
+
+            // Format numbers
+            document.getElementById('chatgpt-total-downloads').textContent = formatNumber(chatgptTotal);
+            document.getElementById('copilot-total-downloads').textContent = formatNumber(copilotTotal);
+
+            // Format growth
+            const chatgptGrowthEl = document.getElementById('chatgpt-growth');
+            chatgptGrowthEl.textContent = chatgptGrowth > 0 ? `+${chatgptGrowth.toFixed(1)}%` : `${chatgptGrowth.toFixed(1)}%`;
+            chatgptGrowthEl.className = `kpi-change ${chatgptGrowth >= 0 ? 'positive-change' : 'negative-change'}`;
+
+            const copilotGrowthEl = document.getElementById('copilot-growth');
+            copilotGrowthEl.textContent = copilotGrowth > 0 ? `+${copilotGrowth.toFixed(1)}%` : `${copilotGrowth.toFixed(1)}%`;
+            copilotGrowthEl.className = `kpi-change ${copilotGrowth >= 0 ? 'positive-change' : 'negative-change'}`;
+
+            // Ratings
+            document.getElementById('chatgpt-rating').textContent = chatgptRatingData[chatgptRatingData.length - 1].toFixed(2);
+            document.getElementById('copilot-rating').textContent = copilotRatingData[copilotRatingData.length - 1].toFixed(2);
+
+            // Rating counts (from the last data point)
+            document.getElementById('chatgpt-rating-count').textContent = formatNumber(14197503);
+            document.getElementById('copilot-rating-count').textContent = formatNumber(858497);
+        }
+
+        // Format large numbers
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        // Draw all charts
+        function drawChart() {
+            // 1. Downloads Trend Chart
+            const downloadsTrendOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function(params) {
+                        let result = params[0].axisValue + '<br/>';
+                        params.forEach(param => {
+                            result += param.marker + ' ' + param.seriesName + ': ' + formatNumber(param.value) + '<br/>';
+                        });
+                        return result;
+                    }
+                },
+                legend: {
+                    data: ['ChatGPT', 'Microsoft Copilot'],
+                    bottom: 0
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '10%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: rawData[0].chartData[0].dates,
+                    axisLabel: {
+                        interval: 4,
+                        rotate: 45
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        formatter: value => formatNumber(value)
+                    }
+                },
+                series: [
+                    {
+                        name: 'ChatGPT',
+                        type: 'line',
+                        data: rawData[0].chartData[0].chatgpt,
+                        smooth: true,
+                        lineStyle: {
+                            width: 3
+                        },
+                        itemStyle: {
+                            color: '#3498db'
+                        },
+                        areaStyle: {
+                            color: {
+                                type: 'linear',
+                                x: 0,
+                                y: 0,
+                                x2: 0,
+                                y2: 1,
+                                colorStops: [{
+                                    offset: 0,
+                                    color: 'rgba(52, 152, 219, 0.5)'
+                                }, {
+                                    offset: 1,
+                                    color: 'rgba(52, 152, 219, 0.1)'
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        name: 'Microsoft Copilot',
+                        type: 'line',
+                        data: rawData[0].chartData[0].copilot,
+                        smooth: true,
+                        lineStyle: {
+                            width: 3
+                        },
+                        itemStyle: {
+                            color: '#2ecc71'
+                        },
+                        areaStyle: {
+                            color: {
+                                type: 'linear',
+                                x: 0,
+                                y: 0,
+                                x2: 0,
+                                y2: 1,
+                                colorStops: [{
+                                    offset: 0,
+                                    color: 'rgba(46, 204, 113, 0.5)'
+                                }, {
+                                    offset: 1,
+                                    color: 'rgba(46, 204, 113, 0.1)'
+                                }]
+                            }
+                        }
+                    }
+                ]
+            };
+            downloadsTrendChart.setOption(downloadsTrendOption);
+
+            // 2. Market Share Chart
+            const marketShareOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function(params) {
+                        let result = params[0].axisValue + '<br/>';
+                        params.forEach(param => {
+                            result += param.marker + ' ' + param.seriesName + ': ' + param.value.toFixed(1) + '%<br/>';
+                        });
+                        return result;
+                    },
+                    axisPointer: {
+                        type: 'cross',
+                        label: {
+                            backgroundColor: '#6a7985'
+                        }
+                    }
+                },
+                legend: {
+                    data: ['ChatGPT', 'Microsoft Copilot'],
+                    bottom: 0
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '10%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: rawData[1].chartData[0].dates,
+                    axisLabel: {
+                        interval: 4,
+                        rotate: 45
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    min: 0,
+                    max: 100,
+                    axisLabel: {
+                        formatter: '{value}%'
+                    }
+                },
+                series: [
+                    {
+                        name: 'ChatGPT',
+                        type: 'line',
+                        stack: 'Total',
+                        areaStyle: {},
+                        emphasis: {
+                            focus: 'series'
+                        },
+                        data: rawData[1].chartData[0].chatgptShare,
+                        itemStyle: {
+                            color: '#3498db'
+                        }
+                    },
+                    {
+                        name: 'Microsoft Copilot',
+                        type: 'line',
+                        stack: 'Total',
+                        areaStyle: {},
+                        emphasis: {
+                            focus: 'series'
+                        },
+                        data: rawData[1].chartData[0].copilotShare,
+                        itemStyle: {
+                            color: '#2ecc71'
+                        }
+                    }
+                ]
+            };
+            marketShareChart.setOption(marketShareOption);
+
+            // 3. ChatGPT Platform Distribution Chart
+            const chatgptPlatformOption = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b}: {c} ({d}%)'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 10,
+                    data: ['iOS', 'Android']
+                },
+                series: [
+                    {
+                        name: 'ChatGPT Downloads',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: '18',
+                                fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: [
+                            { value: 46.1, name: 'iOS', itemStyle: { color: '#3498db' } },
+                            { value: 53.9, name: 'Android', itemStyle: { color: '#9b59b6' } }
+                        ]
+                    }
+                ]
+            };
+            chatgptPlatformChart.setOption(chatgptPlatformOption);
+
+            // 4. Copilot Platform Distribution Chart
+            const copilotPlatformOption = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b}: {c} ({d}%)'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 10,
+                    data: ['iOS', 'Android']
+                },
+                series: [
+                    {
+                        name: 'Copilot Downloads',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: '18',
+                                fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: [
+                            { value: 31.5, name: 'iOS', itemStyle: { color: '#2ecc71' } },
+                            { value: 68.5, name: 'Android', itemStyle: { color: '#e74c3c' } }
+                        ]
+                    }
+                ]
+            };
+            copilotPlatformChart.setOption(copilotPlatformOption);
+
+            // 5. Ratings Comparison Chart
+            const ratingsOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function(params) {
+                        let result = params[0].axisValue + '<br/>';
+                        params.forEach(param => {
+                            result += param.marker + ' ' + param.seriesName + ': ' + param.value.toFixed(2) + '<br/>';
+                        });
+                        return result;
+                    }
+                },
+                legend: {
+                    data: ['ChatGPT', 'Microsoft Copilot'],
+                    bottom: 0
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '10%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: rawData[4].chartData[0].dates,
+                    axisLabel: {
+                        interval: 8,
+                        rotate: 45
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    min: 4.7,
+                    max: 4.9,
+                    axisLabel: {
+                        formatter: '{value}'
+                    }
+                },
+                series: [
+                    {
+                        name: 'ChatGPT',
+                        type: 'line',
+                        data: rawData[4].chartData[0].chatgptRating,
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 8,
+                        itemStyle: {
+                            color: '#3498db'
+                        },
+                        lineStyle: {
+                            width: 3
+                        }
+                    },
+                    {
+                        name: 'Microsoft Copilot',
+                        type: 'line',
+                        data: rawData[4].chartData[0].copilotRating,
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 8,
+                        itemStyle: {
+                            color: '#2ecc71'
+                        },
+                        lineStyle: {
+                            width: 3
+                        }
+                    }
+                ]
+            };
+            ratingsChart.setOption(ratingsOption);
+
+            // 6. Detailed Data Chart
+            const detailedDataOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    },
+                    formatter: function(params) {
+                        let result = params[0].axisValue + '<br/>';
+                        params.forEach(param => {
+                            result += param.marker + ' ' + param.seriesName + ': ' + formatNumber(param.value) + '<br/>';
+                        });
+                        return result;
+                    }
+                },
+                legend: {
+                    data: ['ChatGPT iOS', 'ChatGPT Android', 'Copilot iOS', 'Copilot Android'],
+                    bottom: 0
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '10%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: rawData[5].chartData[0].dates,
+                    axisLabel: {
+                        interval: 4,
+                        rotate: 45
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        formatter: value => formatNumber(value)
+                    }
+                },
+                series: [
+                    {
+                        name: 'ChatGPT iOS',
+                        type: 'bar',
+                        stack: 'ChatGPT',
+                        emphasis: {
+                            focus: 'series'
+                        },
+                        data: rawData[5].chartData[0].chatgptIOS,
+                        itemStyle: {
+                            color: '#3498db'
+                        }
+                    },
+                    {
+                        name: 'ChatGPT Android',
+                        type: 'bar',
+                        stack: 'ChatGPT',
+                        emphasis: {
+                            focus: 'series'
+                        },
+                        data: rawData[5].chartData[0].chatgptAndroid,
+                        itemStyle: {
+                            color: '#9b59b6'
+                        }
+                    },
+                    {
+                        name: 'Copilot iOS',
+                        type: 'bar',
+                        stack: 'Copilot',
+                        emphasis: {
+                            focus: 'series'
+                        },
+                        data: rawData[5].chartData[0].copilotIOS,
+                        itemStyle: {
+                            color: '#2ecc71'
+                        }
+                    },
+                    {
+                        name: 'Copilot Android',
+                        type: 'bar',
+                        stack: 'Copilot',
+                        emphasis: {
+                            focus: 'series'
+                        },
+                        data: rawData[5].chartData[0].copilotAndroid,
+                        itemStyle: {
+                            color: '#e74c3c'
+                        }
+                    }
+                ]
+            };
+            detailedDataChart.setOption(detailedDataOption);
+        }
+
+        // Update KPIs and draw charts
+        updateKPIs();
+        drawChart();
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            downloadsTrendChart.resize();
+            marketShareChart.resize();
+            chatgptPlatformChart.resize();
+            copilotPlatformChart.resize();
+            ratingsChart.resize();
+            detailedDataChart.resize();
+        });
+
+        // Cross-origin communication for iframe embedding
+        window.addEventListener('message', function(event) {
+            const { type, payload, reqId } = event.data || {};
+            if (type === 'call-drawChart') {
+                window.drawChart(payload);
+            }
+            if (type === 'get-rawdata') {
+                event.source.postMessage({
+                    type: 'rawdata-response',
+                    reqId,
+                    rawdata: window.rawData
+                }, event.origin);
+            }
+        });
+
+        // Global exposure
+        drawChart(rawData);
+
+        window.addEventListener('message', function (event) {
+          if (typeof event.data !== 'object' || !event.data.type) {
+            console.warn("Invalid message received:", event.data);
+            return;
+          }
+          if (event.data.type === 'request_raw_data') {
+            window.parent.postMessage({
+              type: 'send_raw_data',
+              rawData: rawData,
+            }, event.origin);
+          }
+          if (event.data.type === 'request_draw_chart') {
+            drawChart(event.data.rawData);
+          }
+        });
+
+    </script>
+
+</body></html>
