@@ -463,7 +463,23 @@
      */
     function writeToExcel(currentIframe, address, data) {
       return Excel.run(async (context) => {
-        const range = context.workbook.worksheets.getActiveWorksheet().getRange(address);
+        const worksheet = context.workbook.worksheets.getActiveWorksheet();
+        // Use the entire worksheet range instead of usedRange
+        const worksheetRange = worksheet.getRange();
+        worksheetRange.load("address");
+        await context.sync();
+        const mergedAreas = worksheetRange.getMergedAreasOrNullObject();
+        mergedAreas.load("areas");
+        await context.sync();
+        if (!mergedAreas.isNullObject && mergedAreas.areas.items.length > 0) {
+          // Unmerge each merged area
+          for (let i = 0; i < mergedAreas.areas.items.length; i++) {
+            const mergedArea = mergedAreas.areas.items[i];
+            mergedArea.unmerge();
+          }
+        }
+        const range = worksheet.getRange(address);
+
         if (data && data.length > 0) {
           for (let i = 0; i < data.length; i++) {
             for (let j = 0; j < data[i].length; j++) {
