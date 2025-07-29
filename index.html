@@ -374,7 +374,6 @@
 
       if (targetUrl) {
         await loadUrl(targetUrl);
-
       } else {
         showPlaceholder('No URL specified');
       }
@@ -464,7 +463,8 @@
     function writeToExcel(currentIframe, address, data) {
       return Excel.run(async (context) => {
         const worksheet = context.workbook.worksheets.getActiveWorksheet();
-        // Use the entire worksheet range instead of usedRange
+
+        // Clear existing merged cells in the worksheet
         const worksheetRange = worksheet.getRange();
         worksheetRange.load("address");
         await context.sync();
@@ -472,14 +472,41 @@
         mergedAreas.load("areas");
         await context.sync();
         if (!mergedAreas.isNullObject && mergedAreas.areas.items.length > 0) {
-          // Unmerge each merged area
           for (let i = 0; i < mergedAreas.areas.items.length; i++) {
             const mergedArea = mergedAreas.areas.items[i];
             mergedArea.unmerge();
           }
         }
-        const range = worksheet.getRange(address);
 
+        // Clear cell formatting
+        worksheetRange.load(["format/borders", "format/fill", "format/font"]);
+        await context.sync();
+        worksheetRange.format.fill.clear();
+        worksheetRange.format.font.name = "Calibri";
+        worksheetRange.format.font.size = 11;
+        worksheetRange.format.font.color = "#000000";
+        worksheetRange.format.font.bold = false;
+        worksheetRange.format.font.italic = false;
+        worksheetRange.format.font.underline = "None";
+        worksheetRange.format.font.strikethrough = false;
+        worksheetRange.format.horizontalAlignment = "General";
+        worksheetRange.format.verticalAlignment = "Bottom";
+        worksheetRange.format.wrapText = false;
+        const borderEdges = [
+          'EdgeTop',
+          'EdgeBottom',
+          'EdgeLeft',
+          'EdgeRight',
+          'InsideHorizontal',
+          'InsideVertical'
+        ];
+        for (const edge of borderEdges) {
+          const border = worksheetRange.format.borders.getItem(edge);
+          border.style = 'None';
+        }
+        await context.sync();
+
+        const range = worksheet.getRange(address);
         if (data && data.length > 0) {
           for (let i = 0; i < data.length; i++) {
             for (let j = 0; j < data[i].length; j++) {
@@ -523,7 +550,6 @@
         throw error;
       });
     }
-
 
     /** Checks if Office.js is loaded
      * @returns {boolean} - True if Office.js is loaded, false otherwise
