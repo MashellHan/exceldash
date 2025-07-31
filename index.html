@@ -211,7 +211,7 @@
           console.log('Could not read Office settings:', error.message);
         }
 
-        // 尝试从Excel自定义属性读取
+        // Try to read Excel custom properties
         try {
           console.log('Attempting to read Excel custom properties...');
           const customPropertyUrl = await readExcelCustomProperties();
@@ -324,7 +324,7 @@
 
           // Add event handler for worksheet changes
           Excel.run(async (context) => {
-            const worksheet = context.workbook.worksheets.getActiveWorksheet();
+            const worksheet = context.workbook.worksheets.getFirst();
             worksheet.onChanged.add(handleWorksheetChange);
             await context.sync();
             currentIframe.contentWindow.postMessage({ type: 'request_set_status', msg: 'Ready - Monitoring worksheet changes', status: 'success' }, '*');
@@ -462,7 +462,7 @@
      */
     function writeToExcel(currentIframe, address, data) {
       return Excel.run(async (context) => {
-        const worksheet = context.workbook.worksheets.getActiveWorksheet();
+        const worksheet = context.workbook.worksheets.getFirst();
 
         // Clear existing merged cells in the worksheet
         const worksheetRange = worksheet.getRange();
@@ -531,7 +531,7 @@
      */
     function loadFromExcel(address) {
       return Excel.run(async (context) => {
-        const range = context.workbook.worksheets.getActiveWorksheet().getRange(address);
+        const range = context.workbook.worksheets.getFirst().getRange(address);
         range.load("values");
         await context.sync();
         var data = range.values;
