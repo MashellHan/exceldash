@@ -518,6 +518,10 @@
         }
         range.values = data;
         await context.sync();
+
+        const columnsRange = worksheet.getRange("A:CV");
+        columnsRange.format.autofitColumns();
+        await context.sync();
       }).catch(error => {
         console.error("Error writing data to Excel:", error);
         currentIframe.postMessage({ type: 'request_set_status', msg: error.message, status: 'error' }, '*');
